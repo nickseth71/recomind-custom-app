@@ -1,4 +1,4 @@
-// /app/lib/api.js
+// /app/lib.js/api.js
 // Central API client — all calls to the RecoMind Express backend
 
 const BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
@@ -23,50 +23,50 @@ async function request(path, options = {}) {
 }
 
 export const storeApi = {
-  getMe: () => request("/api/stores/me"),
+  getMe: () => request("/stores/me"),
 };
 
 export const productApi = {
-  getDashboard: () => request("/api/products/dashboard"),
+  getDashboard: () => request("/products/dashboard"),
   list: (params = {}) => {
     const q = new URLSearchParams(params).toString();
-    return request(`/api/products${q ? `?${q}` : ""}`);
+    return request(`/products${q ? `?${q}` : ""}`);
   },
-  get: (id) => request(`/api/products/${id}`),
-  analyse: (id) => request(`/api/products/${id}/analyse`, { method: "POST" }),
-  analyseBulk: () => request("/api/products/analyse-bulk", { method: "POST" }),
-  getAnalyses: (id) => request(`/api/products/${id}/analysis`),
-  optimise: (id) => request(`/api/products/${id}/optimise`, { method: "POST" }),
+  get: (id) => request(`/products/${id}`),
+  analyse: (id) => request(`/products/${id}/analyse`, { method: "POST" }),
+  analyseBulk: () => request("/products/analyse-bulk", { method: "POST" }),
+  getAnalyses: (id) => request(`/products/${id}/analysis`),
+  optimise: (id) => request(`/products/${id}/optimise`, { method: "POST" }),
   rollback: (id, analysisId) =>
-    request(`/api/products/${id}/rollback`, {
+    request(`/products/${id}/rollback`, {
       method: "POST",
       body: JSON.stringify({ analysisId }),
     }),
-  sync: () => request("/api/products/sync", { method: "POST" }),
-  jobStatus: (jobId) => request(`/api/products/jobs/${jobId}`),
+  sync: () => request("/products/sync", { method: "POST" }),
+  jobStatus: (jobId) => request(`/products/jobs/${jobId}`),
 };
 
 export const promptApi = {
   simulate: (prompt, productId) =>
-    request("/api/prompts/simulate", {
+    request("/prompts/simulate", {
       method: "POST",
       body: JSON.stringify({ prompt, productId }),
     }),
   analyse: (prompt) =>
-    request("/api/prompts/analyse", {
+    request("/prompts/analyse", {
       method: "POST",
       body: JSON.stringify({ prompt }),
     }),
   history: (params = {}) => {
     const q = new URLSearchParams(params).toString();
-    return request(`/api/prompts/history${q ? `?${q}` : ""}`);
+    return request(`/prompts/history${q ? `?${q}` : ""}`);
   },
 };
 
 export const reportApi = {
-  summary: () => request("/api/reports/summary"),
+  summary: () => request("/reports/summary"),
   llmsTxt: async () => {
-    const res = await fetch(`${BASE}/api/reports/llms-txt`, {
+    const res = await fetch(`${BASE}/reports/llms-txt`, {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
     if (!res.ok) throw new Error("Failed to generate llms.txt");
@@ -74,6 +74,6 @@ export const reportApi = {
   },
   auditLog: (params = {}) => {
     const q = new URLSearchParams(params).toString();
-    return request(`/api/reports/audit-log${q ? `?${q}` : ""}`);
+    return request(`/reports/audit-log${q ? `?${q}` : ""}`);
   },
 };
