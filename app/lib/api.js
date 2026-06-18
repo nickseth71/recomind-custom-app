@@ -1,4 +1,4 @@
-// /app/lib.js
+// /app/lib.js/api.js
 // Central API client — all calls to the RecoMind Express backend
 
 const BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";

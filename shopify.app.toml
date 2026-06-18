@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "a1f73e416505e467ace8b81dc16a6cc4"
+client_id = "56333f90e32fd303bab3a2668a834bfe"
 name = "RecoMind"
 application_url = "https://example.com"
 embedded = true

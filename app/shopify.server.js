@@ -24,7 +24,7 @@ const shopify = shopifyApp({
 
       try {
         const backendUrl = process.env.VITE_BASE_URL || "http://localhost:5000";
-        const response = await fetch(`${backendUrl}/api/stores`, {
+        const response = await fetch(`${backendUrl}/stores`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ shop, accessToken, scope }),
