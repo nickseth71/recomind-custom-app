@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+/* ==========================================
+   DESIGN TOKENS (Tailwind v4)
+========================================== */
+
+@theme {
+  /* Colors */
+  --color-on-primary-container: #dbe1ff;
+  --color-primary-fixed: #dbe1ff;
+  --color-surface-container: #f4e9d9;
+  --color-secondary: #585e71;
+  --color-surface-dim: #e3d9c8;
+  --color-on-tertiary-container: #ffe08d;
+  --color-on-surface-variant: #44464f;
+  --color-on-secondary-fixed: #111b2d;
+  --color-on-primary-fixed-variant: #2b3467;
+  --color-secondary-fixed-dim: #b6bfd1;
+  --color-on-primary: #ffffff;
+  --color-on-background: #1b1b1f;
+  --color-outline-variant: #c5c6d0;
+  --color-surface-tint: #111844;
+  --color-surface-bright: #fff8f1;
+  --color-tertiary-fixed-dim: #e9ba00;
+  --color-surface: #fff8f1;
+  --color-tertiary-container: #966d00;
+  --color-inverse-primary: #b9c3ff;
+  --color-error: #ba1a1a;
+  --color-inverse-on-surface: #f4f0ef;
+  --color-surface-variant: #e1e2ec;
+  --color-surface-container-highest: #e3d9c8;
+  --color-on-tertiary: #ffffff;
+  --color-on-surface: #1b1b1f;
+  --color-surface-container-high: #ebe0cf;
+  --color-on-secondary-container: #111844;
+  --color-background: #fff8f1;
+  --color-secondary-fixed: #dee2f9;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-tertiary-fixed: #261a00;
+  --color-primary: #111844;
+  --color-on-error-container: #410002;
+  --color-on-secondary-fixed-variant: #404659;
+  --color-on-secondary: #ffffff;
+  --color-on-primary-fixed: #1a1c20;
+  --color-on-error: #ffffff;
+  --color-surface-container-low: #fdf2e1;
+  --color-tertiary-fixed: #ffe08d;
+  --color-tertiary: #7b5800;
+  --color-on-tertiary-fixed-variant: #5d4200;
+  --color-inverse-surface: #303034;
+  --color-secondary-container: #dee2f9;
+  --color-primary-container: #111844;
+  --color-error-container: #ffdad6;
+  --color-outline: #757780;
+  --color-primary-fixed-dim: #b9c3ff;
+  --color-green-win: #005236;
+  --color-green-win-light: #00e29e;
+
+  /* Spacing */
+  --spacing-gutter: 16px;
+  --space-gutter: var(--spacing-gutter);
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 32px;
+  --spacing-unit: 4px;
+  --spacing-max-width: 1440px;
+
+  /* Radius */
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Fonts */
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* ==========================================
+   BASE
+========================================== */
+
+@layer base {
+  body {
+    background-color: #1b1b1f;
+    color: #e5e2e2;
+    font-family: var(--font-body);
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings:
+      "FILL" 0,
+      "wght" 400,
+      "GRAD" 0,
+      "opsz" 24;
+    vertical-align: middle;
+  }
+}
+
+/* ==========================================
+   TYPOGRAPHY UTILITIES
+========================================== */
+
+@utility text-display-lg {
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+@utility text-headline-lg {
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+@utility text-headline-md {
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+@utility text-headline-sm {
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+@utility text-body-lg {
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+@utility text-body-md {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+@utility text-label-md {
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+@utility text-label-sm {
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+}
+
+@utility text-mono-sm {
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: var(--font-mono);
+}
+
+/* ==========================================
+   FONT UTILITIES
+========================================== */
+
+@utility font-display-lg {
+  font-family: var(--font-display);
+}
+
+@utility font-headline-lg {
+  font-family: var(--font-display);
+}
+
+@utility font-headline-md {
+  font-family: var(--font-display);
+}
+
+@utility font-headline-sm {
+  font-family: var(--font-display);
+}
+
+@utility font-body-lg {
+  font-family: var(--font-body);
+}
+
+@utility font-body-md {
+  font-family: var(--font-body);
+}
+
+@utility font-label-md {
+  font-family: var(--font-body);
+}
+
+@utility font-mono-sm {
+  font-family: var(--font-mono);
+}
+
+/* ==========================================
+   CUSTOM COMPONENTS
+========================================== */
+
+@layer components {
+  .glass-card {
+    @apply backdrop-blur-xl border;
+    background-color: #f4e9d9;
+    border-color: #e3d9c8;
+  }
+
+  .ai-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .progress-ring__circle {
+    transition: stroke-dashoffset 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
