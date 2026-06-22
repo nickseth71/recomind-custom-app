@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Archive, Trophy ,Workflow, FileText, ChartBarBig, ChartNoAxesCombined, ReceiptText} from "lucide-react";
+
 
 export const loader = async () => null;
 // changed isOpen to sideBar openand setIsOpen to setSidebarOpen for sidebar changes
@@ -19,7 +20,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const getLinkClasses = (path) => {
     const active = isActive(path);
     const base =
-      "flex items-center gap-3 px-4 py-3 rounded-lg font-bold border-r-2 transition-all duration-200 ease-in-out";
+      "flex items-center gap-1.5 px-4 py-1 rounded-lg font-semibold border-r-2 transition-all duration-200 ease-in-out";
     if (active) {
       return `${base} text-secondary border-secondary bg-surface-container`;
     }
@@ -27,25 +28,29 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   };
 
   const navItems = [
-    { to: "/app", icon: "dashboard", label: "Dashboard" },
-    { to: "/app/products", icon: "inventory_2", label: "Products" },
+    { to: "/app", icon: <Trophy size={14}/>, label: "Dashboard" },
+    { to: "/app/products", icon: <Archive size={14} />, label: "Products" },
+    { to: "/app/products" , icon: <Trophy size={14}/>, label: "Prompt Wins" },
+    { to: "/app/products" , icon: <ChartBarBig size={14}/>, label: "Competitors" },
+    { to: "/app/products" , icon: <ChartNoAxesCombined size={14}/>, label: "Impact" },
     {
       to: "/app/simulation",
-      icon: "precision_manufacturing",
+      icon: <Workflow size={14}/>,
       label: "Simulation",
     },
-    { to: "/app/reports", icon: "assessment", label: "Reports" },
+    { to: "/app/reports", icon:<FileText size={14}/> , label: "Reports" },
+    { to: "/app/products" , icon:<ReceiptText size={14} /> , label: "Billing" },
   ];
 
   return (
     <aside
       className={`h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-container-lowest flex flex-col py-gutter px-4 z-50 transition-all duration-300 ${
-        sidebarOpen ? "w-64" : "w-20"
+        sidebarOpen ? "w-54" : "w-20"
       }`}
     >
       {/* Header */}
       <div
-        className={`mb-12 flex items-center justify-between ${!sidebarOpen && "flex-col gap-4"}`}
+        className={`mb-8 flex items-center justify-between ${!sidebarOpen && "flex-col gap-4"}`}
       >
         <div
           className={`flex items-center ${sidebarOpen ? "gap-3" : "gap-0 flex-col"}`}
@@ -53,17 +58,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center shrink-0">
             <span
               className="material-symbols-outlined text-on-secondary"
-              style={{ fontVariationSettings: "'FILL' 1", fontSize: "20px" }}
+              style={{ fontVariationSettings: "'FILL' 1", fontSize: "16px" }}
             >
               psychology
             </span>
           </div>
           {sidebarOpen && (
             <div>
-              <h1 className="font-display-lg text-[20px] font-bold text-on-surface dark:text-on-surface leading-none">
+              <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
                 RecoMind
               </h1>
-              <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">
+              <p className="text-[8px] text-on-surface-variant uppercase tracking-widest mt-1">
                 AI Commerce Visibility
               </p>
             </div>
@@ -75,14 +80,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           <ChevronLeft
-            size={20}
+            size={18}
             className={`transition-transform duration-300 ${!sidebarOpen && "rotate-180"}`}
           />
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-0">
         {navItems.map(({ to, icon, label }) => (
           <Link
             key={to}
@@ -91,25 +96,25 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             title={!sidebarOpen ? label : ""}
           >
             <span
-              className="material-symbols-outlined shrink-0"
-              style={{ fontSize: "24px" }}
+              className="material-symbols-outlined  shrink-0"
+              style={{ fontSize: "16px" }}
               data-icon={icon}
             >
               {icon}
             </span>
-            {sidebarOpen && <span>{label}</span>}
+            {sidebarOpen && <span className="text-[14px]">{label}</span>}
           </Link>
         ))}
       </nav>
 
       {/* Footer */}
       <div
-        className={`pt-8 mt-auto border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
+        className={`pt-8 mt-3 border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
       >
         <button
           className={`${
             sidebarOpen ? "w-full" : "w-full"
-          } bg-secondary text-on-secondary font-bold py-3 rounded-lg mb-4 hover:opacity-90 transition-all flex items-center justify-center`}
+          } bg-secondary text-on-secondary font-bold py-2 rounded-lg mb-2 hover:opacity-90 transition-all flex items-center justify-center`}
           title={!sidebarOpen ? "Upgrade Plan" : ""}
         >
           {sidebarOpen ? (
@@ -117,7 +122,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           ) : (
             <span
               className="material-symbols-outlined"
-              style={{ fontSize: "20px" }}
+              style={{ fontSize: "16px" }}
             >
               trending_up
             </span>
@@ -132,7 +137,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         >
           <span
             className="material-symbols-outlined shrink-0"
-            style={{ fontSize: "20px" }}
+            style={{ fontSize: "16px" }}
           >
             settings
           </span>
@@ -147,7 +152,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         >
           <span
             className="material-symbols-outlined shrink-0"
-            style={{ fontSize: "20px" }}
+            style={{ fontSize: "16px" }}
           >
             help_outline
           </span>
