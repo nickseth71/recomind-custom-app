@@ -18,7 +18,7 @@ const Sidebar = () => {
   const getLinkClasses = (path) => {
     const active = isActive(path);
     const base =
-      "flex items-center gap-3 px-4 py-3 rounded-lg font-bold border-r-2 transition-all duration-200 ease-in-out";
+      "flex items-center gap-3 px-2 py-1 rounded-lg font-normal border-r-2 transition-all duration-200 ease-in-out";
     if (active) {
       return `${base} text-secondary border-secondary bg-surface-container`;
     }
@@ -28,6 +28,11 @@ const Sidebar = () => {
   const navItems = [
     { to: "/app", icon: "dashboard", label: "Dashboard" },
     { to: "/app/products", icon: "inventory_2", label: "Products" },
+    {
+      to: "/app/promptwin",
+      icon: "inventory_2",
+      label: "Prompt Win",
+    },
     {
       to: "/app/simulation",
       icon: "precision_manufacturing",
@@ -39,30 +44,30 @@ const Sidebar = () => {
   return (
     <aside
       className={`h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-container-lowest flex flex-col py-gutter px-4 z-50 transition-all duration-300 ${
-        isOpen ? "w-64" : "w-20"
+        isOpen ? "w-44" : "w-20"
       }`}
     >
       {/* Header */}
       <div
-        className={`mb-12 flex items-center justify-between ${!isOpen && "flex-col gap-4"}`}
+        className={`mb-6 flex items-center justify-between ${!isOpen && "flex-col gap-4"}`}
       >
         <div
           className={`flex items-center ${isOpen ? "gap-3" : "gap-0 flex-col"}`}
         >
-          <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center shrink-0">
             <span
               className="material-symbols-outlined text-on-secondary"
-              style={{ fontVariationSettings: "'FILL' 1", fontSize: "20px" }}
+              style={{ fontVariationSettings: "'FILL' 1", fontSize: "15px" }}
             >
               psychology
             </span>
           </div>
           {isOpen && (
             <div>
-              <h1 className="font-display-lg text-[20px] font-bold text-on-surface dark:text-on-surface leading-none">
+              <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
                 RecoMind
               </h1>
-              <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">
+              <p className="text-[8px] text-on-surface-variant uppercase tracking-widest mt-1">
                 AI Commerce Visibility
               </p>
             </div>
@@ -74,14 +79,14 @@ const Sidebar = () => {
           title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           <ChevronLeft
-            size={20}
+            size={15}
             className={`transition-transform duration-300 ${!isOpen && "rotate-180"}`}
           />
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-1">
         {navItems.map(({ to, icon, label }) => (
           <Link
             key={to}
@@ -91,12 +96,12 @@ const Sidebar = () => {
           >
             <span
               className="material-symbols-outlined shrink-0"
-              style={{ fontSize: "24px" }}
+              style={{ fontSize: "14px" }}
               data-icon={icon}
             >
               {icon}
             </span>
-            {isOpen && <span>{label}</span>}
+            {isOpen && <span className="text-[15px]">{label}</span>}
           </Link>
         ))}
       </nav>

@@ -99,11 +99,11 @@ export default function App() {
 
       console.log(
         "[App] Fetching token from:",
-        `${backendUrl}/api/stores/token?shop=${shopDomain}`,
+        `${backendUrl}/stores/token?shop=${shopDomain}`,
       );
 
       const res = await fetch(
-        `${backendUrl}/api/stores/token?shop=${encodeURIComponent(shopDomain)}`,
+        `${backendUrl}/stores/token?shop=${encodeURIComponent(shopDomain)}`,
       );
 
       console.log("[App] Token response status:", res.status);
