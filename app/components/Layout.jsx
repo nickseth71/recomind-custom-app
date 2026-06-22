@@ -46,8 +46,17 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-[#fff8f1] text-[#e5e2e2]">
-      <Sidebar />
-      <Header store={store} />
+      {/* <Sidebar />
+      <Header store={store} /> */}
+      <Sidebar
+  sidebarOpen={sidebarOpen}
+  setSidebarOpen={setSidebarOpen}
+/>
+
+<Header
+  store={store}
+  sidebarOpen={sidebarOpen}
+/>
       <main
         className={`pt-24 px-margin-desktop pb-12 min-h-screen transition-all duration-300 overflow-x-auto ${
           sidebarOpen ? "ml-64" : "ml-20"

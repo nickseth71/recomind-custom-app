@@ -3,9 +3,10 @@ import { Link, useLocation } from "react-router";
 import { ChevronLeft } from "lucide-react";
 
 export const loader = async () => null;
-
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
+// changed isOpen to sideBar openand setIsOpen to setSidebarOpen for sidebar changes
+// const Sidebar = () => {
+//   const [isOpen, setIsOpen] = useState(true);
+const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
 
   const isActive = (path) => {
@@ -39,15 +40,15 @@ const Sidebar = () => {
   return (
     <aside
       className={`h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-container-lowest flex flex-col py-gutter px-4 z-50 transition-all duration-300 ${
-        isOpen ? "w-64" : "w-20"
+        sidebarOpen ? "w-64" : "w-20"
       }`}
     >
       {/* Header */}
       <div
-        className={`mb-12 flex items-center justify-between ${!isOpen && "flex-col gap-4"}`}
+        className={`mb-12 flex items-center justify-between ${!sidebarOpen && "flex-col gap-4"}`}
       >
         <div
-          className={`flex items-center ${isOpen ? "gap-3" : "gap-0 flex-col"}`}
+          className={`flex items-center ${sidebarOpen ? "gap-3" : "gap-0 flex-col"}`}
         >
           <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center shrink-0">
             <span
@@ -57,7 +58,7 @@ const Sidebar = () => {
               psychology
             </span>
           </div>
-          {isOpen && (
+          {sidebarOpen && (
             <div>
               <h1 className="font-display-lg text-[20px] font-bold text-on-surface dark:text-on-surface leading-none">
                 RecoMind
@@ -69,13 +70,13 @@ const Sidebar = () => {
           )}
         </div>
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-1.5 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant hover:text-on-surface shrink-0"
-          title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+          title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           <ChevronLeft
             size={20}
-            className={`transition-transform duration-300 ${!isOpen && "rotate-180"}`}
+            className={`transition-transform duration-300 ${!sidebarOpen && "rotate-180"}`}
           />
         </button>
       </div>
@@ -87,7 +88,7 @@ const Sidebar = () => {
             key={to}
             className={getLinkClasses(to)}
             to={to}
-            title={!isOpen ? label : ""}
+            title={!sidebarOpen ? label : ""}
           >
             <span
               className="material-symbols-outlined shrink-0"
@@ -96,22 +97,22 @@ const Sidebar = () => {
             >
               {icon}
             </span>
-            {isOpen && <span>{label}</span>}
+            {sidebarOpen && <span>{label}</span>}
           </Link>
         ))}
       </nav>
 
       {/* Footer */}
       <div
-        className={`pt-8 mt-auto border-t border-outline-variant ${isOpen ? "space-y-2" : "space-y-3"}`}
+        className={`pt-8 mt-auto border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
       >
         <button
           className={`${
-            isOpen ? "w-full" : "w-full"
+            sidebarOpen ? "w-full" : "w-full"
           } bg-secondary text-on-secondary font-bold py-3 rounded-lg mb-4 hover:opacity-90 transition-all flex items-center justify-center`}
-          title={!isOpen ? "Upgrade Plan" : ""}
+          title={!sidebarOpen ? "Upgrade Plan" : ""}
         >
-          {isOpen ? (
+          {sidebarOpen ? (
             "Upgrade Plan"
           ) : (
             <span
@@ -124,10 +125,10 @@ const Sidebar = () => {
         </button>
         <Link
           className={`flex items-center px-4 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors ${
-            !isOpen && "justify-center"
+            !sidebarOpen && "justify-center"
           }`}
           to="/app/settings"
-          title={!isOpen ? "Settings" : ""}
+          title={!sidebarOpen ? "Settings" : ""}
         >
           <span
             className="material-symbols-outlined shrink-0"
@@ -135,14 +136,14 @@ const Sidebar = () => {
           >
             settings
           </span>
-          {isOpen && <span className="ml-3">Settings</span>}
+          {sidebarOpen && <span className="ml-3">Settings</span>}
         </Link>
         <Link
           className={`flex items-center px-4 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors ${
-            !isOpen && "justify-center"
+            !sidebarOpen && "justify-center"
           }`}
           to="/app/support"
-          title={!isOpen ? "Support" : ""}
+          title={!sidebarOpen ? "Support" : ""}
         >
           <span
             className="material-symbols-outlined shrink-0"
@@ -150,7 +151,7 @@ const Sidebar = () => {
           >
             help_outline
           </span>
-          {isOpen && <span className="ml-3">Support</span>}
+          {sidebarOpen && <span className="ml-3">Support</span>}
         </Link>
       </div>
     </aside>

@@ -1,7 +1,13 @@
-const Header = ({ store }) => {
+// const Header = ({ store }) => {
+//added an extra prop sidebarOpen 
+
+ const Header = ({ store, sidebarOpen }) => { 
   return (
-    <header className="fixed top-0 right-0 left-64 z-40 bg-surface/60 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center h-16 px-margin-desktop transition-all duration-300">
-      <div className="flex items-center bg-primary-container border border-outline-variant rounded-full px-4 py-1.5 w-96">
+    // <header className="fixed top-0 right-0 left-64 z-40 bg-surface/60 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center h-16 px-margin-desktop transition-all duration-300">
+    // <header className="fixed top-0 right-0 left-64 z-40 bg-surface/60 backdrop-blur-xl border-b border-outline-variant flex justify-end items-center h-16 px-margin-desktop transition-all duration-300">
+    <header className={`fixed top-0 right-0 z-40 bg-surface/60 backdrop-blur-xl border-b border-outline-variant flex justify-end items-center h-16 px-margin-desktop transition-all duration-300 
+      ${ sidebarOpen ? "left-64" : "left-20" }`}>
+      {/* <div className="flex items-center bg-primary-container border border-outline-variant rounded-full px-4 py-1.5 w-96">
         <span className="material-symbols-outlined text-on-surface-variant text-[20px] mr-2">
           search
         </span>
@@ -10,10 +16,11 @@ const Header = ({ store }) => {
           placeholder="Search AI product vectors..."
           type="text"
         />
-      </div>
+      </div> */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2 px-3 py-1 bg-surface-container-high rounded-full border border-outline-variant">
-          <span className="w-2 h-2 rounded-full bg-secondary ai-pulse"></span>
+          {/* <span className="w-2 h-2 rounded-full bg-secondary ai-pulse"></span> */}
+          <span className="w-2 h-2 rounded-full bg-[#00e29e] ai-pulse"></span>
           <span className="text-label-md font-label-md uppercase text-on-surface-variant">
             Plan: Enterprise
           </span>
