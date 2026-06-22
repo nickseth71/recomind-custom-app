@@ -13,7 +13,8 @@ export function useApi(fn, deps = []) {
     setError(null);
     try {
       const res = await fn();
-      setData(res.data ?? res);
+      setData(res);
+      console.log(res, "useAPI's data")
     } catch (e) {
       setError(e.message);
     } finally {

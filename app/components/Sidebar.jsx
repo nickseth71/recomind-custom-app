@@ -55,7 +55,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div
           className={`flex items-center ${sidebarOpen ? "gap-3" : "gap-0 flex-col"}`}
         >
-          <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center shrink-0">
             <span
               className="material-symbols-outlined text-on-secondary"
               style={{ fontVariationSettings: "'FILL' 1", fontSize: "16px" }}
@@ -66,8 +66,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           {sidebarOpen && (
             <div>
               <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
+              <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
                 RecoMind
               </h1>
+              <p className="text-[8px] text-on-surface-variant uppercase tracking-widest mt-1">
               <p className="text-[8px] text-on-surface-variant uppercase tracking-widest mt-1">
                 AI Commerce Visibility
               </p>

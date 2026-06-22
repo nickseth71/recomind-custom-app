@@ -872,9 +872,11 @@ export default function Products() {
     [token, page, sort, statusFilter],
   );
   const { data: countAll } = useApi(
-    token ? () => productApi.list({ page: 1, limit: 1 }) : null,
+    token ? () => productApi.list({ page: 1, limit: 20 }) : null,
     [token],
   );
+
+  console.log("countAll", countAll);
   const { data: countOpt } = useApi(
     token
       ? () => productApi.list({ page: 1, limit: 1, optimized: "true" })
@@ -883,7 +885,7 @@ export default function Products() {
   );
   const { data: countUnopt } = useApi(
     token
-      ? () => productApi.list({ page: 1, limit: 1, optimized: "false" })
+      ? () => productApi.list({ page: 1, limit: 20, optimized: "false" })
       : null,
     [token],
   );

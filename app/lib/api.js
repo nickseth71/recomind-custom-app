@@ -47,6 +47,8 @@ export const productApi = {
 };
 
 export const promptApi = {
+  dashboard: ({ params = {} }) => { const q = new URLSearchParams(params).toString();
+    return request(`/prompts/win-dashboard${q ? `?${q}` : ""}`);},
   simulate: (prompt, productId) =>
     request("/prompts/simulate", {
       method: "POST",
