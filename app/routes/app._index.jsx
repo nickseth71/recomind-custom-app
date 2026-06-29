@@ -546,6 +546,32 @@ export default function Index() {
     ];
   }, [coverage]);
 
+  const availablePeriods = useMemo(() => {
+    const planName = (plan?.name || "").toLowerCase();
+
+    if (planName === "starter") {
+      return [{ value: "30d", label: "30D" }];
+    }
+
+    if (planName === "growth") {
+      return [
+        { value: "30d", label: "30D" },
+        { value: "3months", label: "3M" },
+      ];
+    }
+
+    if (planName === "pro") {
+      return [
+        { value: "30d", label: "30D" },
+        { value: "3months", label: "3M" },
+        { value: "6months", label: "6M" },
+      ];
+    }
+
+    // fallback
+    return [{ value: "30d", label: "30D" }];
+  }, [plan]);
+
   return (
     <div className="space-y-4">
       {/* ── Header ── */}
@@ -569,11 +595,7 @@ export default function Index() {
         </div>
         <div className="flex items-center gap-3">
           <div className="glass-card rounded-xl p-1 flex">
-            {[
-              { value: "30d", label: "30D" },
-              { value: "3months", label: "3M" },
-              { value: "6months", label: "6M" },
-            ].map((period) => (
+            {availablePeriods.map((period) => (
               <button
                 key={period.value}
                 onClick={() => setTimePeriod(period.value)}

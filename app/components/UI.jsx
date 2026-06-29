@@ -100,7 +100,7 @@ export function BackLink({ to, children = "Back" }) {
 export function PillTabs({ items, value, onChange, wrap = true }) {
   return (
     <div
-      className={`glass-card rounded-2xl p-1.5 inline-flex gap-1 ${wrap ? "flex-wrap" : ""}`}
+      className={`glass-card rounded-2xl p-1.5 inline-flex ${wrap ? "flex-wrap" : ""}`}
     >
       {items.map((item) => {
         const active = value === item.key;
@@ -109,7 +109,7 @@ export function PillTabs({ items, value, onChange, wrap = true }) {
           <button
             key={item.key}
             onClick={() => onChange(item.key)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl font-mono-sm text-[12px] font-bold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-2 py-2 rounded-xl font-mono-sm text-[12px] font-bold transition-all whitespace-nowrap ${
               active
                 ? "bg-primary text-on-primary shadow-md"
                 : "text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface"

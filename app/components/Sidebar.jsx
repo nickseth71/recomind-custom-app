@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { ChevronLeft, Archive, Trophy ,Workflow, FileText, ChartBarBig, ChartNoAxesCombined, ReceiptText} from "lucide-react";
+import { ChevronLeft, Archive, LayoutDashboard ,Workflow, FileText, ChartBarBig, ChartNoAxesCombined, Receipt} from "lucide-react";
 
 
 export const loader = async () => null;
@@ -20,7 +20,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const getLinkClasses = (path) => {
     const active = isActive(path);
     const base =
-      "flex items-center gap-1.5 px-4 py-1 rounded-lg font-semibold border-r-2 transition-all duration-200 ease-in-out";
+      "flex items-center gap-3 px-4 py-2 rounded-lg font-semibold border-r-2 transition-all duration-200 ease-in-out";
     if (active) {
       return `${base} text-secondary border-secondary bg-surface-container`;
     }
@@ -28,18 +28,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   };
 
   const navItems = [
-    { to: "/app", icon: <Trophy size={14}/>, label: "Dashboard" },
-    { to: "/app/products", icon: <Archive size={14} />, label: "Products" },
-    { to: "/app/products" , icon: <Trophy size={14}/>, label: "Prompt Wins" },
-    { to: "/app/products" , icon: <ChartBarBig size={14}/>, label: "Competitors" },
-    { to: "/app/products" , icon: <ChartNoAxesCombined size={14}/>, label: "Impact" },
+    { to: "/app", icon: <LayoutDashboard  size={sidebarOpen ? "14px" : "20px"}/>, label: "Dashboard" },
+    { to: "/app/products", icon: <Archive size={sidebarOpen ? "14px" : "20px"} />, label: "Products" },
+    { to: "/app/promptwins" , icon: <LayoutDashboard size={sidebarOpen ? "14px" : "20px"}/>, label: "Prompt Wins" },
+    { to: "/app/competitors" , icon: <ChartBarBig size={sidebarOpen ? "14px" : "20px"}/>, label: "Competitors" },
+    { to: "/app/impact" , icon: <ChartNoAxesCombined size={sidebarOpen ? "14px" : "20px"}/>, label: "Impact" },
     {
       to: "/app/simulation",
-      icon: <Workflow size={14}/>,
+      icon: <Workflow size={sidebarOpen ? "14px" : "20px"}/>,
       label: "Simulation",
     },
-    { to: "/app/reports", icon:<FileText size={14}/> , label: "Reports" },
-    { to: "/app/products" , icon:<ReceiptText size={14} /> , label: "Billing" },
+    { to: "/app/reports", icon:<FileText size={sidebarOpen ? "14px" : "20px"}/> , label: "Reports" },
+    { to: "/app/billing" , icon:<Receipt size={sidebarOpen ? "14px" : "20px"} /> , label: "Billing" },
   ];
 
   return (
@@ -66,10 +66,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           {sidebarOpen && (
             <div>
               <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
-              <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
                 RecoMind
               </h1>
-              <p className="text-[8px] text-on-surface-variant uppercase tracking-widest mt-1">
               <p className="text-[8px] text-on-surface-variant uppercase tracking-widest mt-1">
                 AI Commerce Visibility
               </p>
@@ -89,7 +87,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-0">
+      <nav className="flex-1 space-y-1">
         {navItems.map(({ to, icon, label }) => (
           <Link
             key={to}

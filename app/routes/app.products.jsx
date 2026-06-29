@@ -1023,7 +1023,7 @@ export default function Products() {
       </div>
 
       {/* Tabs + search */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
+      <div className="flex items-center justify-between gap-1 ">
         <PillTabs
           items={tabItems}
           value={statusFilter}
@@ -1032,8 +1032,8 @@ export default function Products() {
             setPage(1);
           }}
         />
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex items-center gap-1">
+          <div className="relative ">
             <Search
               size={14}
               className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant"
@@ -1043,14 +1043,14 @@ export default function Products() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products…"
-              className="pl-8 pr-3 py-2 rounded-xl font-mono-sm text-mono-sm outline-none w-52 bg-surface-container-highest border border-outline-variant text-on-surface placeholder:text-on-surface-variant focus:border-outline transition-colors"
+              className="pl-8 py-2 rounded-xl w-70 font-mono-sm text-mono-sm outline-none  bg-surface-container-highest border border-outline-variant text-on-surface placeholder:text-on-surface-variant focus:border-outline transition-colors"
             />
           </div>
-          <div className="flex items-center gap-1.5 font-mono-sm text-mono-sm glass-card rounded-xl px-2 py-1">
+          <div className="flex items-center gap-0.5 font-mono-sm text-mono-sm glass-card rounded-xl px-2 py-1">
             <ArrowUpDown
               size={14}
               strokeWidth={1.8}
-              className="text-on-surface-variant ml-1"
+              className="text-on-surface-variant "
             />
             <select
               value={sort}
@@ -1058,10 +1058,10 @@ export default function Products() {
                 setSort(e.target.value);
                 setPage(1);
               }}
-              className="bg-transparent px-1 py-1 font-mono-sm text-mono-sm font-semibold text-on-surface cursor-pointer outline-none"
+              className="bg-transparent py-1 max-w-30 font-mono-sm text-mono-sm font-semibold text-on-surface cursor-pointer outline-none"
             >
-              <option value="score_asc">AI Score (Low first)</option>
-              <option value="score_desc">AI Score (High first)</option>
+              <option value="score_asc">Low to High</option>
+              <option value="score_desc">High to Low</option>
             </select>
           </div>
         </div>

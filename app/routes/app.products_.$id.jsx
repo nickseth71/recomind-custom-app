@@ -46,7 +46,7 @@ function OverviewPanel({ analysis }) {
     <div className="flex flex-col gap-5">
       <div className="grid grid-cols-2 gap-5">
         <Card className="p-5 flex items-center gap-5">
-          <ScoreRing score={analysis.score} size={110} />
+          <ScoreRing score={analysis.score} size={110}  />
           <div>
             <Eyebrow>AI Readiness Score</Eyebrow>
             <div
@@ -780,7 +780,7 @@ export default function ProductDetail() {
             <div className="h-8 w-64 rounded-lg bg-surface-container-highest/30 animate-pulse" />
           ) : (
             <>
-              <h1 className="font-headline-lg text-headline-lg text-surface truncate">
+              <h1 className="font-headline-lg text-headline-lg text-on-surface truncate">
                 {product?.title ?? "Product"}
               </h1>
               <div className="flex items-center gap-3 mt-1.5 flex-wrap">
