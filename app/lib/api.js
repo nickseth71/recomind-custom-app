@@ -33,6 +33,7 @@ export const productApi = {
     return request(`/products${q ? `?${q}` : ""}`);
   },
   get: (id) => request(`/products/${id}`),
+  getCompetitors: (id) => request(`/products/${id}/competitors`),
   analyse: (id) => request(`/products/${id}/analyse`, { method: "POST" }),
   analyseBulk: () => request("/products/analyse-bulk", { method: "POST" }),
   getAnalyses: (id) => request(`/products/${id}/analysis`),
@@ -47,8 +48,10 @@ export const productApi = {
 };
 
 export const promptApi = {
-  dashboard: ({ params = {} }) => { const q = new URLSearchParams(params).toString();
-    return request(`/prompts/win-dashboard${q ? `?${q}` : ""}`);},
+  dashboard: ({ params = {} }) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/prompts/win-dashboard${q ? `?${q}` : ""}`);
+  },
   simulate: (prompt, productId) =>
     request("/prompts/simulate", {
       method: "POST",

@@ -226,6 +226,7 @@ import {
   SBox,
   Chip,
 } from "../components/UI";
+import { jwtDecode } from "jwt-decode";
 
 export const loader = async () => null;
 
@@ -531,8 +532,7 @@ function PromptSection({
 }
 
 /* ─── Plan limits bar ───────────────────────────────────────── */
-function PlanBar({ limits }) {
-  
+function PlanBar({ limits, plan }) {
   if (!limits) return null;
   const tracked = limits.trackedCount ?? 0;
   const total = limits.totalTrackedPrompts;
@@ -541,7 +541,7 @@ function PlanBar({ limits }) {
   return (
     <Card className="p-4 flex items-center gap-4 flex-wrap">
       <div className="flex-1 min-w-0">
-        <Eyebrow className="mb-1">Plan — {limits.dashboardLevel} tier</Eyebrow>
+        <Eyebrow className="mb-1">Plan — {plan} </Eyebrow>
         <div className="flex items-center gap-4 flex-wrap text-[12px]">
           <span className="font-mono-sm text-on-surface-variant">
             <span className="font-bold text-on-surface">{tracked}</span>
@@ -581,6 +581,10 @@ function PlanBar({ limits }) {
 /* ═══ MAIN PAGE ════════════════════════════════════════════════ */
 export default function PromptWinDashboard() {
   const token = localStorage.getItem("recomind_token");
+  const decoded = jwtDecode(token);
+  const plan = decoded.storePlan;
+
+  //console.log("plan", plan);
 
   // Filters
   const [visFilter, setVisFilter] = useState("all"); // all | HIGH | MEDIUM | LOW
@@ -715,7 +719,7 @@ export default function PromptWinDashboard() {
       {!loading && !error && (
         <>
           {/* Plan limits bar */}
-          <PlanBar limits={limits} />
+          <PlanBar limits={limits} plan={plan} />
 
           {/* Summary stat row */}
           <div className="grid grid-cols-4 gap-4">
