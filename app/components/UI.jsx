@@ -97,10 +97,10 @@ export function BackLink({ to, children = "Back" }) {
 
 // Pill-style tab row, wrapped in glass-card so active/inactive text always
 // has a light background to sit on (matches the 30D/3M/6M selector pattern).
-export function PillTabs({ items, value, onChange, wrap = true }) {
+export function PillTabs({ items, value, onChange, wrap = true , className = "", }) {
   return (
     <div
-      className={`glass-card rounded-2xl p-1.5 inline-flex ${wrap ? "flex-wrap" : ""}`}
+      className={`glass-card rounded-2xl p-1.5 flex gap-1 ${wrap ? "flex-wrap" : ""} ${className}`}
     >
       {items.map((item) => {
         const active = value === item.key;
@@ -279,7 +279,7 @@ export function ScoreBar({ value, max }) {
         style={{
           width: `${pct}%`,
           background: col,
-          transition: "width 0.8s ease",
+          // transition: "width 0.8s ease",
         }}
       />
     </div>
@@ -290,7 +290,9 @@ export function ScoreBar({ value, max }) {
 export function MiniScoreRing({ score, size = 72 }) {
   const r = size / 2 - 7,
     circ = 2 * Math.PI * r;
-  const fill = ((score ?? 0) / 100) * circ;
+  // const fill = ((score ?? 0) / 100) * circ;
+    const fill = ((score ?? 0) / 100) * circ;
+    const offset = circ - fill;
   const col = scoreColor(score ?? 0);
   return (
     <div
@@ -306,17 +308,32 @@ export function MiniScoreRing({ score, size = 72 }) {
           stroke="var(--color-outline-variant)"
           strokeWidth="5"
         />
-        <circle
+        {/* <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
           stroke={col}
           strokeWidth="5"
-          strokeDasharray={`${fill.toFixed(1)} ${circ.toFixed(1)}`}
+          // strokeDasharray={`${fill.toFixed(1)} ${circ.toFixed(1)}`}
+          strokeDashoffset={offset}
           strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 4px ${col})` }}
-        />
+          // style={{ filter: `drop-shadow(0 0 4px ${col})` }}
+        /> */}
+        <circle
+  cx={size / 2}
+  cy={size / 2}
+  r={r}
+  fill="none"
+  stroke={col}
+  strokeWidth="8"
+  strokeDasharray={circ}
+  strokeDashoffset={offset}
+  strokeLinecap="round"
+  style={{
+    transition: "stroke-dashoffset 1.2s ease",
+  }}
+/>
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <span
@@ -359,8 +376,8 @@ export function ScoreRing({ score, size = 120 }) {
           strokeDasharray={`${fill.toFixed(1)} ${circ.toFixed(1)}`}
           strokeLinecap="round"
           style={{
-            transition: "stroke-dasharray 1.2s ease",
-            filter: `drop-shadow(0 0 6px ${col})`,
+            // transition: "stroke-dasharray 1.2s ease",
+            // filter: `drop-shadow(0 0 6px ${col})`,
           }}
         />
       </svg>

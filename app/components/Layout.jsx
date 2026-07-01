@@ -53,12 +53,12 @@ const Layout = ({ children }) => {
   setSidebarOpen={setSidebarOpen}
 />
 
-<Header
+{/* <Header
   store={store}
   sidebarOpen={sidebarOpen}
-/>
+/> */}
       <main
-        className={`pt-24 px-margin-desktop pb-12 min-h-screen transition-all duration-300 overflow-x-auto ${
+        className={`pt-12 px-margin-desktop pb-12 min-h-screen transition-all duration-300 overflow-x-auto ${
           sidebarOpen ? "ml-64" : "ml-20"
         }`}
       >

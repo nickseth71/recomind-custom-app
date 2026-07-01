@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
+import { jwtDecode } from "jwt-decode";
 import {
   Card,
   Divider,
@@ -719,6 +720,11 @@ export const loader = async () => null;
 export default function ProductDetail() {
   const { id } = useParams();
   const token = localStorage.getItem("recomind_token");
+  console.log(token)
+  const decoded = token ? jwtDecode(token) : null;
+const storePlan = decoded?.storePlan?.toLowerCase();    //added
+  // const decoded = jwtDecode(token)
+  console.log("Decoded Token", decoded)
   const [tab, setTab] = useState("overview");
   const [applyLoading, setApplyLoading] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
@@ -767,7 +773,10 @@ export default function ProductDetail() {
     },
     { key: "fixes", label: "Fixes", icon: Wrench, badge: highFixCount || null },
     { key: "faq", label: "FAQ", icon: HelpCircle },
-    { key: "comparison", label: "Comparison", icon: GitCompare },
+    // { key: "comparison", label: "Comparison", icon: GitCompare },
+    ...(storePlan !== "starter"
+    ? [{ key: "comparison", label: "Comparison", icon: GitCompare }]     //checks plan and shows comparison
+    : []),
   ];
 
   return (
@@ -930,8 +939,13 @@ export default function ProductDetail() {
           </Card>
 
           {/* Tab bar — glass-card pills, readable on dark body */}
-          <PillTabs items={tabItems} value={tab} onChange={setTab} />
-
+          <div
+  className={`mx-auto transition-all duration-300 ${
+    storePlan === "starter" ? "w-fit" : "w-full"
+  }`}
+>
+          <PillTabs items={tabItems} value={tab} onChange={setTab} className={storePlan !== "starter" ? "w-full  justify-center" : "w-fit"}/>
+          </div>
           {/* Tab content */}
           <div>
             {tab === "overview" && <OverviewPanel analysis={analysis} />}
@@ -943,7 +957,11 @@ export default function ProductDetail() {
             )}
             {tab === "fixes" && <FixesPanel fixes={fixes} />}
             {tab === "faq" && <FaqPanel analysis={analysis} />}
-            {tab === "comparison" && <ComparisonPanel analysis={analysis} />}
+            {tab === "comparison" && storePlan !== "starter" && (
+  <ComparisonPanel analysis={analysis} />
+)}
+            {/* {tab === "comparison" && <ComparisonPanel analysis={analysis} />} */}
+            
           </div>
         </div>
       )}

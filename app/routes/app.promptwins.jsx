@@ -532,6 +532,7 @@ function PromptSection({
 
 /* ─── Plan limits bar ───────────────────────────────────────── */
 function PlanBar({ limits }) {
+  
   if (!limits) return null;
   const tracked = limits.trackedCount ?? 0;
   const total = limits.totalTrackedPrompts;
@@ -816,7 +817,7 @@ export default function PromptWinDashboard() {
                 </div>
 
                 {/* Visibility filter — only shown on "All Recent" tab */}
-                {activeTab === "recent" && (
+                {/* {activeTab === "recent" && (
                   <div className="flex items-center gap-1.5 pb-3">
                     <Filter
                       size={12}
@@ -842,7 +843,7 @@ export default function PromptWinDashboard() {
                       );
                     })}
                   </div>
-                )}
+                )} */}
               </div>
 
               {/* Tab content */}

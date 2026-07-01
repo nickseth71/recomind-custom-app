@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { Link, useLocation } from "react-router";
 import { ChevronLeft, Archive, LayoutDashboard ,Workflow, FileText, ChartBarBig, ChartNoAxesCombined, Receipt} from "lucide-react";
-
-
+import { jwtDecode } from "jwt-decode";
 export const loader = async () => null;
 // changed isOpen to sideBar openand setIsOpen to setSidebarOpen for sidebar changes
 // const Sidebar = () => {
 //   const [isOpen, setIsOpen] = useState(true);
-const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+const Sidebar = ({ sidebarOpen, setSidebarOpen, plan }) => {
   const location = useLocation();
 
   const isActive = (path) => {
@@ -19,8 +18,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   const getLinkClasses = (path) => {
     const active = isActive(path);
+    // const base =
+    //   "flex items-center gap-3 px-4 py-2 rounded-lg font-semibold border-r-2 transition-all duration-200 ease-in-out";
     const base =
-      "flex items-center gap-3 px-4 py-2 rounded-lg font-semibold border-r-2 transition-all duration-200 ease-in-out";
+  "flex items-center gap-2 px-3 py-2 rounded-lg font-medium border-r-2 transition-all duration-200";
     if (active) {
       return `${base} text-secondary border-secondary bg-surface-container`;
     }
@@ -28,20 +29,37 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   };
 
   const navItems = [
-    { to: "/app", icon: <LayoutDashboard  size={sidebarOpen ? "14px" : "20px"}/>, label: "Dashboard" },
-    { to: "/app/products", icon: <Archive size={sidebarOpen ? "14px" : "20px"} />, label: "Products" },
-    { to: "/app/promptwins" , icon: <LayoutDashboard size={sidebarOpen ? "14px" : "20px"}/>, label: "Prompt Wins" },
-    { to: "/app/competitors" , icon: <ChartBarBig size={sidebarOpen ? "14px" : "20px"}/>, label: "Competitors" },
-    { to: "/app/impact" , icon: <ChartNoAxesCombined size={sidebarOpen ? "14px" : "20px"}/>, label: "Impact" },
+    { to: "/app", icon: <LayoutDashboard  size={sidebarOpen ? "16" : "20"}/>, label: "Dashboard" },
+    { to: "/app/products", icon: <Archive size={sidebarOpen ? "16" : "20"} />, label: "Products" },
+    { to: "/app/promptwins" , icon: <LayoutDashboard size={sidebarOpen ? "16" : "20"}/>, label: "Prompt Wins" },
+    { to: "/app/competitors" , icon: <ChartBarBig size={sidebarOpen ? "16" : "20"}/>, label: "Competitors" },
+    { to: "/app/impact" , icon: <ChartNoAxesCombined size={sidebarOpen ? "16" : "20"}/>, label: "Impact" },
     {
       to: "/app/simulation",
-      icon: <Workflow size={sidebarOpen ? "14px" : "20px"}/>,
+      icon: <Workflow size={sidebarOpen ? "16" : "20"}/>,
       label: "Simulation",
     },
-    { to: "/app/reports", icon:<FileText size={sidebarOpen ? "14px" : "20px"}/> , label: "Reports" },
-    { to: "/app/billing" , icon:<Receipt size={sidebarOpen ? "14px" : "20px"} /> , label: "Billing" },
+    { to: "/app/reports", icon:<FileText size={sidebarOpen ? "16" : "20"}/> , label: "Reports" },
+    { to: "/app/billing" , icon:<Receipt size={sidebarOpen ? "16" : "20"} /> , label: "Billing" },
   ];
-
+  
+  const [decoded, setDecoded] = useState(null);
+  useEffect(() => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("recomind_token");
+  
+    if (token) {
+      try {
+        setDecoded(jwtDecode(token));
+      } catch (err) {
+        console.error("Invalid token", err);
+      }
+    }
+  }
+}, []);
+const userName = decoded?.name || "User";
+console.log(userName)
+const companyName = decoded?.companyName || "";
   return (
     <aside
       className={`h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-container-lowest flex flex-col py-gutter px-4 z-50 transition-all duration-300 ${
@@ -53,7 +71,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         className={`mb-8 flex items-center justify-between ${!sidebarOpen && "flex-col gap-4"}`}
       >
         <div
-          className={`flex items-center ${sidebarOpen ? "gap-3" : "gap-0 flex-col"}`}
+          className={`flex items-center ${sidebarOpen ? "gap-1" : "gap-0 flex-col"}`}
         >
           <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center shrink-0">
             <span
@@ -102,21 +120,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             >
               {icon}
             </span>
-            {sidebarOpen && <span className="text-[14px]">{label}</span>}
+            {sidebarOpen && <span className=" text-[12px] gap-12">{label}</span>}
           </Link>
         ))}
       </nav>
 
       {/* Footer */}
       <div
-        className={`pt-8 mt-3 border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
+        className={`pt-2 border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
       >
-        <button
+        {/* <button
           className={`${
             sidebarOpen ? "w-full" : "w-full"
           } bg-secondary text-on-secondary font-bold py-2 rounded-lg mb-2 hover:opacity-90 transition-all flex items-center justify-center`}
           title={!sidebarOpen ? "Upgrade Plan" : ""}
-        >
+        > 
           {sidebarOpen ? (
             "Upgrade Plan"
           ) : (
@@ -126,9 +144,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             >
               trending_up
             </span>
-          )}
-        </button>
-        <Link
+          )} 
+        </button> */}
+        {/* <Link
           className={`flex items-center px-4 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors ${
             !sidebarOpen && "justify-center"
           }`}
@@ -142,8 +160,87 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             settings
           </span>
           {sidebarOpen && <span className="ml-3">Settings</span>}
-        </Link>
-        <Link
+        </Link> */}
+        {sidebarOpen && (
+  <div className=" rounded-2xl border border-outline-variant bg-surface-container p-1">
+    <div className="flex items-center ">
+      <div className="relative h-12 w-12 rounded-full flex items-center justify-center">
+        <svg className="absolute h-12 w-12 -rotate-90">
+          <circle
+            cx="24"
+            cy="24"
+            r="18"
+            fill="none"
+            stroke="#4B5563"
+            strokeWidth="4"
+          />
+          <circle
+            cx="24"
+            cy="24"
+            r="18"
+            fill="none"
+            stroke="#6366F1"
+            strokeWidth="4"
+            strokeDasharray="113"
+            strokeDashoffset="32"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        <span className="text-sm font-bold text-on-surface">72</span>
+      </div>
+
+      <div>
+        <p className="text-[10px] text-on-surface font-semibold">
+          AI Visibility Score
+        </p>
+
+        <p className="text-green-500 text-xs font-semibold">
+          ↑ 12 pts vs last scan
+        </p>
+
+        <button className="text-xs text-on-surface-variant hover:underline">
+          View full report
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* store name */}
+<div className="border-t border-outline-variant pt-4">
+  <div className="flex items-center gap-3">
+    <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
+      {userName.charAt(0).toUpperCase()}
+    </div>
+
+    <div className="min-w-0">
+      <p className="text-sm font-semibold text-on-surface leading-none">
+        {userName}
+      </p>
+      <p className="text-xs text-on-surface-variant mt-1">
+        {companyName}
+      </p>
+    </div>
+  </div>
+</div>
+        {/* {sidebarOpen && (
+  <div className="border-t border-outline-variant pt-4 flex items-center gap-3">
+    <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold">
+      A
+    </div>
+
+    <div>
+      <p className="text-sm font-semibold text-on-surface">
+        Alex Smith
+      </p>
+      <p className="text-xs text-on-surface-variant">
+        Product Co.
+      </p>
+    </div>
+  </div>
+)}
+        {/* <Link
           className={`flex items-center px-4 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors ${
             !sidebarOpen && "justify-center"
           }`}
@@ -157,7 +254,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             help_outline
           </span>
           {sidebarOpen && <span className="ml-3">Support</span>}
-        </Link>
+        </Link> */}
       </div>
     </aside>
   );
