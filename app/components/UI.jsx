@@ -299,6 +299,7 @@ export function MiniScoreRing({ score, size = 72 }) {
       className="relative inline-flex shrink-0"
       style={{ width: size, height: size }}
     >
+      {/* upper ring */}
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
         <circle
           cx={size / 2}
@@ -306,7 +307,7 @@ export function MiniScoreRing({ score, size = 72 }) {
           r={r}
           fill="none"
           stroke="var(--color-outline-variant)"
-          strokeWidth="5"
+          strokeWidth="4"
         />
         {/* <circle
           cx={size / 2}
@@ -326,7 +327,7 @@ export function MiniScoreRing({ score, size = 72 }) {
   r={r}
   fill="none"
   stroke={col}
-  strokeWidth="8"
+  strokeWidth="2"
   strokeDasharray={circ}
   strokeDashoffset={offset}
   strokeLinecap="round"
@@ -364,7 +365,7 @@ export function ScoreRing({ score, size = 120 }) {
           r={r}
           fill="none"
           stroke="var(--color-outline-variant)"
-          strokeWidth="8"
+          strokeWidth="5"
         />
         <circle
           cx={size / 2}
@@ -372,7 +373,7 @@ export function ScoreRing({ score, size = 120 }) {
           r={r}
           fill="none"
           stroke={col}
-          strokeWidth="8"
+          strokeWidth="5"
           strokeDasharray={`${fill.toFixed(1)} ${circ.toFixed(1)}`}
           strokeLinecap="round"
           style={{

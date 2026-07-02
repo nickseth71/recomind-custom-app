@@ -1,12 +1,13 @@
 // app/routes/app.products_.$id.jsx
 // NOTE: filename uses "products_" (trailing underscore) so this is a
 // SIBLING route at /app/products/:id, not nested under app.products.jsx.
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useParams } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { jwtDecode } from "jwt-decode";
+import { ProductThumb } from "../components/UI";
 import {
   Card,
   Divider,
@@ -42,12 +43,37 @@ import {
 } from "lucide-react";
 
 /* ═══ OVERVIEW PANEL ═══════════════════════════════════════════ */
-function OverviewPanel({ analysis }) {
+function OverviewPanel({ analysis,product }) {
+  const images = product?.images || [];
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % images.length);
+    }, 2000);
+
+
+    return () => clearInterval(interval);
+  }, [images.length]);
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-2 gap-5">
-        <Card className="p-5 flex items-center gap-5">
-          <ScoreRing score={analysis.score} size={110}  />
+      <div className="grid grid-cols-[42%_58%] gap-x-2 ">
+        <Card className="p-5 flex items-center  justify-center ">
+          <div className="relative w-[95%] h-[300px]  overflow-hidden rounded-xl">
+    {images.map((img, index) => (
+      <img
+        key={index}
+        src={img}
+        alt={product?.title}
+        className={`absolute inset-0 w-full h-full object-contain rounded-xl transition-opacity duration-700 ${
+          index === currentImage ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    ))}
+  </div>
+          {/* <ScoreRing score={analysis.score} size={110}  />
           <div>
             <Eyebrow>AI Readiness Score</Eyebrow>
             <div
@@ -74,7 +100,7 @@ function OverviewPanel({ analysis }) {
                 {analysis.reasoning}
               </p>
             )}
-          </div>
+          </div> */}
         </Card>
         <Card className="p-5">
           <Eyebrow className="mb-4">Score Breakdown</Eyebrow>
@@ -948,7 +974,9 @@ const storePlan = decoded?.storePlan?.toLowerCase();    //added
           </div>
           {/* Tab content */}
           <div>
-            {tab === "overview" && <OverviewPanel analysis={analysis} />}
+            {/* {tab === "overview" && <OverviewPanel analysis={analysis} />}
+             */}
+             {tab === "overview" && (<OverviewPanel analysis={analysis} product={product} />)}
             {tab === "intelligence" && (
               <IntelligencePanel interpretation={interpretation} />
             )}

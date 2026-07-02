@@ -58,7 +58,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, plan }) => {
   }
 }, []);
 const userName = decoded?.name || "User";
-console.log(userName)
 const companyName = decoded?.companyName || "";
   return (
     <aside

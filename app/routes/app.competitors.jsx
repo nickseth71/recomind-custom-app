@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState , useRef} from "react";
 import { useApi } from "../hooks/useApi";
 import { productApi } from "../lib/api";
 
@@ -101,7 +101,25 @@ const Competitors = () => {
 
   // Column headers: skip index 0 (Feature / Signal), keep rest
   const headerCols = columns.slice(1); // ["You", "Tiffany...", "Cartier...", ...]
+  const [isOpen, setIsOpen] = useState(false);
 
+const dropdownRef = useRef(null);
+
+useEffect(() => {
+  function handleClickOutside(event) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target)
+    ) {
+      setIsOpen(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () =>
+    document.removeEventListener("mousedown", handleClickOutside);
+}, []);
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -116,41 +134,42 @@ const Competitors = () => {
 
       {/* Product selector bar */}
       <div
-        className="rounded-xl px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        className="rounded-xl px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between "
         style={{
           background: "var(--color-surface-container-low)",
           border: "1px solid var(--color-outline-variant)",
         }}
       >
-        <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-widest font-semibold text-on-surface-variant mb-0.5">
-            Benchmark source
-          </p>
-          <p className="text-sm font-semibold text-on-surface truncate">
-            {selectedProduct?.title || "Select a product"}
-          </p>
-        </div>
+        <div className="shrink-0">
+  <p className="text-[9px] uppercase tracking-[0.18em] font-bold text-on-surface-variant">
+    Benchmark Source
+  </p>
+
+  <h3 className="mt-1 text-base font-bold text-on-surface">
+    Compare with
+  </h3>
+</div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <label
+          {/* <label
             htmlFor="product-select"
             className="text-sm text-on-surface-variant whitespace-nowrap"
           >
             Compare with
-          </label>
-          <select
+          </label> */}
+          {/* <select
             id="product-select"
             value={selectedProductId}
             onChange={(e) => setSelectedProductId(e.target.value)}
             disabled={productsLoading || !products.length}
-            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none cursor-pointer disabled:opacity-50"
+            className="rounded-xl px-4 py-2 text-sm font-semibold outline-none cursor-pointer  disabled:opacity-50"
             style={{
               background: "var(--color-surface-container-lowest)",
               border: "1px solid var(--color-outline-variant)",
               color: "var(--color-on-surface)",
             }}
           >
-            {productsLoading && <option value="">Loading...</option>}
+            {productsLoading && <option value="" className="rounded-xl bg-amber-100" >Loading...</option>}
             {!productsLoading && !products.length && (
               <option value="">No products</option>
             )}
@@ -159,7 +178,143 @@ const Competitors = () => {
                 {p.title}
               </option>
             ))}
-          </select>
+          </select> */}
+          <div className="relative w-[450px]" ref={dropdownRef}>
+  {/* Button */}
+
+  {/* <button
+    type="button"
+    disabled={productsLoading || !products.length}
+    onClick={() => setIsOpen((prev) => !prev)}
+    className="w-full flex items-center justify-between rounded-2xl px-5 py-3 text-left font-semibold transition-all duration-300 disabled:opacity-50"
+    style={{
+      background: "rgba(255,248,240,0.65)",
+      backdropFilter: "blur(16px)",
+      WebkitBackdropFilter: "blur(16px)",
+      border: "1px solid rgba(28,36,84,.15)",
+      color: "var(--color-on-surface)",
+      boxShadow: "0 10px 25px rgba(28,36,84,.08)",
+    }}
+  >
+    <span className="truncate">
+      {selectedProduct?.title || "Select a product"}
+    </span>
+
+    <svg
+      className={`h-5 w-5 transition-transform ${
+        isOpen ? "rotate-180" : ""
+      }`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19 9l-7 7-7-7"
+      />
+    </svg>
+  </button> */}
+  <button
+  type="button"
+  disabled={productsLoading || !products.length}
+  onClick={() => setIsOpen((prev) => !prev)}
+  className="w-full flex items-center justify-between gap-3 rounded-2xl px-5 py-3 text-left disabled:opacity-50 transition-all duration-300"
+  style={{
+    background: "rgba(255,248,240,0.65)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    border: "1px solid rgba(28,36,84,.15)",
+    color: "var(--color-on-surface)",
+    boxShadow: "0 10px 25px rgba(28,36,84,.08)",
+  }}
+>
+  {/* <span className="flex-1 min-w-0 truncate text-sm font-semibold">
+    {selectedProduct?.title || "Select a product"}
+  </span> */}
+  <span
+  className="flex-1 min-w-0 truncate text-sm font-semibold"
+  title={selectedProduct?.title}
+>
+  {selectedProduct?.title || "Select a product"}
+</span>
+
+  <svg
+    className={`h-4 w-4 shrink-0 transition-transform ${
+      isOpen ? "rotate-180" : ""
+    }`}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19 9l-7 7-7-7"
+    />
+  </svg>
+</button>
+
+  {/* Dropdown */}
+
+  {isOpen && (
+    <div
+      className="absolute left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
+      style={{
+        background: "rgba(255,248,240,.82)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        border: "1px solid rgba(28,36,84,.12)",
+        boxShadow: "0 20px 40px rgba(28,36,84,.18)",
+      }}
+    >
+      {productsLoading && (
+        <div className="px-5 py-3 text-sm">
+          Loading...
+        </div>
+      )}
+
+      {!productsLoading && !products.length && (
+        <div className="px-5 py-3 text-sm">
+          No products
+        </div>
+      )}
+
+      {!productsLoading &&
+        products.map((p) => (
+          <button
+            key={p._id}
+            type="button"
+            onClick={() => {
+              setSelectedProductId(p._id);
+              setIsOpen(false);
+            }}
+            className={`w-full text-left px-5 py-3 transition-all duration-200
+              ${
+                selectedProductId === p._id
+      ? "bg-[#1C2454] text-white"
+      : "text-on-surface hover:bg-[rgba(28,36,84,0.08)]"
+              }
+            `}
+            onMouseEnter={(e) => {
+              if (selectedProductId !== p._id) {
+                e.currentTarget.style.background = "#F7EFD9";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (selectedProductId !== p._id) {
+                e.currentTarget.style.background = "transparent";
+              }
+            }}
+          >
+            {p.title}
+          </button>
+        ))}
+    </div>
+  )}
+</div>
 
           {/* Competitor count badge */}
           {enabled && competitorCount > 0 && (
