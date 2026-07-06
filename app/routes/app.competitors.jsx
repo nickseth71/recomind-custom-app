@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState , useRef} from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useApi } from "../hooks/useApi";
 import { productApi } from "../lib/api";
 
@@ -60,21 +60,53 @@ const Competitors = () => {
       ? localStorage.getItem("recomind_token")
       : null;
 
+  const [selectedProductId, setSelectedProductId] = useState("");
+  const [productPage, setProductPage] = useState(1);
+  const [productSearch, setProductSearch] = useState("");
+  const [pageInput, setPageInput] = useState(1);
+
   const {
     data: productsData,
     loading: productsLoading,
     error: productsError,
-  } = useApi(token ? () => productApi.list({ limit: 50 }) : null, [token]);
+  } = useApi(
+    token
+      ? () =>
+          productApi.list({
+            page: productPage,
+            limit: 20,
+            search: productSearch.trim(),
+          })
+      : null,
+    [token, productPage, productSearch],
+  );
 
   const products = useMemo(() => {
     const list = productsData?.data ?? productsData?.products ?? [];
     return Array.isArray(list) ? list : [];
   }, [productsData]);
-
-  const [selectedProductId, setSelectedProductId] = useState("");
+  const pagination = productsData?.pagination ?? null;
 
   useEffect(() => {
-    if (products.length && !selectedProductId) {
+    setProductPage(1);
+  }, [productSearch]);
+
+  useEffect(() => {
+    setPageInput(productPage);
+  }, [productPage]);
+
+  useEffect(() => {
+    if (!products.length) {
+      if (selectedProductId) {
+        setSelectedProductId("");
+      }
+      return;
+    }
+
+    if (
+      !selectedProductId ||
+      !products.some((product) => product._id === selectedProductId)
+    ) {
       setSelectedProductId(products[0]._id);
     }
   }, [products, selectedProductId]);
@@ -103,23 +135,19 @@ const Competitors = () => {
   const headerCols = columns.slice(1); // ["You", "Tiffany...", "Cartier...", ...]
   const [isOpen, setIsOpen] = useState(false);
 
-const dropdownRef = useRef(null);
+  const dropdownRef = useRef(null);
 
-useEffect(() => {
-  function handleClickOutside(event) {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target)
-    ) {
-      setIsOpen(false);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
     }
-  }
 
-  document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
-  return () =>
-    document.removeEventListener("mousedown", handleClickOutside);
-}, []);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -141,14 +169,14 @@ useEffect(() => {
         }}
       >
         <div className="shrink-0">
-  <p className="text-[9px] uppercase tracking-[0.18em] font-bold text-on-surface-variant">
-    Benchmark Source
-  </p>
+          <p className="text-[9px] uppercase tracking-[0.18em] font-bold text-on-surface-variant">
+            Benchmark Source
+          </p>
 
-  <h3 className="mt-1 text-base font-bold text-on-surface">
-    Compare with
-  </h3>
-</div>
+          <h3 className="mt-1 text-base font-bold text-on-surface">
+            Compare with
+          </h3>
+        </div>
 
         <div className="flex items-center gap-3 shrink-0">
           {/* <label
@@ -180,9 +208,9 @@ useEffect(() => {
             ))}
           </select> */}
           <div className="relative w-[450px]" ref={dropdownRef}>
-  {/* Button */}
+            {/* Button */}
 
-  {/* <button
+            {/* <button
     type="button"
     disabled={productsLoading || !products.length}
     onClick={() => setIsOpen((prev) => !prev)}
@@ -216,105 +244,180 @@ useEffect(() => {
       />
     </svg>
   </button> */}
-  <button
-  type="button"
-  disabled={productsLoading || !products.length}
-  onClick={() => setIsOpen((prev) => !prev)}
-  className="w-full flex items-center justify-between gap-3 rounded-2xl px-5 py-3 text-left disabled:opacity-50 transition-all duration-300"
-  style={{
-    background: "rgba(255,248,240,0.65)",
-    backdropFilter: "blur(16px)",
-    WebkitBackdropFilter: "blur(16px)",
-    border: "1px solid rgba(28,36,84,.15)",
-    color: "var(--color-on-surface)",
-    boxShadow: "0 10px 25px rgba(28,36,84,.08)",
-  }}
->
-  {/* <span className="flex-1 min-w-0 truncate text-sm font-semibold">
+            <button
+              type="button"
+              disabled={productsLoading || !products.length}
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="w-full flex items-center justify-between gap-3 rounded-2xl px-5 py-3 text-left disabled:opacity-50 transition-all duration-300"
+              style={{
+                background: "rgba(255,248,240,0.65)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(28,36,84,.15)",
+                color: "var(--color-on-surface)",
+                boxShadow: "0 10px 25px rgba(28,36,84,.08)",
+              }}
+            >
+              {/* <span className="flex-1 min-w-0 truncate text-sm font-semibold">
     {selectedProduct?.title || "Select a product"}
   </span> */}
-  <span
-  className="flex-1 min-w-0 truncate text-sm font-semibold"
-  title={selectedProduct?.title}
->
-  {selectedProduct?.title || "Select a product"}
-</span>
+              <span
+                className="flex-1 min-w-0 truncate text-sm font-semibold"
+                title={selectedProduct?.title}
+              >
+                {selectedProduct?.title || "Select a product"}
+              </span>
 
-  <svg
-    className={`h-4 w-4 shrink-0 transition-transform ${
-      isOpen ? "rotate-180" : ""
-    }`}
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19 9l-7 7-7-7"
-    />
-  </svg>
-</button>
+              <svg
+                className={`h-4 w-4 shrink-0 transition-transform ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
 
-  {/* Dropdown */}
+            {/* Dropdown */}
 
-  {isOpen && (
-    <div
-      className="absolute left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
-      style={{
-        background: "rgba(255,248,240,.82)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(28,36,84,.12)",
-        boxShadow: "0 20px 40px rgba(28,36,84,.18)",
-      }}
-    >
-      {productsLoading && (
-        <div className="px-5 py-3 text-sm">
-          Loading...
-        </div>
-      )}
+            {isOpen && (
+              <div
+                className="absolute left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
+                style={{
+                  background: "rgba(255,248,240,.82)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  border: "1px solid rgba(28,36,84,.12)",
+                  boxShadow: "0 20px 40px rgba(28,36,84,.18)",
+                }}
+              >
+                <div className="border-b border-[rgba(28,36,84,0.08)] px-3 py-2">
+                  <input
+                    type="text"
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                    placeholder="Search products"
+                    className="w-full rounded-xl px-3 py-2 text-sm outline-none"
+                    style={{
+                      background: "rgba(255,248,240,.95)",
+                      border: "1px solid rgba(28,36,84,.12)",
+                      color: "var(--color-on-surface)",
+                    }}
+                  />
+                </div>
 
-      {!productsLoading && !products.length && (
-        <div className="px-5 py-3 text-sm">
-          No products
-        </div>
-      )}
+                {productsLoading && (
+                  <div className="px-5 py-3 text-sm">Loading...</div>
+                )}
 
-      {!productsLoading &&
-        products.map((p) => (
-          <button
-            key={p._id}
-            type="button"
-            onClick={() => {
-              setSelectedProductId(p._id);
-              setIsOpen(false);
-            }}
-            className={`w-full text-left px-5 py-3 transition-all duration-200
+                {!productsLoading && !products.length && (
+                  <div className="px-5 py-3 text-sm">No products found</div>
+                )}
+
+                {!productsLoading &&
+                  products.map((p) => (
+                    <button
+                      key={p._id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedProductId(p._id);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full text-left px-5 py-3 transition-all duration-200
               ${
                 selectedProductId === p._id
-      ? "bg-[#1C2454] text-white"
-      : "text-on-surface hover:bg-[rgba(28,36,84,0.08)]"
+                  ? "bg-[#1C2454] text-white"
+                  : "text-on-surface hover:bg-[rgba(28,36,84,0.08)]"
               }
             `}
-            onMouseEnter={(e) => {
-              if (selectedProductId !== p._id) {
-                e.currentTarget.style.background = "#F7EFD9";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (selectedProductId !== p._id) {
-                e.currentTarget.style.background = "transparent";
-              }
-            }}
-          >
-            {p.title}
-          </button>
-        ))}
-    </div>
-  )}
-</div>
+                      onMouseEnter={(e) => {
+                        if (selectedProductId !== p._id) {
+                          e.currentTarget.style.background = "#F7EFD9";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedProductId !== p._id) {
+                          e.currentTarget.style.background = "transparent";
+                        }
+                      }}
+                    >
+                      {p.title}
+                    </button>
+                  ))}
+
+                {pagination && (
+                  <div className="flex items-center justify-between gap-3 border-t border-[rgba(28,36,84,0.08)] px-3 py-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setProductPage((prev) => Math.max(1, prev - 1))
+                      }
+                      disabled={productPage <= 1}
+                      className="rounded-lg px-3 py-1.5 text-sm font-semibold disabled:opacity-40"
+                      style={{
+                        background: "rgba(28,36,84,0.08)",
+                        color: "var(--color-on-surface)",
+                      }}
+                    >
+                      Previous
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="1"
+                        max={pagination.totalPages || 1}
+                        value={pageInput}
+                        onChange={(e) => setPageInput(Number(e.target.value))}
+                        className="w-14 rounded-lg border border-[rgba(28,36,84,0.12)] px-2 py-1 text-center text-sm outline-none"
+                        style={{ background: "rgba(255,248,240,.95)" }}
+                      />
+                      <span className="text-xs font-semibold text-on-surface-variant">
+                        / {pagination.totalPages || 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const nextPage = Math.min(
+                            Math.max(1, Number(pageInput) || 1),
+                            pagination.totalPages || 1,
+                          );
+                          setProductPage(nextPage);
+                        }}
+                        className="rounded-lg px-3 py-1.5 text-sm font-semibold"
+                        style={{
+                          background: "var(--color-primary)",
+                          color: "var(--color-on-primary)",
+                        }}
+                      >
+                        Go
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setProductPage((prev) => prev + 1)}
+                      disabled={productPage >= (pagination.totalPages || 1)}
+                      className="rounded-lg px-3 py-1.5 text-sm font-semibold disabled:opacity-40"
+                      style={{
+                        background: "rgba(28,36,84,0.08)",
+                        color: "var(--color-on-surface)",
+                      }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Competitor count badge */}
           {enabled && competitorCount > 0 && (

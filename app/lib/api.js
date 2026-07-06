@@ -62,10 +62,26 @@ export const promptApi = {
       method: "POST",
       body: JSON.stringify({ prompt }),
     }),
+  score: (prompt, productId) =>
+    request("/prompts/score", {
+      method: "POST",
+      body: JSON.stringify({ prompt, productId }),
+    }),
   history: (params = {}) => {
     const q = new URLSearchParams(params).toString();
     return request(`/prompts/history${q ? `?${q}` : ""}`);
   },
+  getProductPrompts: (productId, params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/prompts/products/${productId}${q ? `?${q}` : ""}`);
+  },
+  generateProductPrompts: (productId, prompts = []) =>
+    request(`/prompts/products/${productId}/generate`, {
+      method: "POST",
+      body: JSON.stringify({ prompts }),
+    }),
+  getPromptFix: (promptId) => request(`/prompts/${promptId}/fix`),
+  getPrompt: (promptId) => request(`/prompts/${promptId}`),
 };
 
 export const reportApi = {

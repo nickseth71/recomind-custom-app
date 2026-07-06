@@ -426,6 +426,13 @@ function PromptRow({ item }) {
             </div>
           </div>
           <VisibilityPill vis={item.visibility} />
+          <Link
+            to={`/app/promptwins/${item._id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-primary font-semibold text-sm mr-2"
+          >
+            View
+          </Link>
           <ChevronRight
             size={14}
             strokeWidth={2}
@@ -494,6 +501,26 @@ function PromptRow({ item }) {
                 </div>
               ))}
             </div>
+          )}
+
+          {item.rankingFactors?.length > 0 && (
+            <div className="rounded-xl bg-surface-container-highest border border-outline-variant p-3">
+              <Eyebrow className="mb-2">Ranking Factors</Eyebrow>
+              {item.rankingFactors.map((r, i) => (
+                <div
+                  key={i}
+                  className="flex gap-2 py-1 font-mono-sm text-mono-sm text-on-surface border-b border-outline-variant/30 last:border-0"
+                >
+                  • {r}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {item.reasoning && (
+            <p className="font-mono-sm text-[11px] font-semibold text-on-surface-variant">
+              {item.reasoning}
+            </p>
           )}
 
           {item.statusMessage && (

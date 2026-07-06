@@ -1,8 +1,8 @@
 // app/routes/app.products_.$id.jsx
 // NOTE: filename uses "products_" (trailing underscore) so this is a
 // SIBLING route at /app/products/:id, not nested under app.products.jsx.
-import { useState,useEffect } from "react";
-import { useParams } from "react-router";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
@@ -43,7 +43,7 @@ import {
 } from "lucide-react";
 
 /* ═══ OVERVIEW PANEL ═══════════════════════════════════════════ */
-function OverviewPanel({ analysis,product }) {
+function OverviewPanel({ analysis, product }) {
   const images = product?.images || [];
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -54,7 +54,6 @@ function OverviewPanel({ analysis,product }) {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 2000);
 
-
     return () => clearInterval(interval);
   }, [images.length]);
   return (
@@ -62,17 +61,17 @@ function OverviewPanel({ analysis,product }) {
       <div className="grid grid-cols-[42%_58%] gap-x-2 ">
         <Card className="p-5 flex items-center  justify-center ">
           <div className="relative w-[95%] h-[300px]  overflow-hidden rounded-xl">
-    {images.map((img, index) => (
-      <img
-        key={index}
-        src={img}
-        alt={product?.title}
-        className={`absolute inset-0 w-full h-full object-contain rounded-xl transition-opacity duration-700 ${
-          index === currentImage ? "opacity-100" : "opacity-0"
-        }`}
-      />
-    ))}
-  </div>
+            {images.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={product?.title}
+                className={`absolute inset-0 w-full h-full object-contain rounded-xl transition-opacity duration-700 ${
+                  index === currentImage ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            ))}
+          </div>
           {/* <ScoreRing score={analysis.score} size={110}  />
           <div>
             <Eyebrow>AI Readiness Score</Eyebrow>
@@ -522,6 +521,12 @@ function SmartPromptsPanel({ smartPrompts }) {
                   <span className="text-[13px] font-semibold text-on-surface">
                     "{p.prompt}"
                   </span>
+                  <Link
+                    to={`/app/promptwins/${p._id || p.id}`}
+                    className="text-primary text-sm font-semibold ml-2"
+                  >
+                    View
+                  </Link>
                   {isHV && (
                     <span className="font-mono-sm text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border text-green-win bg-[#00e29e]/12 border-[#00e29e]/35">
                       <Star size={8} className="inline mr-0.5" />
@@ -746,11 +751,11 @@ export const loader = async () => null;
 export default function ProductDetail() {
   const { id } = useParams();
   const token = localStorage.getItem("recomind_token");
-  console.log(token)
+  console.log(token);
   const decoded = token ? jwtDecode(token) : null;
-const storePlan = decoded?.storePlan?.toLowerCase();    //added
+  const storePlan = decoded?.storePlan?.toLowerCase(); //added
   // const decoded = jwtDecode(token)
-  console.log("Decoded Token", decoded)
+  console.log("Decoded Token", decoded);
   const [tab, setTab] = useState("overview");
   const [applyLoading, setApplyLoading] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
@@ -801,8 +806,8 @@ const storePlan = decoded?.storePlan?.toLowerCase();    //added
     { key: "faq", label: "FAQ", icon: HelpCircle },
     // { key: "comparison", label: "Comparison", icon: GitCompare },
     ...(storePlan !== "starter"
-    ? [{ key: "comparison", label: "Comparison", icon: GitCompare }]     //checks plan and shows comparison
-    : []),
+      ? [{ key: "comparison", label: "Comparison", icon: GitCompare }] //checks plan and shows comparison
+      : []),
   ];
 
   return (
@@ -966,17 +971,26 @@ const storePlan = decoded?.storePlan?.toLowerCase();    //added
 
           {/* Tab bar — glass-card pills, readable on dark body */}
           <div
-  className={`mx-auto transition-all duration-300 ${
-    storePlan === "starter" ? "w-fit" : "w-full"
-  }`}
->
-          <PillTabs items={tabItems} value={tab} onChange={setTab} className={storePlan !== "starter" ? "w-full  justify-center" : "w-fit"}/>
+            className={`mx-auto transition-all duration-300 ${
+              storePlan === "starter" ? "w-fit" : "w-full"
+            }`}
+          >
+            <PillTabs
+              items={tabItems}
+              value={tab}
+              onChange={setTab}
+              className={
+                storePlan !== "starter" ? "w-full  justify-center" : "w-fit"
+              }
+            />
           </div>
           {/* Tab content */}
           <div>
             {/* {tab === "overview" && <OverviewPanel analysis={analysis} />}
              */}
-             {tab === "overview" && (<OverviewPanel analysis={analysis} product={product} />)}
+            {tab === "overview" && (
+              <OverviewPanel analysis={analysis} product={product} />
+            )}
             {tab === "intelligence" && (
               <IntelligencePanel interpretation={interpretation} />
             )}
@@ -986,10 +1000,9 @@ const storePlan = decoded?.storePlan?.toLowerCase();    //added
             {tab === "fixes" && <FixesPanel fixes={fixes} />}
             {tab === "faq" && <FaqPanel analysis={analysis} />}
             {tab === "comparison" && storePlan !== "starter" && (
-  <ComparisonPanel analysis={analysis} />
-)}
+              <ComparisonPanel analysis={analysis} />
+            )}
             {/* {tab === "comparison" && <ComparisonPanel analysis={analysis} />} */}
-            
           </div>
         </div>
       )}
