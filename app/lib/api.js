@@ -98,3 +98,22 @@ export const reportApi = {
     return request(`/reports/audit-log${q ? `?${q}` : ""}`);
   },
 };
+
+export const impactApi = {
+  dashboard: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact${q ? `?${q}` : ""}`);
+  },
+  summary: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact/summary${q ? `?${q}` : ""}`);
+  },
+  products: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact/products${q ? `?${q}` : ""}`);
+  },
+  opportunities: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact/opportunities${q ? `?${q}` : ""}`);
+  },
+};
