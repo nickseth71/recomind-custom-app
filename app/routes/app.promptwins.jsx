@@ -429,9 +429,10 @@ function PromptRow({ item }) {
           <Link
             to={`/app/promptwins/${item._id}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-primary font-semibold text-sm mr-2"
+            className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-gray-300 bg-gray-100 text-gray-700 font-mono-sm text-[11px] font-bold hover:bg-gray-200 hover:text-gray-900 transition-colors
+            "
           >
-            View
+            Detail
           </Link>
           <ChevronRight
             size={14}

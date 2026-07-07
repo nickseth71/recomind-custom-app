@@ -179,8 +179,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
       {/* Footer */}
       <div
-        className={`pt-2 border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
-      >
+        // className={`pt-2 border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
+  className={`pt-2 ${
+    sidebarOpen
+      ? "border-t border-outline-variant space-y-2"
+      : "border-t-0 space-y-3"
+  }`}
+> 
+      
         {/* <button
           className={`${
             sidebarOpen ? "w-full" : "w-full"
@@ -260,72 +266,56 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         )}
 
         {/* store name */}
-        {storedShop ? (
-          <div className="border-t border-outline-variant pt-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
-                {storedShop.charAt(0).toUpperCase()}
-              </div>
+{storedShop ? (
+  <div className="border-t border-outline-variant pt-4">
+     {/* <div className="flex items-center gap-3"> */}
+    <div
+      className={`flex items-center ${
+        sidebarOpen ? "gap-3" : "justify-center"
+      }`}
+    >
+      <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
+        {storedShop.charAt(0).toUpperCase()}
+      </div>
 
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-on-surface leading-none">
-                  {storedShop}
-                </p>
-                <p className="text-xs text-on-surface-variant mt-1">
-                  {storePlan.toUpperCase()}
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="border-t border-outline-variant pt-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
-                R
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-on-surface leading-none">
-                  RecoMind
-                </p>
-                <p className="text-xs text-on-surface-variant mt-1">
-                  {storePlan}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* {sidebarOpen && (
-  <div className="border-t border-outline-variant pt-4 flex items-center gap-3">
-    <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold">
-      A
+      {sidebarOpen && (
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-on-surface leading-none">
+            {storedShop}
+          </p>
+          <p className="text-xs text-on-surface-variant mt-1">
+            {storePlan.toUpperCase()}
+          </p>
+        </div>
+      )}
     </div>
+  </div>
+) : (
+  <div className="border-t border-outline-variant pt-4">
+    {/* <div className="flex items-center gap-3"> */}
+    <div
+      className={`flex items-center ${
+        sidebarOpen ? "gap-3" : "justify-center"
+      }`}
+    >
+      <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
+        R
+      </div>
 
-    <div>
-      <p className="text-sm font-semibold text-on-surface">
-        Alex Smith
-      </p>
-      <p className="text-xs text-on-surface-variant">
-        Product Co.
-      </p>
+      {sidebarOpen && (
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-on-surface leading-none">
+            RecoMind
+          </p>
+          <p className="text-xs text-on-surface-variant mt-1">
+            {storePlan}
+          </p>
+        </div>
+      )}
     </div>
   </div>
 )}
-        {/* <Link
-          className={`flex items-center px-4 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors ${
-            !sidebarOpen && "justify-center"
-          }`}
-          to="/app/support"
-          title={!sidebarOpen ? "Support" : ""}
-        >
-          <span
-            className="material-symbols-outlined shrink-0"
-            style={{ fontSize: "16px" }}
-          >
-            help_outline
-          </span>
-          {sidebarOpen && <span className="ml-3">Support</span>}
-        </Link> */}
+        
       </div>
     </aside>
   );

@@ -24,6 +24,64 @@ export default function PromptDetail() {
   const analysis = payload.analysis ?? null;
   const fix = payload.fix ?? null;
 
+  // SCORE RING
+
+  function PromptScoreRing({ score }) {
+  const percentage = Number(score) || 0;
+
+  const radius = 34;
+  const stroke = 7;
+  const normalizedRadius = radius - stroke / 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+
+  const strokeDashoffset =
+    circumference - (percentage / 100) * circumference;
+
+  const ringColor = percentage <= 80 ? "#00E29E" : "#EF4444";
+
+  return (
+    <div className="relative w-24 h-24">
+      <svg
+        height="96"
+        width="96"
+        className="-rotate-90"
+      >
+        <circle
+          stroke="currentColor"
+          fill="transparent"
+          strokeWidth={stroke}
+          r={normalizedRadius}
+          cx="48"
+          cy="48"
+        />
+
+        <circle
+          stroke={ringColor}
+          fill="transparent"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          r={normalizedRadius}
+          cx="48"
+          cy="48"
+          style={{
+            transition: "stroke-dashoffset .8s ease",
+          }}
+        />
+      </svg>
+
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <p className="text-3xl font-bold text-on-surface">
+          {percentage}
+        </p>
+        <p className="text-xs text-on-surface-variant">
+          /100
+        </p>
+      </div>
+    </div>
+  );
+}
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-4">
@@ -51,7 +109,7 @@ export default function PromptDetail() {
           </p>
         </Card>
 
-        <Card className="p-5">
+        {/* <Card className="p-5">
           <p className="text-[11px] font-semibold text-on-surface-variant">
             Your Score
           </p>
@@ -64,7 +122,42 @@ export default function PromptDetail() {
             </div>
             <LikelihoodBadge value={prompt.visibility} />
           </div>
-        </Card>
+        </Card> */}
+        <Card className="p-4">
+  {(() => {
+    const score = Number(prompt.intentCoverageScore) || 0;
+
+    const color =
+  score >= 70
+    ? "#00E29E" // Green
+    : score >= 40
+    ? "#F59E0B" // Orange
+    : ""; // Red
+
+    const heading =
+       score >= 70
+    ? "GOOD" 
+    : score >= 40
+    ? "MODERATE" 
+    : "CRITICAL"; 
+
+
+    return (
+      <div className="flex items-center gap-6">
+        <PromptScoreRing score={score}  />
+
+        <div className="flex-1">
+          <p
+            className="text-2xl font-bold mb-2"
+            style={{ color }}
+          >
+            {heading}
+          </p>
+        </div>
+      </div>
+    );
+  })()}
+</Card>
 
         <Card className="p-5">
           <p className="text-[11px] font-semibold text-on-surface-variant">

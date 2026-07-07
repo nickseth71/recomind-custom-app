@@ -66,7 +66,7 @@ function OverviewPanel({ analysis, product }) {
                 key={index}
                 src={img}
                 alt={product?.title}
-                className={`absolute inset-0 w-full h-full object-contain rounded-xl transition-opacity duration-700 ${
+                className={`absolute inset-0 w-full h-full object-cover rounded-xl transition-opacity duration-700 ${
                   index === currentImage ? "opacity-100" : "opacity-0"
                 }`}
               />
@@ -521,24 +521,29 @@ function SmartPromptsPanel({ smartPrompts }) {
                   <span className="text-[13px] font-semibold text-on-surface">
                     "{p.prompt}"
                   </span>
-                  <Link
+                  {/* <Link
                     to={`/app/promptwins/${p._id || p.id}`}
-                    className="text-primary text-sm font-semibold ml-2"
+                    className="bg-[#44464f]/20 h-6 w-14 rounded-xl text-mono-sm  font-mono-sm ml-2"
                   >
-                    View
-                  </Link>
-                  {isHV && (
+                    Detail
+                  </Link> */}
+                 <Link
+  to={`/app/promptwins/${p._id || p.id}`}
+  className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-[#B8B8B8] bg-[#F3F3F3] text-[#555555] font-mono-sm text-[11px] font-bold hover:bg-[#E6E6E6] hover:text-[#2F2F2F] transition-all">
+  Detail
+</Link>
+                  {/* {isHV && (
                     <span className="font-mono-sm text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border text-green-win bg-[#00e29e]/12 border-[#00e29e]/35">
                       <Star size={8} className="inline mr-0.5" />
                       High Value
                     </span>
-                  )}
-                  {isHW && (
+                  )} */}
+                  {/* {isHW && (
                     <span className="font-mono-sm text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border text-error bg-error/10 border-error/30">
                       Hard
                     </span>
-                  )}
-                </div>
+                  )}*/}
+                </div> 
                 {p.intent && (
                   <p className="font-mono-sm text-mono-sm text-on-surface-variant">
                     {p.intent}
