@@ -1,111 +1,61 @@
-import React from 'react'
-export const usageData = [
-  {
-    title: "Products Tracked",
-    used: 312,
-    total: 500,
-    percentage: 62,
-  },
-  {
-    title: "Prompts Used",
-    used: 3840,
-    total: 5000,
-    percentage: 77,
-  },
-  {
-    title: "Reports Generated",
-    used: 8,
-    total: 20,
-    percentage: 40,
-  },
-];
-const plans=[
-  {
-    "id":"1",
-    "name":"Starter",
-    "price": "$29",
-    "details":"Perfect for small stores getting started with AI visibility.",
-    "features": [
-      "Up to 50 products tracked",
-      "500 prompts/month",
-      "Basic AI visibility score",
-      "Email support",
-    ],
-    "button": "Switch to Starter",
-    "current": false,
-  },
-  { 
-    "id":"2",
-    "name":"Growth",
-    "price": "$79",
-    "details":"For growing brands that need deeper AI insights.",
-      "features": [
-      "Up to 500 products tracked",
-      "5,000 prompts/month",
-      "Advanced AI visibility score",
-      "Competitor analysis",
-      "Priority support",
-    ],
-    "button": "Current Plan",
-    "current": true,
-  },
-  {
-    "id":"3",
-    "name":"Pro",
-    "price": "$199",
-    "details":"Full-scale AI commerce visibility for large catalogs.",
-    "features": [
-      "Unlimited products",
-      "Unlimited prompts",
-      "Full AI recommendation simulation",
-      "Custom reports",
-      "Dedicated account manager",
-    ],
-    "button": "Switch to Pro",
-    "current": false,
-  },
-
-]
-// const Billing = () => {
-//   return (
-//     <div>
-//       <h1 className='text-secondary'>Billing</h1>
-//       <p className='text-secondary'>Manage your subscription, plan, and payment details</p>
-
-//       <div className='h-50 w-full glass-card rounded-xl'>
-//         <div>
-//         <p className='text-secondary'>Current Plan</p>
-//         <h1 className='text-secondary'>Growth Plan</h1> <div>Active</div>
-//         <p className='text-secondary'>Next  Billing Date :</p>
-//         <div>
-//           <button className='text-primary text-xs  glass-card rounded-xl h-10 w-20'>Cancel Plan</button>
-//           <button className='text-on-primary text-xs bg-blue-950 rounded-xl h-10 w-20'>Upgrade Plan</button>
-//         </div>
-//         </div>
-        
-//       </div>
-
-//       {/* 2nd box --Plans*/}
-//       <div  className='h-100 w-full glass-card p-5 rounded-xl mt-5'>
-//       <p>Choose a Plan</p>
-//       <div>
-//         {plans.map((plan)=>(
-//           <div key={plan.id}>
-
-            
-//           </div>
-//         ))}
-//       </div>
-//       </div>
-
-//     </div>
-//   )
-// }
-
+import React, { useEffect, useState } from "react";
+import { billingApi } from "../lib/api";
 // export default Billing
 import { CheckCircle } from "lucide-react";
 
 export default function Billing() {
+const [plans, setPlans] = useState([]);
+const [billing, setBilling] = useState(null);
+const [loading, setLoading] = useState(true);
+useEffect(() => {
+  fetchBillingData();
+}, []);
+
+const fetchBillingData = async () => {
+  try {
+    setLoading(true);
+
+    const [plansRes, billingRes] = await Promise.all([
+      billingApi.getPlans(),
+      billingApi.getBilling(),
+    ]);
+
+    setPlans(plansRes.data.plans);
+    setBilling(billingRes.data);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
+const usageData = billing
+  ? [
+      {
+        title: "Products Tracked",
+        used: billing.usage.productsAnalyzed,
+        total: billing.usage.maxProductsAnalyzed,
+        percentage:
+          (billing.usage.productsAnalyzed /
+            billing.usage.maxProductsAnalyzed) *
+          100,
+      },
+      {
+        title: "Prompts Used",
+        used: billing.tokenQuota.used,
+        total: billing.tokenQuota.monthly,
+        percentage: billing.tokenQuota.percentUsed,
+      },
+      {
+        title: "Products Synced",
+        used: billing.products.analyzed,
+        total: billing.products.total,
+        percentage:
+          (billing.products.analyzed /
+            billing.products.total) *
+          100,
+      },
+    ]
+  : [];
   return (
     <div className="min-h-screen">
 
@@ -123,12 +73,12 @@ export default function Billing() {
           <div>
             <p className="text-on-surface-variant text-mono-sm">Current Plan</p>
             <div className="mt-2 flex items-center gap-3">
-              <h2 className="text-on-surface text-headline-md">Growth Plan</h2>
-              <span className="rounded-full  px-4 py-1 border text-on-surface-variant text-mono-sm">Active</span>
+              <h2 className="text-on-surface text-headline-md">{billing?.plan?.label}</h2>
+              <span className="rounded-full  px-4 py-1 border text-on-surface-variant text-mono-sm">{billing?.account?.isActive ? "Active" : "Inactive"}</span>
             </div>
             <p className="mt-3 text-on-surface-variant text-mono-sm">
               Next billing date:
-              <span className="text-on-surface-variant text-mono-sm"> June 1, 2024</span>
+              <span className="text-on-surface-variant text-mono-sm"> {new Date(billing?.tokenQuota?.resetDate).toLocaleDateString()}</span>
             </p>
           </div>
 
@@ -175,9 +125,9 @@ export default function Billing() {
           <h2 className="text-on-surface text-mono-sm text-headline-md">
             Choose a Plan
           </h2>
-          <div className="flex rounded-xl bg-white p-1">
+          <div className="flex rounded-xl bg-surface-container-high p-1">
             <button className="rounded-lg px-3 py-1 text-on-surface-variant text-mono-sm">Monthly</button>
-            <button className="rounded-lg bg-white px-3 py-1 text-on-surface-variant text-mono-sm">
+            <button className="rounded-lg bg-surface-container-high px-3 py-1 text-on-surface-variant text-mono-sm">
               Annual
               <span className="ml-1 text-green-500">-20%</span>
             </button>
@@ -190,14 +140,14 @@ export default function Billing() {
 
             <div
               key={plan.id}
-              className={`relative rounded-3xl border p-8 ${
-                plan.current
-                  ? "border-[#111844] bg-white"
-                  : "border-white bg-transparent"
-              }`}
+              className={`relative rounded-3xl border p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:border-[#3A4AA0] hover:bg-white/70 ${
+  billing?.plan?.name === plan.id
+    ? "border-[#111844] bg-transparent shadow-xl"
+    : "border-white/60 bg-surface-container-low"
+}`}
             >
-              {plan.current && (
-                <span className="absolute right-8 top-8 rounded-full bg[#111844] px-2 text-white py-1 ">
+              {billing?.plan?.name === plan.id && (
+                <span className="absolute right-8 top-8 rounded-full bg-surface-container-high px-2 text-white py-1 ">
                   Current
                 </span>
 
@@ -205,19 +155,19 @@ export default function Billing() {
 
               <h3
                 className={`text-on-surface text-headline-md${
-                  plan.current ? "text-on-surface-variant" : "text-on-surface-variant"
+                  billing?.plan?.name === plan.id ? "text-on-surface-variant" : "text-on-surface-variant"
                 }`}
               >
-                {plan.name}
+                {plan.label}
               </h3>
 
               <div className="mt-3 flex items-end gap-2">
                 <span
                   className={`text-3xl font-bold ${
-                    plan.current ? "text-on-surface-variant" : "text-on-surface-variant"
+                    billing?.plan?.name === plan.id ? "text-on-surface-variant" : "text-on-surface-variant"
                   }`}
                 >
-                  {plan.price}
+                  ${plan.priceMonthly}
                 </span>
 
                 <span className="mb-2 text-on-surface text-headline-md">
@@ -227,13 +177,13 @@ export default function Billing() {
               </div>
 
               <p className="mt-2 text-on-surface-variant text-mono-sm text-semibold">
-                {plan.name === "Starter" &&
+                {plan.label === "Starter" &&
                   "Perfect for small stores getting started with AI visibility."}
 
-                {plan.name === "Growth" &&
+                {plan.label === "Growth" &&
                   "For growing brands that need deeper AI insights."}
 
-                {plan.name === "Pro" &&
+                {plan.label === "Pro" &&
                   "Full-scale AI commerce visibility for large catalogs."}
               </p>
 
@@ -249,7 +199,7 @@ export default function Billing() {
 
                     <span
                       className={`text-xs ${
-                        plan.current ? "text-on-surface-variant" : "text-on-surface-variant"
+                        billing?.plan?.name === plan.id ? "text-on-surface-variant" : "text-on-surface-variant"
                       }`}
                     >
                       {feature}
@@ -259,12 +209,14 @@ export default function Billing() {
               </div>
               <button
                 className={`mt-5 w-full rounded-xl py-4 text-xl font-semibold ${
-                  plan.current
+                  billing?.plan?.name === plan.id
                     ? "bg-[#111844] text-white"
                     : "border border-[#3A4AA0] text-white"
                 }`}
               >
-                {plan.button}
+                {billing?.plan?.name === plan.id
+  ? "Current Plan"
+  : `Switch to ${plan.label}`}
               </button>
             </div>
           ))}

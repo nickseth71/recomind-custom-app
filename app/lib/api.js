@@ -117,3 +117,7 @@ export const impactApi = {
     return request(`/impact/opportunities${q ? `?${q}` : ""}`);
   },
 };
+export const billingApi = {
+  getPlans: () => request("/stores/plans"),
+  getBilling: () => request("/stores/billing"),
+};
