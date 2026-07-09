@@ -72,9 +72,9 @@ export default function ModeScore({ token }) {
       </div>
 
       {/* ── Right ── */}
-      <div className="space-y-4">
+      <div className="space-y-4 pt-7.5 ">
         {!result && (
-          <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
+          <div className="rounded-2xl border h-[120px] border-outline-variant bg-surface-bright p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
             <span className="text-3xl">📊</span>
             Score results will appear here.
           </div>

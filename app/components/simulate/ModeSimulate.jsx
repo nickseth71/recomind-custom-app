@@ -34,7 +34,8 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
+    // <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       {/* ── Left: Input ── */}
       <div className="space-y-4">
         <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
@@ -44,7 +45,8 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder='e.g. "best protein powder for beginners under $60"'
-          className={`${inputCls} min-h-[120px] resize-none`}
+          className={`${inputCls} min-h-[120px] resize-none bg-surface-bright`}
+          // className={`${inputCls} min-h-[120px] resize-none bg-surface-container-low`}
         />
 
         <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
@@ -59,17 +61,33 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           loading={loading}
           disabled={!prompt.trim() || !productId}
           label="Run AI Simulation →"
-          loadingLabel="Running simulation…"
+          loadingLabel="Running simulation…" className=""
         />
       </div>
 
       {/* ── Right: Result ── */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4"> */}
+      <div className="flex flex-col pt-7">
         {!result && (
-          <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
-            <span className="text-3xl">🎯</span>
-            Results will appear here once a simulation runs.
-          </div>
+          // <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
+          //   <span className="text-3xl">🎯</span>
+          //   Results will appear here once a simulation runs.
+          // </div>
+          <div
+  className="rounded-2xl border border-outline-variant bg-surface-bright
+             min-h-[120px] flex flex-col items-center justify-center
+             text-center text-sm text-on-surface-variant gap-3 px-8"
+>
+  <span className="text-4xl">🎯</span>
+
+  <p className="font-semibold text-on-surface">
+    No Simulation Yet
+  </p>
+
+  <p className="max-w-[260px]">
+    Results will appear here once the simulation runs.
+  </p>
+</div>
         )}
 
         {result && (

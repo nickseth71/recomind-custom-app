@@ -26,10 +26,69 @@ export default function PromptDetail() {
 
   // SCORE RING
 
-  function PromptScoreRing({ score }) {
+//   function PromptScoreRing({ score }) {
+//   const percentage = Number(score) || 0;
+
+//   const radius = 34;
+//   const stroke = 7;
+//   const normalizedRadius = radius - stroke / 2;
+//   const circumference = normalizedRadius * 2 * Math.PI;
+
+//   const strokeDashoffset =
+//     circumference - (percentage / 100) * circumference;
+//     const ringColor =
+//   percentage >= 70
+//     ? "#00E29E" // Green (70-100)
+//     : percentage >= 40
+//     ? "#F59E0B" // Orange (40-69)
+//     : "#EF4444"; // Red (0-39)
+//   return (
+//     <div className="relative w-24 h-24">
+//       <svg
+//         height="96"
+//         width="96"
+//         className="-rotate-90"
+//       >
+//         <circle
+//           stroke="currentColor"
+//           fill="transparent"
+//           strokeWidth={stroke}
+//           r={normalizedRadius}
+//           cx="48"
+//           cy="48"
+//         />
+
+//         <circle
+//           stroke={ringColor}
+//           fill="transparent"
+//           strokeWidth={stroke}
+//           strokeLinecap="round"
+//           strokeDasharray={circumference}
+//           strokeDashoffset={strokeDashoffset}
+//           r={normalizedRadius}
+//           cx="48"
+//           cy="48"
+//           style={{
+//             transition: "stroke-dashoffset .8s ease",
+//           }}
+//         />
+//       </svg>
+
+//       <div className="absolute inset-0 flex flex-col items-center justify-center">
+//         <p className="text-3xl font-bold text-on-surface">
+//           {percentage}
+//         </p>
+//         <p className="text-xs text-on-surface-variant">
+//           /100
+//         </p>
+//       </div>
+//     </div>
+//   );
+// }
+function PromptScoreRing({ score }) {
   const percentage = Number(score) || 0;
 
-  const radius = 34;
+  const radius = 40;          // was 34
   const stroke = 7;
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
@@ -37,37 +96,43 @@ export default function PromptDetail() {
   const strokeDashoffset =
     circumference - (percentage / 100) * circumference;
 
-  const ringColor = percentage <= 80 ? "#00E29E" : "#EF4444";
+  const ringColor =
+    percentage >= 70
+      ? "#00E29E"
+      : percentage >= 40
+      ? "#F59E0B"
+      : "#EF4444";
 
   return (
     <div className="relative w-24 h-24">
       <svg
-        height="96"
         width="96"
+        height="96"
+        viewBox="0 0 96 96"
         className="-rotate-90"
       >
+        {/* Background ring */}
         <circle
-          stroke="currentColor"
-          fill="transparent"
-          strokeWidth={stroke}
-          r={normalizedRadius}
           cx="48"
           cy="48"
+          r={normalizedRadius}
+          fill="none"
+          stroke="#E5E7EB"
+          strokeWidth={stroke}
         />
 
+        {/* Progress ring */}
         <circle
+          cx="48"
+          cy="48"
+          r={normalizedRadius}
+          fill="none"
           stroke={ringColor}
-          fill="transparent"
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          r={normalizedRadius}
-          cx="48"
-          cy="48"
-          style={{
-            transition: "stroke-dashoffset .8s ease",
-          }}
+          style={{ transition: "stroke-dashoffset .8s ease" }}
         />
       </svg>
 
@@ -129,32 +194,41 @@ export default function PromptDetail() {
 
     const color =
   score >= 70
-    ? "#00E29E" // Green
+    ? "#00E29E"
     : score >= 40
-    ? "#F59E0B" // Orange
-    : ""; // Red
-
-    const heading =
-       score >= 70
-    ? "GOOD" 
+    ? "#F59E0B"
+    : "#EF4444";
+const heading =
+  score >= 70
+    ? "GOOD"
     : score >= 40
-    ? "MODERATE" 
-    : "CRITICAL"; 
+    ? "MODERATE"
+    : "CRITICAL";
 
 
     return (
-      <div className="flex items-center gap-6">
-        <PromptScoreRing score={score}  />
+      // <div className="flex items-center gap-6">
+      //   <PromptScoreRing score={score}  />
 
-        <div className="flex-1">
-          <p
-            className="text-2xl font-bold mb-2"
-            style={{ color }}
-          >
-            {heading}
-          </p>
-        </div>
-      </div>
+      //   <div className="flex-1">
+      //     <p
+      //       className="text-2xl font-bold mb-2"
+      //       style={{ color }}
+      //     >
+      //       {heading}
+      //     </p>
+      //   </div>
+      // </div>
+      <div className="flex flex-col items-center justify-center py-4">
+  <PromptScoreRing score={score} />
+
+  <p
+    className="mt-4 text-3xl font-extrabold text-center tracking-wide"
+    style={{ color }}
+  >
+    {heading}
+  </p>
+</div>
     );
   })()}
 </Card>

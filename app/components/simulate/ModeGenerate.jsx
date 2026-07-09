@@ -62,10 +62,13 @@ export default function ModeGenerate({ token }) {
   const planLimits = existing?.planLimits;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6">
+    // <div className="flex flex-col items-center justify-center gap-2">
+    <div className="space-y-4">
       {/* ── Left: Controls ── */}
-      <div className="space-y-4">
-        <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-5 space-y-5">
+        <div>
+        {/* <div className="rounded-2xl border border-outline-variant bg-surface p-5 space-y-5">
+         */}
+         <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 ml-1 space-y-5">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
               Product
@@ -95,7 +98,7 @@ export default function ModeGenerate({ token }) {
               placeholder={
                 "best protein for weight loss\nlow sugar whey protein\n…"
               }
-              className={`${inputCls} min-h-40 resize-none`}
+              className={`${inputCls} min-h-40 resize-none `}
             />
           </div>
 
@@ -114,7 +117,7 @@ export default function ModeGenerate({ token }) {
               type="button"
               onClick={loadExisting}
               disabled={loadingExisting || !productId}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-outline-variant bg-surface-container-highest px-4 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container-low disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-outline-variant  px-4 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container-low disabled:opacity-50"
             >
               {loadingExisting && <Loader2 className="h-4 w-4 animate-spin" />}
               {loadingExisting ? "Loading…" : "Reload Existing Prompts"}
@@ -151,7 +154,7 @@ export default function ModeGenerate({ token }) {
 
       {/* ── Right: Results ── */}
       <div className="space-y-4">
-        <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-5 space-y-5">
+        <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 space-y-5">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-on-surface">
@@ -202,7 +205,7 @@ export default function ModeGenerate({ token }) {
           )}
         </div>
 
-        <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-5 space-y-4">
+        <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-on-surface">

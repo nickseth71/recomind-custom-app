@@ -37,7 +37,7 @@ const Impact = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center gap-2 py-20 text-on-surface-variant">
-        <Loader2 className="animate-spin" size={20} />
+        <Loader2 className="animate-spin font-mono-sm" size={20} />
         Loading impact data from Shopify…
       </div>
     );
@@ -46,8 +46,8 @@ const Impact = () => {
   if (error) {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-8 text-red-700">
-        <p className="font-semibold">Could not load impact data</p>
-        <p className="mt-1 text-sm">{error}</p>
+        <p className="font-semibold font-mono-sm">Could not load impact data</p>
+        <p className="mt-1 text-sm font-mono-sm">{error}</p>
       </div>
     );
   }
@@ -70,32 +70,33 @@ const Impact = () => {
       </p>
 
       {!payload?.hasOptimizations && (
-        <p className="mt-3 rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-800">
+        <p className="mt-3 rounded-lg glass-card px-4 py-2 text-sm text-amber-800">
           Optimize at least one product to unlock before/after comparison. Current
           metrics show your latest Shopify store performance.
         </p>
       )}
 
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-4 gap-5 mt-8">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mt-8">   for 2 in 1 line */}
         {metrics.map((item, index) => {
           const Icon = METRIC_ICONS[item.title] || TrendingUp;
           return (
-            <div key={index} className="glass-card h-40 w-50 rounded-xl gap-5">
-              <div className="ml-3 mt-3 w-8 h-8 bg-white rounded-xl flex items-center justify-center mb-4">
+            <div key={index} className="glass-card h-40 w-full rounded-2xl p-5 flex flex-col justify-between">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center ">
                 <Icon size={18} className={METRIC_COLORS[item.title] || ""} />
               </div>
-              <div className="text-black px-3">{item.title}</div>
-              <div className="text-black px-3 font-semibold">{item.value}</div>
-              <div className="text-black px-3 text-sm">{item.subtitle}</div>
+              <div className="text-on-surface font-headline-sm ">{item.title}</div>
+              <div className="text-on-surface font-semibold">{item.value}</div>
+              <div className="text-on-surface font-mono-sm text-[12px]">{item.subtitle}</div>
             </div>
           );
         })}
       </div>
 
-      <div className="glass-card h-70 w-full mt-5 rounded-xl">
+      <div className="glass-card h-65 w-full mt-5 rounded-xl">
         <div className="p-3 border-b border-outline">
-          <h3 className="text-primary">How your performance changed</h3>
-          <p className="text-primary text-xs">
+          <h3 className="text-on-surface font-headline-md">How your performance changed</h3>
+          <p className="text-on-surface text-xs">
             {payload?.hasOptimizations
               ? "Performance improved after optimization"
               : "Current store performance"}
@@ -104,29 +105,29 @@ const Impact = () => {
 
         <div className="grid grid-cols-2">
           <div className="p-3 border-r border-outline">
-            <h3 className="text-primary font-semibold mb-6">
+            <h3 className="text-on-surface font-headline-md font-semibold mb-2">
               BEFORE OPTIMIZATION
             </h3>
             <div className="space-y-3">
               {beforeData.map((item, index) => (
                 <div key={index} className="flex justify-between items-center">
-                  <p className="text-secondary text-sm">{item.title}</p>
-                  <p className="text-primary font-semibold">{item.value}</p>
+                  <p className="text-on-surface-variant text-mono-sm">{item.title}</p>
+                  <p className="text-primary font-semibold text-mono-sm text-[16px]">{item.value}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="p-3">
-            <h3 className="text-primary font-semibold mb-6">
+            <h3 className="text-on-surface font-headline-md font-semibold mb-2">
               AFTER OPTIMIZATION
             </h3>
             <div className="space-y-3">
               {afterData.map((item, index) => (
                 <div key={index} className="flex justify-between items-center">
-                  <p className="text-secondary text-sm">{item.title}</p>
+                  <p className="text-on-surface-variant text-mono-sm">{item.title}</p>
                   <div className="flex items-center gap-2">
-                    <p className="text-primary font-semibold">{item.value}</p>
+                    <p className="text-primary font-semibold font-mono text-[16px]">{item.value}</p>
                     {item.change && (
                       <p className="text-green-700 font-semibold">
                         {item.change.startsWith("+") ||
@@ -142,8 +143,8 @@ const Impact = () => {
           </div>
         </div>
 
-        <div className="w-full h-10 bg-emerald-50 rounded-xl flex items-center px-4 gap-8">
-          <div className="flex items-center gap-1">
+        <div className="w-full h-10 bg-emerald-50 rounded-xl flex items-center px-4 gap-4">
+          <div className="flex items-center ">
             <Zap size={12} className="text-green-800" />
             <p className="text-xs text-green-800">
               +{highlights.intentsUnlocked ?? 0} new buyer intents unlocked

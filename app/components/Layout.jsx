@@ -57,11 +57,16 @@ const Layout = ({ children }) => {
   store={store}
   sidebarOpen={sidebarOpen}
 /> */}
-      <main
+      {/* <main
         className={`pt-12 px-margin-desktop pb-12 min-h-screen transition-all duration-300 overflow-x-auto ${
           sidebarOpen ? "ml-64" : "ml-20"
         }`}
-      >
+      > commented to avoid 2nd scroll bar*/}
+      <main
+  className={`pt-12 px-margin-desktop pb-12 transition-all duration-300 overflow-x-hidden ${
+    sidebarOpen ? "ml-64" : "ml-20"
+  }`}
+>
         {booting ? (
           <div className="flex items-center justify-center min-h-[60vh] gap-3 text-on-surface-variant">
             {/* Spinner */}

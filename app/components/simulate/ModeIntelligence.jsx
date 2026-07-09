@@ -27,7 +27,8 @@ export default function ModeIntelligence() {
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
       {/* ── Left: Input ── */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4"> */}
+      <div className="space-y-4 ">
         <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
           Shopping Query
         </p>
@@ -35,7 +36,7 @@ export default function ModeIntelligence() {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder='e.g. "best electrolyte drink for runners"'
-          className={`${inputCls} min-h-[120px] resize-none`}
+          className={`${inputCls} min-h-[120px] resize-none `}
         />
 
         <ErrorBanner message={error} />
@@ -50,9 +51,9 @@ export default function ModeIntelligence() {
       </div>
 
       {/* ── Right: Result ── */}
-      <div className="space-y-4">
+      <div className="space-y-4 pt-7.5">
         {!result && (
-          <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
+          <div className="rounded-2xl border h-[120px] border-outline-variant bg-surface-bright p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
             <span className="text-3xl">🔍</span>
             Intelligence report will appear here.
           </div>

@@ -78,7 +78,7 @@ export function Eyebrow({ children, className = "" }) {
 
 // Shared textarea style
 export const inputCls =
-  "w-full rounded-2xl border border-outline-variant bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/50";
+  "w-full rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-3 text-sm text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/50";
 
 // Shared select style
 export const selectCls =

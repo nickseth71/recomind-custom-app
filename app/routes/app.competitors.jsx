@@ -123,6 +123,10 @@ const Competitors = () => {
   );
 
   const benchmark = benchmarkResponse?.data?.competitorBenchmark;
+  useEffect(() => {
+  console.log("Selected Product:", selectedProductId);
+  console.log("Benchmark Response:", benchmarkResponse);
+}, [selectedProductId, benchmarkResponse]);
   const enabled = benchmarkResponse?.data?.enabled ?? false;
   const competitorCount = benchmarkResponse?.data?.competitorCount ?? 0;
   const rows = benchmark?.competitors ?? [];
