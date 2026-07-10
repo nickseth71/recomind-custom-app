@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { PageHeader, BackLink, Card } from "../components/UI";
+import AiSpinner from "../components/loader/AiSpinner";
 import { LikelihoodBadge } from "../components/simulate/SimulateShared";
 
 export default function PromptDetail() {
@@ -18,11 +19,32 @@ export default function PromptDetail() {
     [token, id],
   );
 
-  const payload = data?.data ?? data ?? {};
-  const prompt = payload.prompt ?? {};
-  const product = payload.product ?? null;
-  const analysis = payload.analysis ?? null;
-  const fix = payload.fix ?? null;
+const payload = data?.data ?? data ?? {};
+const prompt = payload.prompt ?? {};
+const product = payload.product ?? null;
+const analysis = payload.analysis ?? null;
+const fix = payload.fix ?? null;
+
+// 👇 Loading check
+if (loading) {
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center">
+      <AiSpinner
+        label="Loading prompt visibility data..."
+      />
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center text-error text-lg font-semibold">
+      {error}
+    </div>
+  );
+}
+
+
 
   // SCORE RING
 
@@ -219,6 +241,7 @@ const heading =
       //     </p>
       //   </div>
       // </div>
+      
       <div className="flex flex-col items-center justify-center py-4">
   <PromptScoreRing score={score} />
 

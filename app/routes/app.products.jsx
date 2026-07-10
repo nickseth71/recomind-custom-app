@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi, promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
+import AiSpinner from "../components/loader/AiSpinner";
 import {
   Card,
   Divider,
@@ -274,6 +275,7 @@ function AnalyseModal({ product, onClose, onDone }) {
                     className="animate-spin text-primary shrink-0"
                     strokeWidth={2}
                   />
+                  
                 ) : (
                   <div className="w-4 h-4 rounded-full border border-outline-variant shrink-0" />
                 )}
@@ -1094,14 +1096,15 @@ export default function Products() {
                 <tr>
                   <td colSpan={5} className="py-16 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <Loader2
+                      {/* <Loader2
                         size={28}
                         className="animate-spin text-on-surface-variant"
                         strokeWidth={1.5}
                       />
                       <span className="font-mono-sm text-mono-sm text-on-surface-variant">
                         Loading products…
-                      </span>
+                      </span> */}
+                      <AiSpinner label="Loading Products" />
                     </div>
                   </td>
                 </tr>

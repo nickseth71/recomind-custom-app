@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { storeApi } from "../lib/api";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import AiSpinner from "./loader/AiSpinner";
 
 const Layout = ({ children }) => {
   const [store, setStore] = useState(null);
   const [booting, setBooting] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Read token from URL (?token=...) or localStorage
@@ -62,15 +63,20 @@ const Layout = ({ children }) => {
           sidebarOpen ? "ml-64" : "ml-20"
         }`}
       > commented to avoid 2nd scroll bar*/}
-      <main
+      {/* <main
   className={`pt-12 px-margin-desktop pb-12 transition-all duration-300 overflow-x-hidden ${
+    sidebarOpen ? "ml-64" : "ml-20"
+  }`}
+> */}
+<main
+  className={`scrollable-container pt-12 px-margin-desktop pb-12 transition-all duration-300 overflow-x-hidden ${
     sidebarOpen ? "ml-64" : "ml-20"
   }`}
 >
         {booting ? (
           <div className="flex items-center justify-center min-h-[60vh] gap-3 text-on-surface-variant">
             {/* Spinner */}
-            <svg
+            {/* <svg
               className="animate-spin"
               width="24"
               height="24"
@@ -88,10 +94,9 @@ const Layout = ({ children }) => {
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
               />
-            </svg>
-            <span className="text-body-md font-body-md">
-              Loading workspace…
-            </span>
+            </svg> */}
+            <AiSpinner label="Loading Workspace"/>
+            
           </div>
         ) : (
           children

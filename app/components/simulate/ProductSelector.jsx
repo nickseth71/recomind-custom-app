@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { productApi } from "../../lib/api";
 
-export default function ProductSelector({ token, value, onChange }) {
+export default function ProductSelector({ token, value, onChange, dropdownPosition = "bottom", pageSize=20 }) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [pageInput, setPageInput] = useState(1);
@@ -18,7 +18,7 @@ export default function ProductSelector({ token, value, onChange }) {
       ? () =>
           productApi.list({
             page,
-            limit: 20,
+            limit: pageSize,
             search: search.trim(),
           })
       : null,
@@ -56,14 +56,17 @@ export default function ProductSelector({ token, value, onChange }) {
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-
+    
     return () =>
       document.removeEventListener(
         "mousedown",
         handleClickOutside,
       );
   }, []);
-
+  const dropdownClass =
+  dropdownPosition === "top"
+    ? "absolute bottom-full mb-2 left-0 w-full"
+    : "absolute top-full mt-2 left-0 w-full";
   return (
     <div className="relative w-full" ref={dropdownRef}>
       {/* Selected Product */}
@@ -106,8 +109,10 @@ export default function ProductSelector({ token, value, onChange }) {
       </button>
 
       {isOpen && (
-        <div
-          className="absolute  left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
+          // <div
+          // className="absolute  left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
+          <div
+  className={`${dropdownClass} rounded-2xl overflow-hidden z-50`}
           style={{
             background: "rgba(255,248,240,.82)",
             backdropFilter: "blur(20px)",
@@ -123,9 +128,10 @@ export default function ProductSelector({ token, value, onChange }) {
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
+                
               }}
               placeholder="Search products"
-              className="w-full rounded-xl px-3 py-2 text-sm outline-none"
+              className="w-full rounded-xl px-3 py-2 text-sm font-semibold text-on-surface outline-none"
               style={{
                 background: "rgba(255,248,240,.95)",
                 border: "1px solid rgba(28,36,84,.12)",
@@ -134,13 +140,13 @@ export default function ProductSelector({ token, value, onChange }) {
             />
           </div>
                     {productsLoading && (
-            <div className="px-5 py-3 text-sm">
+            <div className="px-5 py-3 text-on-surface-variant text-sm">
               Loading...
             </div>
           )}
 
           {!productsLoading && !products.length && (
-            <div className="px-5 py-3 text-sm">
+            <div className="px-5 py-3 text-sm text-on-surface-variant">
               No products found
             </div>
           )}

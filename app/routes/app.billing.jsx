@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { billingApi } from "../lib/api";
 // export default Billing
+import AiSpinner from "../components/loader/AiSpinner";
 import { CheckCircle } from "lucide-react";
 
 export default function Billing() {
@@ -56,6 +57,16 @@ const usageData = billing
       },
     ]
   : [];
+  if (loading) {
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center">
+      <AiSpinner
+        size={70}
+        label="Loading billing information..."
+      />
+    </div>
+  );
+}
   return (
     <div className="min-h-screen">
 

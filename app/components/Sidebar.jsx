@@ -21,7 +21,9 @@ const normalizeShopName = (shop) => {
     .trim();
 };
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+// const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+  const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+  const [isPinned, setIsPinned] = useState(false);
   const [storePlan, setStorePlan] = useState("Starter");
   const [storedShop, setStoredShop] = useState(null);
 
@@ -111,14 +113,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   ];
 
   return (
+    // <aside
+    //   className={`h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-container-lowest flex flex-col py-gutter px-4 z-50 transition-all duration-300 ${
+    //     sidebarOpen ? "w-54" : "w-20"
+    //   }`}
+    // >
     <aside
-      className={`h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant bg-surface-container-lowest dark:bg-surface-container-lowest flex flex-col py-gutter px-4 z-50 transition-all duration-300 ${
-        sidebarOpen ? "w-54" : "w-20"
-      }`}
-    >
+  onMouseEnter={() => {
+    if (!isPinned) setSidebarOpen(true);
+  }}
+  onMouseLeave={() => {
+    if (!isPinned) setSidebarOpen(false);
+  }}
+  className={`h-screen fixed left-0 top-0 border-r border-outline-variant
+  bg-surface-container-lowest flex flex-col py-gutter px-4 z-50
+  transition-all duration-300 ease-in-out
+  ${sidebarOpen ? "w-56" : "w-20"}`}
+>
       {/* Header */}
       <div
-        className={`mb-8 flex items-center justify-between ${!sidebarOpen && "flex-col gap-4"}`}
+        className={`mb-3 flex items-center justify-between ${!sidebarOpen && "flex-col gap-4"}`}
       >
         <div
           className={`flex items-center ${sidebarOpen ? "gap-1" : "gap-0 flex-col"}`}
@@ -143,14 +157,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           )}
         </div>
         <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
+          // onClick={() => setSidebarOpen(!sidebarOpen)}
+          onClick={() => {
+  const nextPinned = !isPinned;
+  setIsPinned(nextPinned);
+  setSidebarOpen(nextPinned);
+}}
           className="p-1.5 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant hover:text-on-surface shrink-0"
           title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
-          <ChevronLeft
+          {/* <ChevronLeft
             size={18}
             className={`transition-transform duration-300 ${!sidebarOpen && "rotate-180"}`}
-          />
+          /> */}
         </button>
       </div>
 

@@ -58,7 +58,7 @@ export default function ModeScore({ token }) {
         <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
           Product
         </p>
-        <ProductSelector token={token} value={productId} onChange={setProductId} />
+        <ProductSelector token={token} value={productId} onChange={setProductId} pageSize={5} dropdownPosition="top" />
 
         <ErrorBanner message={error} />
 

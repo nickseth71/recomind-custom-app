@@ -3,6 +3,7 @@ import { useState } from "react";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { PageHeader } from "../components/UI";
+import AiSpinner from "../components/loader/AiSpinner";
 
 import ModeSimulate from "../components/simulate/ModeSimulate";
 import ModeIntelligence from "../components/simulate/ModeIntelligence";
@@ -25,12 +26,38 @@ export default function Simulate() {
 
   const [mode, setMode] = useState("simulate");
 
-  const { data: historyRes, refetch: refetchHistory } = useApi(
-    token ? () => promptApi.history({ limit: 8 }) : null,
-    [token],
-  );
+  // const { data: historyRes, refetch: refetchHistory } = useApi(
+  //   token ? () => promptApi.history({ limit: 8 }) : null,
+  //   [token],
+  // );
+  const {
+  data: historyRes,
+  loading,
+  error,
+  refetch: refetchHistory,
+} = useApi(
+  token ? () => promptApi.history({ limit: 8 }) : null,
+  [token],
+);
   const history = historyRes?.data ?? [];
+  if (loading) {
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center">
+      <AiSpinner
+        size={70}
+        label="Loading simulator..."
+      />
+    </div>
+  );
+}
 
+if (error) {
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center text-error text-lg font-semibold">
+      {error}
+    </div>
+  );
+}
   return (
     <div className="space-y-6">
       <PageHeader

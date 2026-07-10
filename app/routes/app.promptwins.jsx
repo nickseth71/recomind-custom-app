@@ -200,6 +200,7 @@ import { Link } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
+import AiSpinner from "../components/loader/AiSpinner";
 import {
   TrendingUp,
   TrendingDown,
@@ -617,7 +618,7 @@ export default function PromptWinDashboard() {
   // Filters
   const [visFilter, setVisFilter] = useState("all"); // all | HIGH | MEDIUM | LOW
   const [activeTab, setActiveTab] = useState("missing"); // missing | improve | winning | recent
-
+  const [searchTerm, setSearchTerm] = useState("");
   // Fetch store-wide dashboard
   const {
     data: raw,
@@ -635,7 +636,7 @@ export default function PromptWinDashboard() {
   const improve = dash.topImprove ?? [];
   const winning = dash.topWinning ?? [];
   const recent = dash.recentPrompts ?? [];
-
+  
   const totalMissing = missing.length;
   const totalImprove = improve.length;
   const totalWinning = winning.length;
@@ -674,22 +675,33 @@ export default function PromptWinDashboard() {
       color: "text-on-surface-variant",
     },
   ];
+  const filterItems = (items = []) => {
+  if (!searchTerm.trim()) return items;
+
+  const q = searchTerm.toLowerCase();
+
+  return items.filter(
+    (item) =>
+      item.prompt?.toLowerCase().includes(q) ||
+      item.productId?.title?.toLowerCase().includes(q)
+  );
+};
 
   const tabItems = {
     missing: {
-      items: missing,
+      items: filterItems(missing),
       emptyMsg: "No missing-visibility prompts. Your coverage is solid.",
     },
     improve: {
-      items: improve,
+      items:  filterItems(improve),
       emptyMsg: "No medium-visibility prompts right now.",
     },
     winning: {
-      items: winning,
+      items:  filterItems(winning),
       emptyMsg: "No winning prompts yet — run an analysis first.",
     },
     recent: {
-      items: filteredRecent,
+      items:  filterItems(filteredRecent),
       emptyMsg: "No recent prompts match this filter.",
     },
   };
@@ -718,14 +730,15 @@ export default function PromptWinDashboard() {
 
       {loading && (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <Loader2
+          {/* <Loader2
             size={40}
             className="animate-spin text-primary"
             strokeWidth={1.5}
           />
           <p className="font-mono-sm text-mono-sm text-secondary-fixed-dim">
             Loading prompt visibility data…
-          </p>
+          </p> */}
+          <AiSpinner label="Loading Prompt Win Dashboard" />
         </div>
       )}
 
@@ -849,33 +862,24 @@ export default function PromptWinDashboard() {
                 </div>
 
                 {/* Visibility filter — only shown on "All Recent" tab */}
-                {/* {activeTab === "recent" && (
-                  <div className="flex items-center gap-1.5 pb-3">
-                    <Filter
-                      size={12}
-                      className="text-on-surface-variant"
-                      strokeWidth={1.8}
-                    />
-                    {["all", "HIGH", "MEDIUM", "LOW"].map((v) => {
-                      const labels = {
-                        all: "All",
-                        HIGH: "Winning",
-                        MEDIUM: "Improve",
-                        LOW: "Missing",
-                      };
-                      const active = visFilter === v;
-                      return (
-                        <button
-                          key={v}
-                          onClick={() => setVisFilter(v)}
-                          className={`font-mono-sm text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-colors ${active ? "bg-primary text-on-primary border-primary" : "text-on-surface-variant border-outline-variant hover:text-on-surface"}`}
-                        >
-                          {labels[v]}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )} */}
+
+                {/* SeaRCH bar */}
+                <div className="pb-3">
+  <div className="relative w-72">
+    <Search
+      size={16}
+      className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+    />
+
+    <input
+      type="text"
+      placeholder="Search prompts..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-full rounded-xl border border-outline-variant bg-surface-container-low pl-10 pr-4 py-2 text-sm font-semibold text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary transition-colors"
+    />
+  </div>
+</div>
               </div>
 
               {/* Tab content */}

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useApi } from "../hooks/useApi";
 import { impactApi } from "../lib/api";
+import AiSpinner from "../components/loader/AiSpinner";
 
 const METRIC_ICONS = {
   Traffic: TrendingUp,
@@ -36,9 +37,11 @@ const Impact = () => {
 
   if (loading) {
     return (
+      
       <div className="flex items-center justify-center gap-2 py-20 text-on-surface-variant">
-        <Loader2 className="animate-spin font-mono-sm" size={20} />
-        Loading impact data from Shopify…
+         {/* <Loader2 className="animate-spin font-mono-sm" size={20} /> */}
+         <AiSpinner label="Loading impact data from Shopify…" />
+
       </div>
     );
   }

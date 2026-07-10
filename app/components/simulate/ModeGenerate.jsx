@@ -183,9 +183,9 @@ export default function ModeGenerate({ token }) {
                       </p>
                       <Link
                         to={`/app/promptwins/${item._id}`}
-                        className="text-primary text-sm font-semibold ml-2"
-                      >
-                        View
+                        className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-gray-300 bg-gray-100 text-gray-700 font-mono-sm text-[11px]
+                         font-bold hover:bg-gray-200 hover:text-gray-900 transition-colors">
+                        Detail
                       </Link>
                     </div>
                     <LikelihoodBadge value={item.visibility} />
@@ -238,9 +238,9 @@ export default function ModeGenerate({ token }) {
                       </p>
                       <Link
                         to={`/app/promptwins/${item._id}`}
-                        className="text-primary text-sm font-semibold ml-2"
-                      >
-                        View
+                        className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-gray-300 bg-gray-100 
+                        text-gray-700 font-mono-sm text-[11px] font-bold hover:bg-gray-200 hover:text-gray-900 transition-colors">
+                        Detail
                       </Link>
                     </div>
                     <LikelihoodBadge value={item.visibility} />
