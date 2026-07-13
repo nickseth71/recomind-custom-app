@@ -15,7 +15,7 @@ import React from "react";
 export default function HexagonSpinner({
     size = 64,
     color = "#ec4899",
-    //   trackColor = "#e5d9de", 
+    // trackColor = "#e5d9de", 
     trackColor = "#36454F", 
   speed = 1.8,
   label=""

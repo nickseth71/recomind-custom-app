@@ -509,6 +509,81 @@ export function Toast({ msg, type }) {
   );
 }
 
+/* ─── Button ─────────────────────────────────────────────────────── */
+export function Btn({ children, onClick, disabled, variant = "primary", className = "", ...props }) {
+  const variants = {
+    primary:
+      "bg-primary text-on-primary hover:opacity-90 disabled:opacity-50",
+    ghost:
+      "bg-surface-container-low text-on-surface-variant border border-outline-variant",
+    secondary:
+      "bg-secondary-container text-on-secondary-container hover:opacity-90",
+  };
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`inline-flex items-center justify-center gap-1.5 w-full px-4 py-2.5 rounded-xl text-[13px] font-bold font-mono-sm transition-all disabled:cursor-not-allowed ${
+        variants[variant] || variants.primary
+      } ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* ─── Badge — small colored pill, e.g. "JSON" / "Growth+" tags ─────── */
+export function Badge({ text, color = "#187bda" }) {
+  return (
+    <span
+      className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full"
+      style={{ color, background: `${color}1a`, border: `1px solid ${color}40` }}
+    >
+      {text}
+    </span>
+  );
+}
+
+/* ─── Spinner ────────────────────────────────────────────────────── */
+export function Spinner({ size = 16, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className="animate-spin shrink-0">
+      <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.25" strokeWidth="3" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/* ─── StatCard — icon + label + value, sits in a Card ───────────────── */
+export function StatCard({ icon: Icon, label, value, unit = "", color = "#187bda" }) {
+  return (
+    <Card>
+      <div className="p-4 flex items-center gap-3">
+        <div
+          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+          style={{ background: `${color}1a` }}
+        >
+          <Icon size={16} color={color} strokeWidth={2} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant truncate">
+            {label}
+          </p>
+          <p className="text-[18px] font-bold text-on-surface leading-tight">
+            {value}
+            {unit && (
+              <span className="text-[11px] font-semibold text-on-surface-variant ml-0.5">
+                {unit}
+              </span>
+            )}
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export const BREAKDOWN_META = {
   productClarity: { label: "Product Clarity", max: 20 },
   audienceSignals: { label: "Audience Signals", max: 15 },
