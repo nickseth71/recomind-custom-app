@@ -191,7 +191,7 @@ function PromptScoreRing({ score }) {
           <h3 className="mt-3 text-lg font-bold text-on-surface">
             {prompt.prompt}
           </h3>
-          <p className="mt-2 text-sm text-on-surface-variant">
+          <p className="mt-2 text-sm font-mono-sm text-on-surface-variant">
             Product: {product?.title ?? "—"}
           </p>
         </Card>
@@ -263,14 +263,14 @@ const heading =
           <div className="mt-3 space-y-2">
             {analysis?.comparison?.slice?.(0, 4)?.map((c, i) => (
               <div key={i} className="flex items-center justify-between">
-                <div className="text-sm text-on-surface">{c.name}</div>
+                <div className="text-sm text-on-surface font-mono-sm">{c.name}</div>
                 <div className="text-sm font-semibold text-on-surface">
                   {c.score ?? "—"}
                 </div>
               </div>
             ))}
             {!analysis?.comparison?.length && (
-              <div className="text-sm text-on-surface-variant">
+              <div className="text-sm font-mono-sm text-on-surface-variant">
                 Comparison not available
               </div>
             )}
@@ -283,7 +283,7 @@ const heading =
           <p className="text-[11px] font-semibold text-error">
             Why You're Not Ranking Higher
           </p>
-          <div className="mt-3 space-y-2 text-sm text-error">
+          <div className="mt-3 space-y-2 text-sm font-mono-sm text-error">
             {(
               prompt.missingSignals ||
               fix?.reasons ||
@@ -300,7 +300,7 @@ const heading =
               analysis?.missingSignals ||
               []
             ).length && (
-              <div className="text-on-surface-variant">
+              <div className="font-mono-sm text-on-surface-variant">
                 No obvious missing signals detected.
               </div>
             )}
@@ -311,7 +311,7 @@ const heading =
           <p className="text-[11px] font-semibold text-on-surface-variant">
             What to Improve
           </p>
-          <div className="mt-3 space-y-2 text-sm text-on-surface">
+          <div className="mt-3 space-y-2 font-mono-sm text-sm text-on-surface">
             {(
               prompt.recommendations ||
               fix?.improvements ||
@@ -328,7 +328,7 @@ const heading =
               analysis?.recommendations ||
               []
             ).length && (
-              <div className="text-on-surface-variant">
+              <div className="font-mono-sm text-on-surface-variant">
                 No improvement suggestions available.
               </div>
             )}
@@ -340,20 +340,24 @@ const heading =
             Recommended Actions
           </p>
           <div className="mt-3 space-y-3">
-            {(prompt.recommendedActions || fix?.actions || [])
+            {/* {(prompt.recommendedActions || fix?.actions || []) */}
+            {(prompt.recommendedActions?.length
+  ? prompt.recommendedActions
+  : fix?.actions || [])
               .slice(0, 6)
               .map((act, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <div className="text-sm text-on-surface">
+                  <div className="text-sm text-on-surface font-mono-sm">
                     {act.title || act}
                   </div>
-                  <button className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-on-primary">
+                  {/* <button className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-on-primary">
                     Fix Now
-                  </button>
+                  </button> */}
                 </div>
               ))}
-            {!(fix?.actions || []).length && (
-              <div className="text-on-surface-variant">
+            {/* {!(fix?.actions || []).length && ( */}
+            {!prompt.recommendedActions?.length && !fix?.actions?.length && (
+              <div className="text-on-surface-variant font-mono-sm">
                 No recommended actions available.
               </div>
             )}
@@ -366,12 +370,12 @@ const heading =
           <p className="text-[11px] font-semibold text-on-surface-variant">
             Ranking Factors
           </p>
-          <div className="mt-3 space-y-2 text-sm text-on-surface">
+          <div className="mt-3 space-y-2 text-sm font-mono-sm text-on-surface">
             {(prompt.rankingFactors || []).slice(0, 8).map((f, i) => (
               <div key={i}>• {f}</div>
             ))}
             {!prompt.rankingFactors?.length && (
-              <div className="text-on-surface-variant">
+              <div className="text-on-surface-variant font-mono-sm">
                 No ranking factors available.
               </div>
             )}
@@ -382,7 +386,7 @@ const heading =
           <p className="text-[11px] font-semibold text-on-surface-variant">
             Competitor Signals
           </p>
-          <div className="mt-3 space-y-2 text-sm text-on-surface">
+          <div className="mt-3 space-y-2 text-sm text-on-surface font-mono-sm">
             {(prompt.competitorDominating || prompt.comparison || [])
               .slice(0, 6)
               .map((c, i) => (
@@ -392,7 +396,7 @@ const heading =
               ))}
             {!(prompt.competitorDominating || prompt.comparison || [])
               .length && (
-              <div className="text-on-surface-variant">
+              <div className="text-on-surface-variant font-mono-sm">
                 No competitor data available.
               </div>
             )}
@@ -403,7 +407,7 @@ const heading =
           <p className="text-[11px] font-semibold text-on-surface-variant">
             AI Reasoning
           </p>
-          <div className="mt-3 text-sm text-on-surface">
+          <div className="mt-3 font-mono-sm text-sm text-on-surface">
             {prompt.reasoning ||
               analysis?.reasoning ||
               "No reasoning available."}

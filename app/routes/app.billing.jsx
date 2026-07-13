@@ -219,10 +219,10 @@ const usageData = billing
                 ))}
               </div>
               <button
-                className={`mt-5 w-full rounded-xl py-4 text-xl font-semibold ${
+                className={`mt-5 w-full rounded-xl py-4 cursor-pointer text-xl font-semibold ${
                   billing?.plan?.name === plan.id
                     ? "bg-[#111844] text-white"
-                    : "border border-[#3A4AA0] text-white"
+                    : "border border-[#3A4AA0] text-on-surface-variant"
                 }`}
               >
                 {billing?.plan?.name === plan.id

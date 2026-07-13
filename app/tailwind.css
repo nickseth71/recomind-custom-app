@@ -239,3 +239,15 @@ scrollbar-width: none;/* Firefox */
 display: none;/* Chrome, Safari, Opera */
 }
 }
+@layer base {
+  html,
+  body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+}

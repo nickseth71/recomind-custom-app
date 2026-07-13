@@ -22,7 +22,7 @@ const normalizeShopName = (shop) => {
 };
 
 // const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
-  const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const [isPinned, setIsPinned] = useState(false);
   const [storePlan, setStorePlan] = useState("Starter");
   const [storedShop, setStoredShop] = useState(null);
@@ -48,7 +48,6 @@ const normalizeShopName = (shop) => {
   // const Sidebar = () => {
   //   const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
-
 
   const isActive = (path) => {
     if (path === "/app") {
@@ -119,25 +118,25 @@ const normalizeShopName = (shop) => {
     //   }`}
     // >
     <aside
-  onMouseEnter={() => {
-    if (!isPinned) setSidebarOpen(true);
-  }}
-  onMouseLeave={() => {
-    if (!isPinned) setSidebarOpen(false);
-  }}
-  className={`h-screen fixed left-0 top-0 border-r border-outline-variant
+      onMouseEnter={() => {
+        if (!isPinned) setSidebarOpen(true);
+      }}
+      onMouseLeave={() => {
+        if (!isPinned) setSidebarOpen(false);
+      }}
+      className={`h-screen fixed left-0 top-0 border-r border-outline-variant
   bg-surface-container-lowest flex flex-col py-gutter px-4 z-50
   transition-all duration-300 ease-in-out
   ${sidebarOpen ? "w-56" : "w-20"}`}
->
+    >
       {/* Header */}
       <div
-        className={`mb-3 flex items-center justify-between ${!sidebarOpen && "flex-col gap-4"}`}
+        className={`w-full mb-3 flex items-center justify-start ${!sidebarOpen && "flex-col gap-4"}`}
       >
         <div
-          className={`flex items-center ${sidebarOpen ? "gap-1" : "gap-0 flex-col"}`}
+          className={`w-full h-auto flex items-center ${sidebarOpen ? "gap-1" : "gap-0 flex-col"}`}
         >
-          <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 mb-5 bg-secondary rounded-lg flex items-center justify-center shrink-0">
             <span
               className="material-symbols-outlined text-on-secondary"
               style={{ fontVariationSettings: "'FILL' 1", fontSize: "16px" }}
@@ -147,16 +146,25 @@ const normalizeShopName = (shop) => {
           </div>
           {sidebarOpen && (
             <div>
-              <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
+              {/* <h1 className="font-display-lg text-[14px] font-bold text-on-surface dark:text-on-surface leading-none">
                 RecoMind
+              </h1> */}
+              <h1 className="flex items-end leading-none tracking-[-0.03em]">
+                <span className="text-[18px] font-extrabold text-on-surface">
+                  Reco
+                </span>
+                <span className="text-[18px] text-on-surface">Mind</span>
+                <span className="ml-[1px] text-[16px] font-bold text-[#9E3A56]">
+                  .app
+                </span>
               </h1>
-              <p className="text-[8px] text-on-surface-variant uppercase tracking-widest mt-1">
-                AI Commerce Visibility
+              <p className="text-[7px] text-on-surface-variant uppercase tracking-widest mt-1">
+                AI-POWERED RECOMMENDATIONS
               </p>
             </div>
           )}
         </div>
-        <button
+        {/* <button
           // onClick={() => setSidebarOpen(!sidebarOpen)}
           onClick={() => {
   const nextPinned = !isPinned;
@@ -166,11 +174,11 @@ const normalizeShopName = (shop) => {
           className="p-1.5 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant hover:text-on-surface shrink-0"
           title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
-          {/* <ChevronLeft
+          <ChevronLeft
             size={18}
             className={`transition-transform duration-300 ${!sidebarOpen && "rotate-180"}`}
-          /> */}
-        </button>
+          />
+        </button> */}
       </div>
 
       {/* Navigation */}
@@ -199,13 +207,12 @@ const normalizeShopName = (shop) => {
       {/* Footer */}
       <div
         // className={`pt-2 border-t border-outline-variant ${sidebarOpen ? "space-y-2" : "space-y-3"}`}
-  className={`pt-2 ${
-    sidebarOpen
-      ? "border-t border-outline-variant space-y-2"
-      : "border-t-0 space-y-3"
-  }`}
-> 
-      
+        className={`pt-2 ${
+          sidebarOpen
+            ? "border-t border-outline-variant space-y-2"
+            : "border-t-0 space-y-3"
+        }`}
+      >
         {/* <button
           className={`${
             sidebarOpen ? "w-full" : "w-full"
@@ -285,56 +292,55 @@ const normalizeShopName = (shop) => {
         )}
 
         {/* store name */}
-{storedShop ? (
-  <div className="border-t border-outline-variant pt-4">
-     {/* <div className="flex items-center gap-3"> */}
-    <div
-      className={`flex items-center ${
-        sidebarOpen ? "gap-3" : "justify-center"
-      }`}
-    >
-      <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
-        {storedShop.charAt(0).toUpperCase()}
-      </div>
+        {storedShop ? (
+          <div className="border-t border-outline-variant pt-4">
+            {/* <div className="flex items-center gap-3"> */}
+            <div
+              className={`flex items-center ${
+                sidebarOpen ? "gap-3" : "justify-center"
+              }`}
+            >
+              <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
+                {storedShop.charAt(0).toUpperCase()}
+              </div>
 
-      {sidebarOpen && (
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-on-surface leading-none">
-            {storedShop}
-          </p>
-          <p className="text-xs text-on-surface-variant mt-1">
-            {storePlan.toUpperCase()}
-          </p>
-        </div>
-      )}
-    </div>
-  </div>
-) : (
-  <div className="border-t border-outline-variant pt-4">
-    {/* <div className="flex items-center gap-3"> */}
-    <div
-      className={`flex items-center ${
-        sidebarOpen ? "gap-3" : "justify-center"
-      }`}
-    >
-      <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
-        R
-      </div>
+              {sidebarOpen && (
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-on-surface leading-none">
+                    {storedShop}
+                  </p>
+                  <p className="text-xs text-on-surface-variant mt-1">
+                    {storePlan.toUpperCase()}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="border-t border-outline-variant pt-4">
+            {/* <div className="flex items-center gap-3"> */}
+            <div
+              className={`flex items-center ${
+                sidebarOpen ? "gap-3" : "justify-center"
+              }`}
+            >
+              <div className="h-10 w-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shrink-0">
+                R
+              </div>
 
-      {sidebarOpen && (
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-on-surface leading-none">
-            RecoMind
-          </p>
-          <p className="text-xs text-on-surface-variant mt-1">
-            {storePlan}
-          </p>
-        </div>
-      )}
-    </div>
-  </div>
-)}
-        
+              {sidebarOpen && (
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-on-surface leading-none">
+                    RecoMind
+                  </p>
+                  <p className="text-xs text-on-surface-variant mt-1">
+                    {storePlan}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );

@@ -527,11 +527,11 @@ function SmartPromptsPanel({ smartPrompts }) {
                   >
                     Detail
                   </Link> */}
-                 <Link
+                 {/* <Link
   to={`/app/promptwins/${p._id || p.id}`}
   className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-[#B8B8B8] bg-[#F3F3F3] text-[#555555] font-mono-sm text-[11px] font-bold hover:bg-[#E6E6E6] hover:text-[#2F2F2F] transition-all">
   Detail
-</Link>
+</Link> */}
                   {/* {isHV && (
                     <span className="font-mono-sm text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border text-green-win bg-[#00e29e]/12 border-[#00e29e]/35">
                       <Star size={8} className="inline mr-0.5" />
