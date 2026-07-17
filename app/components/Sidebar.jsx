@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import {
-  ChevronLeft,
   Archive,
   LayoutDashboard,
   Workflow,
@@ -11,6 +10,7 @@ import {
   Receipt,
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
+
 export const loader = async () => null;
 
 const normalizeShopName = (shop) => {
@@ -136,13 +136,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div
           className={`w-full h-auto flex items-center ${sidebarOpen ? "gap-1" : "gap-0 flex-col"}`}
         >
-          <div className="w-8 h-8 mb-5 bg-secondary rounded-lg flex items-center justify-center shrink-0">
-            <span
+          <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center shrink-0">
+            <img
               className="material-symbols-outlined text-on-secondary"
-              style={{ fontVariationSettings: "'FILL' 1", fontSize: "16px" }}
-            >
-              psychology
-            </span>
+              src="/recomind-logo.png"
+              alt="RecoMind Logo"
+              width={22}
+              height={22}
+            />
           </div>
           {sidebarOpen && (
             <div>

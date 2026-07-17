@@ -18,6 +18,7 @@ import {
   Chip,
   ScoreRing,
   ScoreBar,
+  Modal,
   confColors,
   impactColors,
   effortColors,
@@ -41,6 +42,22 @@ import {
   Search,
   Star,
 } from "lucide-react";
+
+// function stripHtml(value = "") {
+//   return String(value)
+//     .replace(/<[^>]+>/g, " ")
+//     .replace(/&nbsp;/gi, " ")
+//     .replace(/\s+/g, " ")
+//     .trim();
+// }
+
+function stripHtml(value = "") {
+  return String(value)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 /* ═══ OVERVIEW PANEL ═══════════════════════════════════════════ */
 function OverviewPanel({ analysis, product }) {
@@ -527,7 +544,7 @@ function SmartPromptsPanel({ smartPrompts }) {
                   >
                     Detail
                   </Link> */}
-                 {/* <Link
+                  {/* <Link
   to={`/app/promptwins/${p._id || p.id}`}
   className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-[#B8B8B8] bg-[#F3F3F3] text-[#555555] font-mono-sm text-[11px] font-bold hover:bg-[#E6E6E6] hover:text-[#2F2F2F] transition-all">
   Detail
@@ -543,7 +560,7 @@ function SmartPromptsPanel({ smartPrompts }) {
                       Hard
                     </span>
                   )}*/}
-                </div> 
+                </div>
                 {p.intent && (
                   <p className="font-mono-sm text-mono-sm text-on-surface-variant">
                     {p.intent}
@@ -765,6 +782,7 @@ export default function ProductDetail() {
   const [applyLoading, setApplyLoading] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
   const [applyErr, setApplyErr] = useState(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   const { data, loading, error, refetch } = useApi(
     token && id ? () => productApi.get(id) : null,
@@ -779,12 +797,18 @@ export default function ProductDetail() {
   const fixes = analysis?.prioritizedFixes || detail?.prioritizedFixes || [];
   const highFixCount = fixes.filter((f) => f.impact === "HIGH").length;
 
+  async function handleOpenPreview() {
+    setApplyErr(null);
+    setShowUpdateModal(true);
+  }
+
   async function handleApply() {
     setApplyLoading(true);
     setApplyErr(null);
     try {
       await productApi.optimise(id);
       setApplyDone(true);
+      setShowUpdateModal(false);
       refetch();
     } catch (e) {
       setApplyErr(e.message);
@@ -792,6 +816,17 @@ export default function ProductDetail() {
       setApplyLoading(false);
     }
   }
+
+  const previewTitle =
+    analysis?.optimizedTitle || product?.title || "Current product title";
+  const previewDescription =
+    stripHtml(analysis?.optimizedDescription || "") ||
+    "A richer, AI-ready description will be written for this product.";
+  const previewKeywords = [
+    ...(analysis?.bestFor || []),
+    ...(analysis?.intentKeywords || []),
+  ].filter(Boolean);
+  const previewFaqs = (analysis?.faq || []).filter(Boolean).slice(0, 3);
 
   const tabItems = [
     { key: "overview", label: "Overview", icon: BarChart2 },
@@ -858,7 +893,7 @@ export default function ProductDetail() {
               </span>
             ) : (
               <button
-                onClick={handleApply}
+                onClick={handleOpenPreview}
                 disabled={applyLoading}
                 className="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary font-bold rounded-xl font-mono-sm text-[13px] hover:opacity-90 transition-opacity disabled:opacity-60"
               >
@@ -882,6 +917,115 @@ export default function ProductDetail() {
           </div>
         )}
       </div>
+
+      {showUpdateModal && analysis && (
+        <Modal
+          title="What will update on Shopify"
+          onClose={() => setShowUpdateModal(false)}
+        >
+          <div className="flex flex-col gap-4">
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+              <p className="font-mono-sm text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+                Preview before applying
+              </p>
+              <div className="space-y-3">
+                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                    Title
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-on-surface">
+                    {previewTitle}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                    Description
+                  </p>
+                  <p className="mt-2 text-sm text-on-surface leading-6">
+                    {previewDescription}
+                  </p>
+                </div>
+                {previewKeywords.length > 0 && (
+                  <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                    <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                      Buyer-intent keywords
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {previewKeywords.slice(0, 8).map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 font-mono-sm text-[11px] text-on-surface-variant"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {previewFaqs.length > 0 && (
+                  <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                    <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                      FAQ items to sync
+                    </p>
+                    <ul className="mt-2 space-y-1.5 text-sm text-on-surface">
+                      {previewFaqs.map((faq) => (
+                        <li key={faq.question || faq} className="flex gap-2">
+                          <span className="text-primary">•</span>
+                          <span>{faq.question || faq}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                    Shopify fields that will change
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {["Title", "Description", "Tags", "FAQ"].map((field) => (
+                      <span
+                        key={field}
+                        className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-[11px] text-on-surface-variant"
+                      >
+                        {field}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleApply}
+                disabled={applyLoading}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity disabled:opacity-60"
+              >
+                {applyLoading ? (
+                  <Loader2
+                    size={15}
+                    className="animate-spin"
+                    strokeWidth={1.8}
+                  />
+                ) : (
+                  <WandSparkles size={15} strokeWidth={1.8} />
+                )}
+                Apply to Shopify
+              </button>
+              <button
+                onClick={() => setShowUpdateModal(false)}
+                className="px-5 py-2.5 rounded-xl font-bold text-[13px] border border-outline-variant text-on-surface-variant hover:text-on-surface transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+            {applyErr && (
+              <p className="text-error font-mono-sm text-[11px] text-center">
+                {applyErr}
+              </p>
+            )}
+          </div>
+        </Modal>
+      )}
 
       {loading && (
         <div className="flex flex-col items-center justify-center py-24 gap-4">

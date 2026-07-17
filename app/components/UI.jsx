@@ -97,7 +97,13 @@ export function BackLink({ to, children = "Back" }) {
 
 // Pill-style tab row, wrapped in glass-card so active/inactive text always
 // has a light background to sit on (matches the 30D/3M/6M selector pattern).
-export function PillTabs({ items, value, onChange, wrap = true , className = "", }) {
+export function PillTabs({
+  items,
+  value,
+  onChange,
+  wrap = true,
+  className = "",
+}) {
   return (
     <div
       className={`glass-card rounded-2xl p-1.5 flex gap-1 ${wrap ? "flex-wrap" : ""} ${className}`}
@@ -291,8 +297,8 @@ export function MiniScoreRing({ score, size = 72 }) {
   const r = size / 2 - 7,
     circ = 2 * Math.PI * r;
   // const fill = ((score ?? 0) / 100) * circ;
-    const fill = ((score ?? 0) / 100) * circ;
-    const offset = circ - fill;
+  const fill = ((score ?? 0) / 100) * circ;
+  const offset = circ - fill;
   const col = scoreColor(score ?? 0);
   return (
     <div
@@ -322,19 +328,19 @@ export function MiniScoreRing({ score, size = 72 }) {
           // style={{ filter: `drop-shadow(0 0 4px ${col})` }}
         /> */}
         <circle
-  cx={size / 2}
-  cy={size / 2}
-  r={r}
-  fill="none"
-  stroke={col}
-  strokeWidth="2"
-  strokeDasharray={circ}
-  strokeDashoffset={offset}
-  strokeLinecap="round"
-  style={{
-    transition: "stroke-dashoffset 1.2s ease",
-  }}
-/>
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={col}
+          strokeWidth="2"
+          strokeDasharray={circ}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{
+            transition: "stroke-dashoffset 1.2s ease",
+          }}
+        />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <span
@@ -376,10 +382,12 @@ export function ScoreRing({ score, size = 120 }) {
           strokeWidth="5"
           strokeDasharray={`${fill.toFixed(1)} ${circ.toFixed(1)}`}
           strokeLinecap="round"
-          style={{
-            // transition: "stroke-dasharray 1.2s ease",
-            // filter: `drop-shadow(0 0 6px ${col})`,
-          }}
+          style={
+            {
+              // transition: "stroke-dasharray 1.2s ease",
+              // filter: `drop-shadow(0 0 6px ${col})`,
+            }
+          }
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -468,7 +476,7 @@ export function Modal({ title, onClose, children, maxWidth = "max-w-lg" }) {
       onClick={onClose}
     >
       <div
-        className={`glass-card rounded-2xl w-full ${maxWidth} max-h-[90vh] overflow-y-auto`}
+        className={`glass-card rounded-2xl w-full ${maxWidth} max-h-[90vh] scrollable-container`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 pt-5 pb-4">
@@ -510,10 +518,16 @@ export function Toast({ msg, type }) {
 }
 
 /* ─── Button ─────────────────────────────────────────────────────── */
-export function Btn({ children, onClick, disabled, variant = "primary", className = "", ...props }) {
+export function Btn({
+  children,
+  onClick,
+  disabled,
+  variant = "primary",
+  className = "",
+  ...props
+}) {
   const variants = {
-    primary:
-      "bg-primary text-on-primary hover:opacity-90 disabled:opacity-50",
+    primary: "bg-primary text-on-primary hover:opacity-90 disabled:opacity-50",
     ghost:
       "bg-surface-container-low text-on-surface-variant border border-outline-variant",
     secondary:
@@ -538,7 +552,11 @@ export function Badge({ text, color = "#187bda" }) {
   return (
     <span
       className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full"
-      style={{ color, background: `${color}1a`, border: `1px solid ${color}40` }}
+      style={{
+        color,
+        background: `${color}1a`,
+        border: `1px solid ${color}40`,
+      }}
     >
       {text}
     </span>
@@ -548,15 +566,39 @@ export function Badge({ text, color = "#187bda" }) {
 /* ─── Spinner ────────────────────────────────────────────────────── */
 export function Spinner({ size = 16, color = "currentColor" }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className="animate-spin shrink-0">
-      <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.25" strokeWidth="3" />
-      <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="3" strokeLinecap="round" />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className="animate-spin shrink-0"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="9"
+        stroke={color}
+        strokeOpacity="0.25"
+        strokeWidth="3"
+      />
+      <path
+        d="M21 12a9 9 0 0 0-9-9"
+        stroke={color}
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
 /* ─── StatCard — icon + label + value, sits in a Card ───────────────── */
-export function StatCard({ icon: Icon, label, value, unit = "", color = "#187bda" }) {
+export function StatCard({
+  icon: Icon,
+  label,
+  value,
+  unit = "",
+  color = "#187bda",
+}) {
   return (
     <Card>
       <div className="p-4 flex items-center gap-3">

@@ -124,9 +124,9 @@ const Competitors = () => {
 
   const benchmark = benchmarkResponse?.data?.competitorBenchmark;
   useEffect(() => {
-  console.log("Selected Product:", selectedProductId);
-  console.log("Benchmark Response:", benchmarkResponse);
-}, [selectedProductId, benchmarkResponse]);
+    console.log("Selected Product:", selectedProductId);
+    console.log("Benchmark Response:", benchmarkResponse);
+  }, [selectedProductId, benchmarkResponse]);
   const enabled = benchmarkResponse?.data?.enabled ?? false;
   const competitorCount = benchmarkResponse?.data?.competitorCount ?? 0;
   const rows = benchmark?.competitors ?? [];
@@ -484,8 +484,8 @@ const Competitors = () => {
         </div>
       )}
 
-      {/* No benchmark yet */}
-      {!benchmarkLoading && !benchmarkError && enabled && !benchmark && (
+      {/* No benchmark yet — includes the "no analysis" 404 case */}
+      {!benchmarkLoading && enabled && (benchmarkError || !benchmark) && (
         <div
           className="rounded-xl px-6 py-8 text-center"
           style={{
@@ -494,11 +494,14 @@ const Competitors = () => {
           }}
         >
           <p className="font-semibold text-on-surface mb-2">
-            No benchmark data yet.
+            {benchmarkError
+              ? benchmarkError
+              : benchmarkResponse?.data?.message || "No benchmark data yet."}
           </p>
           <p className="text-sm text-on-surface-variant">
-            Run a product analysis first so we can generate competitor
-            benchmarks.
+            {benchmarkError
+              ? "We could not load the benchmark for this product."
+              : "Run a product analysis first so we can generate competitor benchmarks."}
           </p>
         </div>
       )}

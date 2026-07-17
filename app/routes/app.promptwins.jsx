@@ -206,6 +206,7 @@ import {
   TrendingDown,
   Minus,
   Search,
+  X,
   Target,
   AlertTriangle,
   CheckCircle2,
@@ -226,6 +227,7 @@ import {
   PageHeader,
   SBox,
   Chip,
+  useDebounced,
 } from "../components/UI";
 import { jwtDecode } from "jwt-decode";
 
@@ -613,13 +615,15 @@ export default function PromptWinDashboard() {
   const decoded = jwtDecode(token);
   const plan = decoded.storePlan;
 
-  //console.log("plan", plan);
-
   // Filters
   const [visFilter, setVisFilter] = useState("all"); // all | HIGH | MEDIUM | LOW
   const [activeTab, setActiveTab] = useState("missing"); // missing | improve | winning | recent
   const [searchTerm, setSearchTerm] = useState("");
-  // Fetch store-wide dashboard
+  const debouncedSearch = useDebounced(searchTerm, 400); // waits 400ms after typing stops
+  const isSearching = debouncedSearch.trim().length > 0;
+
+  // Fetch store-wide dashboard — drives coverage ring, plan limits, and tabs.
+  // Left untouched by search so those numbers don't jump around while typing.
   const {
     data: raw,
     loading,
@@ -627,16 +631,34 @@ export default function PromptWinDashboard() {
     refetch,
   } = useApi(token ? () => promptApi.dashboard({}) : null, [token]);
 
+  // Separate, dedicated search fetch — only runs once there's a query.
+  const {
+    data: searchRaw,
+    loading: searchLoading,
+    error: searchError,
+  } = useApi(
+    token && isSearching
+      ? () =>
+          promptApi.dashboard({
+            params: { search: debouncedSearch, searchLimit: 30 },
+          })
+      : null,
+    [token, debouncedSearch],
+  );
+
   const dash = raw?.data ?? raw ?? {};
   const counts = dash.visibilityCounts ?? {};
   const limits = dash.planLimits ?? null;
-  console.log("3. raw:", raw, "| loading:", loading, "| error:", error);
+
+  const searchDash = searchRaw?.data ?? searchRaw ?? {};
+  const searchResults = searchDash.searchResults ?? [];
+
   // Derive real totals from arrays (don't trust summary object — can be stale)
   const missing = dash.topMissing ?? [];
   const improve = dash.topImprove ?? [];
   const winning = dash.topWinning ?? [];
   const recent = dash.recentPrompts ?? [];
-  
+
   const totalMissing = missing.length;
   const totalImprove = improve.length;
   const totalWinning = winning.length;
@@ -675,33 +697,22 @@ export default function PromptWinDashboard() {
       color: "text-on-surface-variant",
     },
   ];
-  const filterItems = (items = []) => {
-  if (!searchTerm.trim()) return items;
-
-  const q = searchTerm.toLowerCase();
-
-  return items.filter(
-    (item) =>
-      item.prompt?.toLowerCase().includes(q) ||
-      item.productId?.title?.toLowerCase().includes(q)
-  );
-};
 
   const tabItems = {
     missing: {
-      items: filterItems(missing),
+      items: missing,
       emptyMsg: "No missing-visibility prompts. Your coverage is solid.",
     },
     improve: {
-      items:  filterItems(improve),
+      items: improve,
       emptyMsg: "No medium-visibility prompts right now.",
     },
     winning: {
-      items:  filterItems(winning),
+      items: winning,
       emptyMsg: "No winning prompts yet — run an analysis first.",
     },
     recent: {
-      items:  filterItems(filteredRecent),
+      items: filteredRecent,
       emptyMsg: "No recent prompts match this filter.",
     },
   };
@@ -730,14 +741,6 @@ export default function PromptWinDashboard() {
 
       {loading && (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
-          {/* <Loader2
-            size={40}
-            className="animate-spin text-primary"
-            strokeWidth={1.5}
-          />
-          <p className="font-mono-sm text-mono-sm text-secondary-fixed-dim">
-            Loading prompt visibility data…
-          </p> */}
           <AiSpinner label="Loading Prompt Win Dashboard" />
         </div>
       )}
@@ -841,7 +844,9 @@ export default function PromptWinDashboard() {
             <Card className="overflow-hidden">
               {/* Tab bar */}
               <div className="flex items-center justify-between px-5 pt-4 pb-0 border-b border-outline-variant/40 flex-wrap gap-3">
-                <div className="flex gap-0">
+                <div
+                  className={`flex gap-0 ${isSearching ? "opacity-40 pointer-events-none" : ""}`}
+                >
                   {tabs.map(({ key, label, count, color }) => {
                     const active = activeTab === key;
                     return (
@@ -861,34 +866,73 @@ export default function PromptWinDashboard() {
                   })}
                 </div>
 
-                {/* Visibility filter — only shown on "All Recent" tab */}
-
-                {/* SeaRCH bar */}
+                {/* Search bar */}
                 <div className="pb-3">
-  <div className="relative w-72">
-    <Search
-      size={16}
-      className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
-    />
-
-    <input
-      type="text"
-      placeholder="Search prompts..."
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="w-full rounded-xl border border-outline-variant bg-surface-container-low pl-10 pr-4 py-2 text-sm font-semibold text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary transition-colors"
-    />
-  </div>
-</div>
+                  <div className="relative w-72">
+                    <Search
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search prompts..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full rounded-xl border border-outline-variant bg-surface-container-low pl-10 pr-9 py-2 text-sm font-semibold text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary transition-colors"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
+                        aria-label="Clear search"
+                      >
+                        <X size={14} strokeWidth={2} />
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {/* Tab content */}
+              {/* Tab content OR search results */}
               <div className="p-5">
-                <PromptSection
-                  title={tabs.find((t) => t.key === activeTab)?.label}
-                  items={tabItems[activeTab]?.items ?? []}
-                  emptyMsg={tabItems[activeTab]?.emptyMsg ?? "No data."}
-                />
+                {isSearching ? (
+                  searchLoading ? (
+                    <div className="flex justify-center py-10">
+                      <Loader2
+                        size={22}
+                        className="animate-spin text-primary"
+                        strokeWidth={1.8}
+                      />
+                    </div>
+                  ) : searchError ? (
+                    <p className="text-error font-mono-sm text-mono-sm text-center py-6">
+                      {searchError}
+                    </p>
+                  ) : searchResults.length === 0 ? (
+                    <div className="rounded-xl border border-outline-variant/50 bg-surface-container-low/50 px-5 py-8 text-center">
+                      <p className="font-mono-sm text-mono-sm text-on-surface-variant">
+                        No prompts match "{debouncedSearch}".
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <p className="font-mono-sm text-[11px] text-on-surface-variant mb-1">
+                        {searchResults.length} result
+                        {searchResults.length !== 1 ? "s" : ""} for "
+                        {debouncedSearch}"
+                      </p>
+                      {searchResults.map((item) => (
+                        <PromptRow key={item._id} item={item} />
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  <PromptSection
+                    title={tabs.find((t) => t.key === activeTab)?.label}
+                    items={tabItems[activeTab]?.items ?? []}
+                    emptyMsg={tabItems[activeTab]?.emptyMsg ?? "No data."}
+                  />
+                )}
               </div>
             </Card>
           )}

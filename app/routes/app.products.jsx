@@ -44,6 +44,14 @@ import {
   BarChart2,
 } from "lucide-react";
 
+function stripHtml(value = "") {
+  return String(value)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /* ─── Action button — three states based on product progress ──────────── */
 function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
   if (product.analysisScore == null)
@@ -275,7 +283,6 @@ function AnalyseModal({ product, onClose, onDone }) {
                     className="animate-spin text-primary shrink-0"
                     strokeWidth={2}
                   />
-                  
                 ) : (
                   <div className="w-4 h-4 rounded-full border border-outline-variant shrink-0" />
                 )}
@@ -415,6 +422,77 @@ function AnalyseModal({ product, onClose, onDone }) {
 function OptimiseModal({ product, onClose, onDone }) {
   const [phase, setPhase] = useState("confirm");
   const [errMsg, setErrMsg] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPreview() {
+      if (!product?._id) return;
+      setPreviewLoading(true);
+      setPreview(null);
+
+      try {
+        const res = await productApi.get(product._id);
+        if (cancelled) return;
+
+        const detail = res?.data ?? res;
+        const analysis = detail?.analysis;
+        const currentDescription = stripHtml(
+          product.description ||
+            product.body_html ||
+            product.bodyHtml ||
+            product.descriptionHtml ||
+            "",
+        );
+
+        setPreview({
+          currentTitle: product.title || "Current title",
+          nextTitle:
+            analysis?.optimizedTitle || product.title || "Current title",
+          currentDescription:
+            currentDescription || "No product description available yet.",
+          nextDescription:
+            stripHtml(analysis?.optimizedDescription || "") ||
+            "A richer, AI-optimized description will be written.",
+          keywords: [
+            ...(analysis?.bestFor || []),
+            ...(analysis?.intentKeywords || []),
+          ]
+            .filter(Boolean)
+            .slice(0, 8),
+          faqs: (analysis?.faq || []).filter(Boolean).slice(0, 6),
+        });
+      } catch {
+        if (!cancelled) {
+          setPreview({
+            currentTitle: product.title || "Current title",
+            nextTitle: product.title || "Current title",
+            currentDescription:
+              stripHtml(
+                product.description ||
+                  product.body_html ||
+                  product.bodyHtml ||
+                  product.descriptionHtml ||
+                  "",
+              ) || "No product description available yet.",
+            nextDescription: "Preview unavailable right now.",
+            keywords: [],
+            faqs: [],
+          });
+        }
+      } finally {
+        if (!cancelled) setPreviewLoading(false);
+      }
+    }
+
+    loadPreview();
+    return () => {
+      cancelled = true;
+    };
+  }, [product?._id]);
+
   async function apply() {
     setPhase("applying");
     try {
@@ -441,6 +519,128 @@ function OptimiseModal({ product, onClose, onDone }) {
               .
             </p>
           </div>
+
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <p className="font-mono-sm text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+              What will update on Shopify
+            </p>
+
+            {previewLoading ? (
+              <div className="flex items-center gap-2 text-sm text-on-surface-variant">
+                <Loader2 size={14} className="animate-spin" strokeWidth={1.8} />
+                Loading update preview…
+              </div>
+            ) : preview ? (
+              <div className="space-y-3">
+                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                    Title
+                  </p>
+                  <div className="mt-2 flex flex-col gap-1.5">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                        Current
+                      </p>
+                      <p className="text-sm text-on-surface">
+                        {preview.currentTitle}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                        Will become
+                      </p>
+                      <p className="text-sm font-semibold text-on-surface">
+                        {preview.nextTitle}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                    Description
+                  </p>
+                  <div className="mt-2 flex flex-col gap-1.5">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                        Current
+                      </p>
+                      <p className="text-sm text-on-surface leading-6">
+                        {preview.currentDescription}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                        Will become
+                      </p>
+                      <p className="text-sm text-on-surface leading-6">
+                        {preview.nextDescription}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                    Buyer-intent tags
+                  </p>
+                  {preview.keywords.length > 0 ? (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {preview.keywords.map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-[11px] text-on-surface-variant"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-sm text-on-surface-variant">
+                      No extra keywords were generated for this product yet.
+                    </p>
+                  )}
+                </div>
+
+                {preview.faqs.length > 0 && (
+                  <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                    <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                      FAQ items to sync
+                    </p>
+                    <ul className="mt-2 space-y-1.5 text-sm text-on-surface">
+                      {preview.faqs.map((faq) => (
+                        <li key={faq.question || faq} className="flex gap-2">
+                          <span className="text-primary">•</span>
+                          <span>{faq.question || faq}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
+                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
+                    Shopify fields that will change
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {["Title", "Description", "Tags", "FAQ"].map((field) => (
+                      <span
+                        key={field}
+                        className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-[11px] text-on-surface-variant"
+                      >
+                        {field}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-on-surface-variant">
+                No preview data is available for this product right now.
+              </p>
+            )}
+          </div>
+
           <div className="flex gap-3">
             <button
               onClick={apply}

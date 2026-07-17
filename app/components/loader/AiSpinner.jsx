@@ -13,12 +13,12 @@ import React from "react";
  *  - speed: full loop duration in seconds (default 1.8)
  */
 export default function HexagonSpinner({
-    size = 64,
-    color = "#ec4899",
-    // trackColor = "#e5d9de", 
-    trackColor = "#36454F", 
+  size = 64,
+  color = "#ec4899",
+  // trackColor = "#e5d9de",
+  trackColor = "#36454F",
   speed = 1.8,
-  label=""
+  label = "",
 }) {
   // 6 vertices of a flat-top hexagon inscribed in a 100x100 box
   const cx = 50;
@@ -33,18 +33,18 @@ export default function HexagonSpinner({
 
   return (
     <div
-    //   style={{
-    //     display: "inline-flex",
-    //     alignItems: "center",
-    //     justifyContent: "center",
-    //     width: size,
-    //     height: size,
-    //   }}
-    style={{
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "6px",
-}}
+      //   style={{
+      //     display: "inline-flex",
+      //     alignItems: "center",
+      //     justifyContent: "center",
+      //     width: size,
+      //     height: size,
+      //   }}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+      }}
       role="status"
       aria-label="Loading"
     >
@@ -103,9 +103,7 @@ export default function HexagonSpinner({
           />
         ))}
       </svg>
-      <span className="text-[#36454F] text-sm font-body-md">
-              {label}
-            </span>
+      <span className="text-[#36454F] text-sm font-body-md">{label}</span>
 
       <style>{`
         @keyframes hex-vertex-pulse {
@@ -143,11 +141,15 @@ export function Demo() {
       </div>
       <div style={{ textAlign: "center" }}>
         <HexagonSpinner size={96} speed={1.2} />
-        <p style={{ marginTop: 12, color: "#888", fontSize: 13 }}>faster / larger</p>
+        <p style={{ marginTop: 12, color: "#888", fontSize: 13 }}>
+          faster / larger
+        </p>
       </div>
       <div style={{ textAlign: "center" }}>
         <HexagonSpinner size={48} color="#f472b6" trackColor="#f3e8eb" />
-        <p style={{ marginTop: 12, color: "#888", fontSize: 13 }}>lighter pink</p>
+        <p style={{ marginTop: 12, color: "#888", fontSize: 13 }}>
+          lighter pink
+        </p>
       </div>
     </div>
   );
