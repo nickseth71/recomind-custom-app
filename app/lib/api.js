@@ -33,6 +33,7 @@ export const productApi = {
     return request(`/products${q ? `?${q}` : ""}`);
   },
   get: (id) => request(`/products/${id}`),
+  getCompetitors: (id) => request(`/products/${id}/competitors`),
   analyse: (id) => request(`/products/${id}/analyse`, { method: "POST" }),
   analyseBulk: () => request("/products/analyse-bulk", { method: "POST" }),
   getAnalyses: (id) => request(`/products/${id}/analysis`),
@@ -47,8 +48,10 @@ export const productApi = {
 };
 
 export const promptApi = {
-  dashboard: ({ params = {} }) => { const q = new URLSearchParams(params).toString();
-    return request(`/prompts/win-dashboard${q ? `?${q}` : ""}`);},
+  dashboard: ({ params = {} }) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/prompts/win-dashboard${q ? `?${q}` : ""}`);
+  },
   simulate: (prompt, productId) =>
     request("/prompts/simulate", {
       method: "POST",
@@ -59,10 +62,26 @@ export const promptApi = {
       method: "POST",
       body: JSON.stringify({ prompt }),
     }),
+  score: (prompt, productId) =>
+    request("/prompts/score", {
+      method: "POST",
+      body: JSON.stringify({ prompt, productId }),
+    }),
   history: (params = {}) => {
     const q = new URLSearchParams(params).toString();
     return request(`/prompts/history${q ? `?${q}` : ""}`);
   },
+  getProductPrompts: (productId, params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/prompts/products/${productId}${q ? `?${q}` : ""}`);
+  },
+  generateProductPrompts: (productId, prompts = []) =>
+    request(`/prompts/products/${productId}/generate`, {
+      method: "POST",
+      body: JSON.stringify({ prompts }),
+    }),
+  getPromptFix: (promptId) => request(`/prompts/${promptId}/fix`),
+  getPrompt: (promptId) => request(`/prompts/${promptId}`),
 };
 
 export const reportApi = {
@@ -78,4 +97,27 @@ export const reportApi = {
     const q = new URLSearchParams(params).toString();
     return request(`/reports/audit-log${q ? `?${q}` : ""}`);
   },
+};
+
+export const impactApi = {
+  dashboard: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact${q ? `?${q}` : ""}`);
+  },
+  summary: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact/summary${q ? `?${q}` : ""}`);
+  },
+  products: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact/products${q ? `?${q}` : ""}`);
+  },
+  opportunities: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/impact/opportunities${q ? `?${q}` : ""}`);
+  },
+};
+export const billingApi = {
+  getPlans: () => request("/stores/plans"),
+  getBilling: () => request("/stores/billing"),
 };
