@@ -52,6 +52,7 @@ function triggerDownload(blob, filename) {
 export default function Reports() {
   const [toast, setToast] = useState(null);
   const [loadingKey, setLoadingKey] = useState(null);
+  const [auditPage, setAuditPage] = useState(1);
 
   // Store plan now comes from the actual auth'd store, not a missing prop
   const { data: storeRes } = useApi(() => storeApi.getMe(), []);
@@ -59,12 +60,14 @@ export default function Reports() {
 
   const { data: summaryRes } = useApi(() => reportApi.summary(), []);
   const { data: auditRes, loading: auditLoading } = useApi(
-    () => reportApi.auditLog({ limit: 15 }),
-    [],
+    () => reportApi.auditLog({ page: auditPage, limit: 10 }),
+    [auditPage],
   );
 
-  const s = summaryRes?.summary;
+  const s = summaryRes?.data?.summary ?? summaryRes?.summary;
   const auditLogs = auditRes?.data ?? (Array.isArray(auditRes) ? auditRes : []);
+  const pagination = auditRes?.pagination;
+  const totalPages = pagination?.totalPages || 1;
 
   function showToast(msg, type = "success") {
     setToast({ msg, type });
@@ -88,8 +91,9 @@ export default function Reports() {
     setLoadingKey("summary");
     try {
       const res = await reportApi.summary();
+      const exportPayload = res?.data?.exportData ?? res?.data ?? res;
       triggerDownload(
-        new Blob([JSON.stringify(res.data ?? res, null, 2)], {
+        new Blob([JSON.stringify(exportPayload, null, 2)], {
           type: "application/json",
         }),
         "shopmind-report.json",
@@ -287,6 +291,35 @@ export default function Reports() {
             })
           )}
         </div>
+
+        {pagination && (
+          <div className="flex flex-col gap-3 border-t border-outline-variant px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-[12px] text-on-surface-variant">
+              Showing page {pagination.page} of {totalPages} •{" "}
+              {pagination.total} total entries
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setAuditPage((page) => Math.max(1, page - 1))}
+                disabled={auditPage === 1}
+                className="rounded-md border border-outline-variant px-3 py-1.5 text-[12px] font-medium text-on-surface disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setAuditPage((page) => Math.min(totalPages, page + 1))
+                }
+                disabled={auditPage >= totalPages}
+                className="rounded-md border border-outline-variant px-3 py-1.5 text-[12px] font-medium text-on-surface disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );

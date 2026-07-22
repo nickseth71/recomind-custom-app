@@ -5,21 +5,27 @@ import Layout from "../components/Layout";
 import { EmbeddedAppProvider } from "../components/EmbeddedAppProvider";
 import { authenticate } from "../shopify.server";
 
+function getStoredShop() {
+  if (typeof window === "undefined" || !window.localStorage) return null;
+  return window.localStorage.getItem("recomind_shop");
+}
+
 export const loader = async ({ request }) => {
   console.log("[Loader] Request URL:", request.url);
   // Try to get shop from Shopify session if available
   let shop = null;
+  const localStorageShop = getStoredShop();
 
   try {
     const { session } = await authenticate.admin(request);
     if (session?.shop) {
-      shop = session.shop;
+      shop = session.shop || localStorageShop;
       console.log("[Loader] Got shop from Shopify session:", shop);
     }
   } catch (err) {
     // Session not available - check URL params
     const url = new URL(request.url);
-    shop = url.searchParams.get("shop");
+    shop = url.searchParams.get("shop") || localStorageShop;
     if (shop) {
       console.log("[Loader] Got shop from URL params:", shop);
     } else {
