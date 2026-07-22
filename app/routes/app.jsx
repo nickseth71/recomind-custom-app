@@ -11,8 +11,6 @@ function getStoredShop() {
 }
 
 export const loader = async ({ request }) => {
-  console.log("[Loader] Request URL:", request.url);
-  // Try to get shop from Shopify session if available
   let shop = null;
   const localStorageShop = getStoredShop();
 
@@ -20,17 +18,13 @@ export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     if (session?.shop) {
       shop = session.shop || localStorageShop;
-      console.log("[Loader] Got shop from Shopify session:", shop);
     }
   } catch (err) {
-    // Session not available - check URL params
+    if (err instanceof Response) {
+      throw err; // let Shopify's redirect (now handled properly by App Bridge) propagate
+    }
     const url = new URL(request.url);
     shop = url.searchParams.get("shop") || localStorageShop;
-    if (shop) {
-      console.log("[Loader] Got shop from URL params:", shop);
-    } else {
-      console.debug("[Loader] No shop in URL params either");
-    }
   }
 
   return {
