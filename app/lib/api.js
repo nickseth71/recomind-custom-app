@@ -44,6 +44,16 @@ export const productApi = {
       body: JSON.stringify({ analysisId }),
     }),
   sync: () => request("/products/sync", { method: "POST" }),
+  searchShopify: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/products/shopify-search${q ? `?${q}` : ""}`);
+  },
+  syncSelected: (shopifyProductIds) =>
+    request("/products/sync-selected", {
+      method: "POST",
+      body: JSON.stringify({ shopifyProductIds }),
+    }),
+  removeFromSync: (id) => request(`/products/${id}/sync`, { method: "DELETE" }),
   jobStatus: (jobId) => request(`/products/jobs/${jobId}`),
 };
 
