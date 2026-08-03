@@ -2,7 +2,8 @@
 // Central API client — all calls to the RecoMind Express backend
 
 const BASE =
-  import.meta.env.VITE_BASE_URL
+  import.meta.env.VITE_BASE_URL ||
+  "https://staging-recomind-api.onrender.com/recomind/v1";
 
 let currentToken = null;
 

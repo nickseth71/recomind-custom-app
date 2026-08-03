@@ -30,7 +30,9 @@ const shopify = shopifyApp({
       } = session;
 
       try {
-        const backendUrl = process.env.VITE_BASE_URL || "http://localhost:5000";
+        const backendUrl =
+          process.env.VITE_BASE_URL ||
+          "https://staging-recomind-api.onrender.com/recomind/v1";
         const response = await fetch(`${backendUrl}/stores`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
