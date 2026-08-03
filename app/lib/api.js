@@ -1,7 +1,9 @@
 // /app/lib.js/api.js
 // Central API client — all calls to the RecoMind Express backend
 
-const BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000/recomind/v1";
+const BASE =
+  import.meta.env.VITE_BASE_URL ||
+  "https://staging-recomind-api.onrender.com/recomind/v1";
 
 let currentToken = null;
 
