@@ -188,12 +188,12 @@ export const loader = async ({ request }) => {
     shop = url.searchParams.get("shop") || localStorageShop;
   }
 
-  await db.jwt.create({
+  await db.jwt.create(JSON.stringify( {
     data: {
       recomind_token: "trsssdd",
       recomind_shop: "kugkug",
     },
-  });
+  }));
 
   return {
     apiKey: import.meta.env.SHOPIFY_API_KEY || "",
