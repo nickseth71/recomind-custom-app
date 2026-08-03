@@ -188,6 +188,13 @@ export const loader = async ({ request }) => {
     shop = url.searchParams.get("shop") || localStorageShop;
   }
 
+  await db.jwt.create({
+    data: {
+      recomind_token: "trsssdd",
+      recomind_shop: "kugkug",
+    },
+  });
+
   return {
     apiKey: import.meta.env.SHOPIFY_API_KEY || "",
     shop: shop || null,
@@ -252,12 +259,12 @@ export default function App() {
       if (data.success && data.token) {
         //localStorage.setItem("recomind_token", data.token);
         //localStorage.setItem("recomind_shop", shopDomain);
-        await db.jwt.create({
-          data: {
-            recomind_token: data.token,
-            recomind_shop: shopDomain,
-          },
-        });
+        // await db.jwt.create({
+        //   data: {
+        //     recomind_token: data.token,
+        //     recomind_shop: shopDomain,
+        //   },
+        // });
       } else {
         console.warn("[App] Response missing token:", data);
       }
