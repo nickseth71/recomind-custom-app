@@ -10,7 +10,7 @@ import {
   Receipt,
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/Authcontext";
 
 export const loader = async () => null;
 

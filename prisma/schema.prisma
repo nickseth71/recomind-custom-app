@@ -31,5 +31,5 @@ model Session {
 model Jwt {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
   recomind_token  String
-  recomind_shop   String
+  recomind_shop   String @unique
 }

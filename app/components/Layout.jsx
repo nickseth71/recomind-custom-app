@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { storeApi } from "../lib/api";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/Authcontext";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import AiSpinner from "./loader/AiSpinner";
