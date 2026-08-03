@@ -27,3 +27,8 @@ model Session {
   refreshToken  String? // Refresh token for offline sessions (optional)
   refreshTokenExpires DateTime? // Expiration for the refresh token (optional)
 }
+
+model Jwt{
+  id    String    @id @default(auto()) @map("_id") @db.ObjectId // Unique session ID (MongoDB ObjectId)
+  token   String?
+}
