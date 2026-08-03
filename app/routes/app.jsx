@@ -155,7 +155,6 @@
 //   return boundary.headers(headersArgs);
 // };
 
-import { useEffect } from "react";
 import { Outlet, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import Layout from "../components/Layout";
@@ -164,114 +163,51 @@ import ProductSyncGate from "../components/ProductSyncGate";
 import { authenticate } from "../shopify.server";
 import { AnalysisTrackerProvider } from "../context/AnalysisTrackerContext";
 import GlobalAnalysisToast from "../components/GlobalAnalysisToast";
-import db from "../db.server";
+import { upsertJwt } from "../models/jwt.server";
 
-function getStoredShop() {
-  if (typeof window === "undefined" || !window.localStorage) return null;
-  return window.localStorage.getItem("recomind_shop");
-}
+// function getStoredShop() {
+//   if (typeof window === "undefined" || !window.localStorage) return null;
+//   return window.localStorage.getItem("recomind_shop");
+// }
 
 export const loader = async ({ request }) => {
   let shop = null;
-  const localStorageShop = getStoredShop();
 
   try {
     const { session } = await authenticate.admin(request);
-    if (session?.shop) {
-      shop = session.shop || localStorageShop;
-    }
+    shop = session?.shop;
   } catch (err) {
-    if (err instanceof Response) {
-      throw err; // let Shopify's redirect (now handled properly by App Bridge) propagate
-    }
+    if (err instanceof Response) throw err;
+
     const url = new URL(request.url);
-    shop = url.searchParams.get("shop") || localStorageShop;
+    shop = url.searchParams.get("shop");
   }
 
-  await db.jwt.create({
-    data: {
-      recomind_token: "trsssdd",
-      recomind_shop: "kugkug",
-    },
-  });
+  if (shop) {
+    const backendUrl =
+      import.meta.env.VITE_BASE_URL || "http://localhost:3000/recomind/v1";
+
+    const res = await fetch(
+      `${backendUrl}/stores/token?shop=${encodeURIComponent(shop)}`,
+    );
+
+    if (res.ok) {
+      const data = await res.json();
+
+      if (data.success && data.token) {
+        await upsertJwt(shop, data.token);
+      }
+    }
+  }
 
   return {
     apiKey: import.meta.env.SHOPIFY_API_KEY || "",
-    shop: shop || null,
+    shop,
   };
 };
 
 export default function App() {
-  const { apiKey, shop } = useLoaderData();
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlShop = params.get("shop");
-    const loaderShop = shop;
-
-    const existingToken = localStorage.getItem("recomind_token");
-    const storedShop = localStorage.getItem("recomind_shop");
-
-    const shopToValidate = loaderShop || urlShop || storedShop;
-    if (existingToken && (!shopToValidate || storedShop === shopToValidate)) {
-      return;
-    }
-
-    if (!shopToValidate && storedShop && existingToken) {
-      return;
-    }
-
-    const shopToUse = loaderShop || urlShop || storedShop;
-
-    if (shopToUse) {
-      fetchAndStoreToken(shopToUse);
-    } else {
-      const timer = setTimeout(() => {
-        const retryShop =
-          new URLSearchParams(window.location.search).get("shop") ||
-          localStorage.getItem("recomind_shop");
-        if (retryShop && !localStorage.getItem("recomind_token")) {
-          fetchAndStoreToken(retryShop);
-        }
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [shop]);
-
-  async function fetchAndStoreToken(shopDomain) {
-    try {
-      const backendUrl =
-        import.meta.env.VITE_BASE_URL || "http://localhost:5000";
-
-      const res = await fetch(
-        `${backendUrl}/stores/token?shop=${encodeURIComponent(shopDomain)}`,
-      );
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.warn("[App] Token fetch failed:", res.status, errorText);
-        return;
-      }
-
-      const data = await res.json();
-
-      if (data.success && data.token) {
-        //localStorage.setItem("recomind_token", data.token);
-        //localStorage.setItem("recomind_shop", shopDomain);
-        // await db.jwt.create({
-        //   data: {
-        //     recomind_token: data.token,
-        //     recomind_shop: shopDomain,
-        //   },
-        // });
-      } else {
-        console.warn("[App] Response missing token:", data);
-      }
-    } catch (err) {
-      console.error("[App] Error fetching backend token:", err.message, err);
-    }
-  }
+  const { apiKey } = useLoaderData();
 
   return (
     <EmbeddedAppProvider apiKey={apiKey}>
