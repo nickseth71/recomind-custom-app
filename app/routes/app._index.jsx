@@ -3,6 +3,7 @@ import { useApi } from "../hooks/useApi";
 import { productApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
+import {useAuth} from "../context/Authcontext"
 
 // ─── lucide-react — one named import per icon, fully tree-shakeable ──────────
 import {
@@ -482,7 +483,7 @@ export const loader = async ({ request }) => {
 export default function Index() {
   const [timePeriod, setTimePeriod] = useState("30d");
   const [promptTab, setPromptTab] = useState("missing");
-  const token = localStorage.getItem("recomind_token");
+  const { token } = useAuth();
   
   const {
     data: dashboardResponse,

@@ -3,8 +3,14 @@
 
 const BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
+let currentToken = null;
+
+export function setAuthToken(token) {
+  currentToken = token;
+}
+
 function getToken() {
-  return localStorage.getItem("recomind_token");
+  return currentToken;
 }
 
 async function request(path, options = {}) {

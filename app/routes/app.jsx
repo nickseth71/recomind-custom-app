@@ -163,7 +163,8 @@ import ProductSyncGate from "../components/ProductSyncGate";
 import { authenticate } from "../shopify.server";
 import { AnalysisTrackerProvider } from "../context/AnalysisTrackerContext";
 import GlobalAnalysisToast from "../components/GlobalAnalysisToast";
-import { upsertJwt } from "../models/jwt.server";
+import { getToken, upsertJwt } from "../models/jwt.server";
+import { AuthProvider } from "../context/Authcontext"
 
 // function getStoredShop() {
 //   if (typeof window === "undefined" || !window.localStorage) return null;
@@ -183,7 +184,13 @@ export const loader = async ({ request }) => {
     shop = url.searchParams.get("shop");
   }
 
+  let token = null;
+
   if (shop) {
+
+    token = await getToken(shop)
+
+    if(!token){
     const backendUrl =
       import.meta.env.VITE_BASE_URL || "http://localhost:3000/recomind/v1";
 
@@ -195,22 +202,26 @@ export const loader = async ({ request }) => {
       const data = await res.json();
 
       if (data.success && data.token) {
-        await upsertJwt(shop, data.token);
+        token = data.token;
+        await upsertJwt(shop, token);
       }
     }
   }
+}
 
   return {
     apiKey: import.meta.env.SHOPIFY_API_KEY || "",
     shop,
+    token,
   };
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData();
+  const { apiKey, shop, token } = useLoaderData();
 
   return (
     <EmbeddedAppProvider apiKey={apiKey}>
+      <AuthProvider shop={shop} token={token}>
       <AnalysisTrackerProvider>
         <Layout>
           <ProductSyncGate />
@@ -218,6 +229,7 @@ export default function App() {
           <Outlet />
         </Layout>
       </AnalysisTrackerProvider>
+      </AuthProvider>
     </EmbeddedAppProvider>
   );
 }

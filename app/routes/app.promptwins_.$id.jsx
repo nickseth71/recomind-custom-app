@@ -4,6 +4,7 @@
 import { useParams } from "react-router";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
+import { useAuth } from "../context/Authcontext";
 import { PageHeader, BackLink, Card, Eyebrow } from "../components/UI";
 import AiSpinner from "../components/loader/AiSpinner";
 import { AlertTriangle } from "lucide-react";
@@ -16,10 +17,7 @@ import EngineComparisonCard from "../components/promptDetail/EngineComparisonCar
 
 export default function PromptDetail() {
   const { id } = useParams();
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("recomind_token")
-      : null;
+  const { token } = useAuth();
 
   const { data, loading, error, refetch } = useApi(
     token && id ? () => promptApi.getPrompt(id) : null,

@@ -1,37 +1,28 @@
 import { useEffect, useState } from "react";
 import { storeApi } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import AiSpinner from "./loader/AiSpinner";
 
 const Layout = ({ children }) => {
+  const { token } = useAuth();
   const [store, setStore] = useState(null);
   const [booting, setBooting] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    // Read token from URL (?token=...) or localStorage
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get("token");
+   useEffect(() => {
+     if (!token) {
+       setBooting(false);
+       return;
+     }
 
-    if (urlToken) {
-      localStorage.setItem("recomind_token", urlToken);
-      window.history.replaceState({}, "", window.location.pathname);
-    }
-
-    const token = urlToken || localStorage.getItem("recomind_token");
-
-    if (!token) {
-      setBooting(false);
-      return;
-    }
-
-    storeApi
-      .getMe()
-      .then((res) => setStore(res.data ?? res))
-      .catch(() => {})
-      .finally(() => setBooting(false));
-  }, []);
+     storeApi
+       .getMe()
+       .then((res) => setStore(res.data ?? res))
+       .catch(() => {})
+       .finally(() => setBooting(false));
+   }, [token]);
 
   // Listen for sidebar state changes from localStorage or context
   useEffect(() => {

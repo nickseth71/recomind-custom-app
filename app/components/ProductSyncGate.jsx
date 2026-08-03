@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { storeApi } from "../lib/api";
 import ProductSyncModal from "./ProductSyncModal";
+import {useAuth} from "../context/Authcontext"
 
 /**
  * ProductSyncGate
@@ -15,6 +16,7 @@ import ProductSyncModal from "./ProductSyncModal";
  * the Products page) can trigger the same modal later.
  */
 export default function ProductSyncGate() {
+  const {token} = useAuth();
   const [open, setOpen] = useState(false);
   const [syncSlots, setSyncSlots] = useState(null);
   const [checked, setChecked] = useState(false);
@@ -37,22 +39,24 @@ export default function ProductSyncGate() {
   useEffect(() => {
     // Poll briefly for the token to appear (it's set async by app.jsx's
     // fetchAndStoreToken), then do the actual check once.
-    if (localStorage.getItem("recomind_token")) {
-      checkSyncStatus();
-      return;
-    }
-    const interval = setInterval(() => {
-      if (localStorage.getItem("recomind_token")) {
-        clearInterval(interval);
-        checkSyncStatus();
-      }
-    }, 500);
-    const timeout = setTimeout(() => clearInterval(interval), 10000);
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, []);
+    // if (localStorage.getItem("recomind_token")) {
+    //   checkSyncStatus();
+    //   return;
+    // }
+    // const interval = setInterval(() => {
+    //   if (localStorage.getItem("recomind_token")) {
+    //     clearInterval(interval);
+    //     checkSyncStatus();
+    //   }
+    // }, 500);
+    // const timeout = setTimeout(() => clearInterval(interval), 10000);
+    // return () => {
+    //   clearInterval(interval);
+    //   clearTimeout(timeout);
+    // };
+    if(!token) return;
+    checkSyncStatus();
+  }, [token]);
 
   useEffect(() => {
     function handleManualOpen() {

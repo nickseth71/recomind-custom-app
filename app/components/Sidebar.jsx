@@ -10,6 +10,7 @@ import {
   Receipt,
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../context/AuthContext";
 
 export const loader = async () => null;
 
@@ -23,6 +24,7 @@ const normalizeShopName = (shop) => {
 
 // const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+  const { token: existingToken, shop } = useAuth();
   const [isPinned, setIsPinned] = useState(false);
   const [storePlan, setStorePlan] = useState("Starter");
   const [storedShop, setStoredShop] = useState(null);
@@ -30,8 +32,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const existingToken = localStorage.getItem("recomind_token");
-    const shop = localStorage.getItem("recomind_shop");
+    // const existingToken = localStorage.getItem("recomind_token");
+    // const shop = localStorage.getItem("recomind_shop");
 
     let decodedToken = null;
     try {

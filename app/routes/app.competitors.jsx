@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useApi } from "../hooks/useApi";
+import { useAuth } from "../context/Authcontext";
 import { productApi } from "../lib/api";
 
 // ─── Value renderer ───────────────────────────────────────────
@@ -55,10 +56,7 @@ function CellValue({ value, isYou, isScoreRow, isReviewRow }) {
 
 // ─── Main Component ───────────────────────────────────────────
 const Competitors = () => {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("recomind_token")
-      : null;
+  const { token } = useAuth();
 
   const [selectedProductId, setSelectedProductId] = useState("");
   const [productPage, setProductPage] = useState(1);

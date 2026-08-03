@@ -7,6 +7,7 @@ import { Link } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
+import {useAuth} from "../context/Authcontext"
 import AiSpinner from "../components/loader/AiSpinner";
 import ProgressCircle from "../components/ProgressCircle";
 import PromptRow from "../components/PromptRow";
@@ -120,7 +121,7 @@ function PlanBar({ limits, plan }) {
 
 /* ═══ MAIN PAGE ════════════════════════════════════════════════ */
 export default function PromptWinDashboard() {
-  const token = localStorage.getItem("recomind_token");
+  const { token } = useAuth();
   const decoded = jwtDecode(token);
   const plan = decoded.storePlan;
 

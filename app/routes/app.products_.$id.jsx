@@ -8,6 +8,7 @@ import { productApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { jwtDecode } from "jwt-decode";
 import { ProductThumb } from "../components/UI";
+import { useAuth } from "../context/Authcontext";
 import {
   Card,
   Divider,
@@ -773,7 +774,7 @@ export const loader = async () => null;
 /* ═══ PRODUCT DETAIL PAGE ══════════════════════════════════════ */
 export default function ProductDetail() {
   const { id } = useParams();
-  const token = localStorage.getItem("recomind_token");
+  const { token } = useAuth();
   console.log(token);
   const decoded = token ? jwtDecode(token) : null;
   const storePlan = decoded?.storePlan?.toLowerCase(); //added

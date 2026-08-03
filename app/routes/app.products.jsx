@@ -1617,6 +1617,7 @@ import {
   WandSparkles,
   BarChart2,
 } from "lucide-react";
+import {useAuth} from "../context/Authcontext"
 
 function stripHtml(value = "") {
   return String(value)
@@ -2727,7 +2728,7 @@ export const loader = async () => null;
 
 /* ═══ PRODUCTS PAGE ════════════════════════════════════════════ */
 export default function Products() {
-  const token = localStorage.getItem("recomind_token");
+  const { token } = useAuth();
   const {
     startBulkAnalysis,
     activeBatch,

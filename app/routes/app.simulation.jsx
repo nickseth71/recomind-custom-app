@@ -3,6 +3,7 @@ import { useState } from "react";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { PageHeader } from "../components/UI";
+import { useAuth } from "../context/Authcontext";
 import AiSpinner from "../components/loader/AiSpinner";
 
 import ModeSimulate from "../components/simulate/ModeSimulate";
@@ -19,11 +20,7 @@ const MODES = [
 ];
 
 export default function Simulate() {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("recomind_token")
-      : null;
-
+  const { token } = useAuth();
   const [mode, setMode] = useState("simulate");
 
   // const { data: historyRes, refetch: refetchHistory } = useApi(
