@@ -162,6 +162,8 @@ import Layout from "../components/Layout";
 import { EmbeddedAppProvider } from "../components/EmbeddedAppProvider";
 import ProductSyncGate from "../components/ProductSyncGate";
 import { authenticate } from "../shopify.server";
+import { AnalysisTrackerProvider } from "../context/AnalysisTrackerContext";
+import GlobalAnalysisToast from "../components/GlobalAnalysisToast";
 
 function getStoredShop() {
   if (typeof window === "undefined" || !window.localStorage) return null;
@@ -259,10 +261,13 @@ export default function App() {
 
   return (
     <EmbeddedAppProvider apiKey={apiKey}>
-      <Layout>
-        <ProductSyncGate />
-        <Outlet />
-      </Layout>
+      <AnalysisTrackerProvider>
+        <Layout>
+          <ProductSyncGate />
+          <GlobalAnalysisToast />
+          <Outlet />
+        </Layout>
+      </AnalysisTrackerProvider>
     </EmbeddedAppProvider>
   );
 }

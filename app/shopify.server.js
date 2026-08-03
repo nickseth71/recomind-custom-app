@@ -20,14 +20,28 @@ const shopify = shopifyApp({
   hooks: {
     afterAuth: async ({ session }) => {
       console.log("DEBUGSTATEMENT afterAuth", session);
-      const { shop, accessToken, scope } = session;
+      const {
+        shop,
+        accessToken,
+        scope,
+        refreshToken,
+        expires,
+        refreshTokenExpires,
+      } = session;
 
       try {
         const backendUrl = process.env.VITE_BASE_URL || "http://localhost:5000";
         const response = await fetch(`${backendUrl}/stores`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ shop, accessToken, scope }),
+          body: JSON.stringify({
+            shop,
+            accessToken,
+            scope,
+            refreshToken,
+            expiresAt: expires ? new Date(expires).toISOString() : undefined,
+            refreshTokenExpiresAt: refreshTokenExpires ? new Date(refreshTokenExpires).toISOString() : undefined,
+          }),
         });
 
         if (response.ok) {

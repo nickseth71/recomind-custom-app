@@ -2,7 +2,7 @@
 
 client_id = "56333f90e32fd303bab3a2668a834bfe"
 name = "RecoMind"
-application_url = "https://example.com"
+application_url = "https://recomindai.onrender.com"
 embedded = true
 
 [build]
@@ -17,4 +17,4 @@ api_version = "2026-07"
 scopes = "write_products,read_reports,read_orders,read_markets"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://recomindai.onrender.com" ]

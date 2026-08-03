@@ -222,7 +222,7 @@ function OverviewPanel({ analysis, product }) {
 }
 
 /* ═══ INTELLIGENCE PANEL ════════════════════════════════════════ */
-function IntelligencePanel({ interpretation }) {
+function IntelligencePanel({ interpretation, plan }) {
   if (!interpretation?.productIdentity)
     return (
       <p className="font-mono-sm text-mono-sm text-on-surface-variant text-center py-16">
@@ -375,36 +375,37 @@ function IntelligencePanel({ interpretation }) {
         </SBox>
       )}
 
-      {(comp.directCompetitors?.length > 0 ||
-        comp.differentiators?.length > 0) && (
-        <div className="grid grid-cols-2 gap-4">
-          {comp.directCompetitors?.length > 0 && (
-            <SBox
-              label="Direct Competitors"
-              labelClass="text-on-secondary-container"
-            >
-              <div className="flex flex-wrap">
-                {comp.directCompetitors.map((c) => (
-                  <Chip key={c} text={c} />
-                ))}
-              </div>
-            </SBox>
-          )}
-          {comp.differentiators?.length > 0 && (
-            <SBox label="Differentiators" labelClass="text-green-win">
-              {comp.differentiators.map((d) => (
-                <div
-                  key={d}
-                  className="flex gap-2 py-1.5 font-mono-sm text-mono-sm text-on-surface border-b border-outline-variant/30 last:border-0"
-                >
-                  <span className="text-green-win shrink-0">✓</span>
-                  {d}
+      {plan !== "starter" &&
+        (comp.directCompetitors?.length > 0 ||
+          comp.differentiators?.length > 0) && (
+          <div className="grid grid-cols-2 gap-4">
+            {comp.directCompetitors?.length > 0 && (
+              <SBox
+                label="Direct Competitors"
+                labelClass="text-on-secondary-container"
+              >
+                <div className="flex flex-wrap">
+                  {comp.directCompetitors.map((c) => (
+                    <Chip key={c} text={c} />
+                  ))}
                 </div>
-              ))}
-            </SBox>
-          )}
-        </div>
-      )}
+              </SBox>
+            )}
+            {comp.differentiators?.length > 0 && (
+              <SBox label="Differentiators" labelClass="text-green-win">
+                {comp.differentiators.map((d) => (
+                  <div
+                    key={d}
+                    className="flex gap-2 py-1.5 font-mono-sm text-mono-sm text-on-surface border-b border-outline-variant/30 last:border-0"
+                  >
+                    <span className="text-green-win shrink-0">✓</span>
+                    {d}
+                  </div>
+                ))}
+              </SBox>
+            )}
+          </div>
+        )}
 
       {gaps.criticalGaps?.length > 0 && (
         <div className="rounded-xl border border-error/20 bg-error/5 p-5">
@@ -1141,7 +1142,10 @@ export default function ProductDetail() {
               <OverviewPanel analysis={analysis} product={product} />
             )}
             {tab === "intelligence" && (
-              <IntelligencePanel interpretation={interpretation} />
+              <IntelligencePanel
+                interpretation={interpretation}
+                plan={storePlan}
+              />
             )}
             {tab === "prompts" && (
               <SmartPromptsPanel smartPrompts={smartPrompts} />

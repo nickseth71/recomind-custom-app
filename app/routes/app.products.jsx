@@ -1576,7 +1576,9 @@ import { Link, useNavigate } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi, promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
+import { useAnalysisTracker } from "../context/AnalysisTrackerContext";
 import AiSpinner from "../components/loader/AiSpinner";
+import Pagination from "../components/Pagination";
 import {
   Card,
   Divider,
@@ -1624,8 +1626,111 @@ function stripHtml(value = "") {
     .trim();
 }
 
+/* ─── Bulk analyse button — shows a live progress bar in place of the
+   button itself while a batch is running, in either visual variant ──── */
+function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
+  const { activeBatch } = useAnalysisTracker();
+
+  if (activeBatch) {
+    const pct = Math.round(
+      ((activeBatch.completed + activeBatch.failed) / activeBatch.total) * 100,
+    );
+    const label = `Analysing ${activeBatch.completed + activeBatch.failed}/${activeBatch.total}…`;
+    if (variant === "cta") {
+      return (
+        <div className="flex flex-col gap-1.5 min-w-[220px]">
+          <div className="flex items-center gap-2 font-mono-sm text-[12px] font-bold text-on-surface">
+            <Loader2
+              size={14}
+              className="animate-spin text-primary shrink-0"
+              strokeWidth={2}
+            />
+            {label}
+          </div>
+          <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-all duration-500"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="flex flex-col gap-1 min-w-[160px] px-4 py-1.5 rounded-xl bg-primary/10 border border-primary/25">
+        <span className="flex items-center gap-1.5 font-label-md text-[11px] font-bold text-primary">
+          <Loader2
+            size={12}
+            className="animate-spin shrink-0"
+            strokeWidth={2.2}
+          />
+          {label}
+        </span>
+        <div className="h-1 w-full bg-primary/15 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === "cta") {
+    return (
+      <button
+        onClick={onClick}
+        disabled={starting}
+        className="flex items-center gap-2 px-5 py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 font-label-md text-label-md"
+      >
+        {starting ? (
+          <Loader2 size={15} className="animate-spin" strokeWidth={1.8} />
+        ) : (
+          <Play size={15} strokeWidth={1.8} />
+        )}
+        Run Bulk Analysis
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={starting}
+      className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(17,24,68,0.35)] disabled:opacity-50 font-label-md text-label-md"
+    >
+      {starting ? (
+        <Loader2
+          size={16}
+          className="animate-spin shrink-0"
+          strokeWidth={1.8}
+        />
+      ) : (
+        <Zap size={16} strokeWidth={1.8} className="shrink-0" />
+      )}
+      Bulk Analyse
+    </button>
+  );
+}
+
 /* ─── Action button — three states based on product progress ──────────── */
 function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
+  const { getProductJob } = useAnalysisTracker();
+  const activeJob = getProductJob(product._id);
+
+  if (activeJob) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary/10 text-primary border border-primary/25">
+        <Loader2
+          size={12}
+          className="animate-spin shrink-0"
+          strokeWidth={2.2}
+        />
+        Analysing…
+      </span>
+    );
+  }
+
   if (product.analysisScore == null)
     return (
       <button
@@ -1749,80 +1854,75 @@ function ConfirmAnalyseModal({ product, onClose, onConfirm }) {
 
 /* ═══ ANALYSE MODAL ════════════════════════════════════════════ */
 function AnalyseModal({ product, onClose, onDone }) {
-  const [phase, setPhase] = useState("queuing");
+  const { startSingleAnalysis, jobs, getProductJob } = useAnalysisTracker();
+  const [jobId, setJobId] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [errMsg, setErrMsg] = useState(null);
-  const [pollCount, setPoll] = useState(0);
-  const pollRef = useRef(null),
-    timeoutRef = useRef(null);
-  const lastStatus = useRef(null),
-    running = useRef(false);
+  const [phase, setPhase] = useState("queuing"); // queuing | polling | done | error
+  const startedRef = useRef(false);
+  const fetchedRef = useRef(false);
 
-  useEffect(() => {
-    startAnalysis();
-    return () => {
-      clearInterval(pollRef.current);
-      clearTimeout(timeoutRef.current);
-    };
-  }, []); // eslint-disable-line
-
-  async function startAnalysis() {
-    if (running.current) return;
-    running.current = true;
-    setPhase("queuing");
+  async function beginTracking() {
+    startedRef.current = true;
     setErrMsg(null);
-    setPoll(0);
+    // If a job is already tracked for this product (e.g. the modal was
+    // reopened, or this product was swept up in a bulk run), attach to
+    // it instead of starting a duplicate analysis.
+    const existing = getProductJob(product._id);
+    if (existing) {
+      setJobId(existing.jobId);
+      setPhase("polling");
+      return;
+    }
     try {
-      const res = await productApi.analyse(product._id);
-      const jobId = res.data?.jobId;
-      if (!jobId && res.data?.usingCached) {
-        setAnalysis(res.data.analysis);
+      const res = await startSingleAnalysis(product);
+      if (res.usingCached) {
+        setAnalysis(res.analysis);
         setPhase("done");
-        running.current = false;
         return;
       }
-      if (!jobId) throw new Error("No job ID returned");
+      setJobId(res.jobId);
       setPhase("polling");
-      pollRef.current = setInterval(async () => {
-        try {
-          const status = await productApi.jobStatus(jobId);
-          const s = status.data?.status;
-          lastStatus.current = s;
-          setPoll((c) => c + 1);
-          if (s === "completed") {
-            clearInterval(pollRef.current);
-            clearTimeout(timeoutRef.current);
-            setTimeout(async () => {
-              const full = await productApi.get(product._id);
-              setAnalysis(full.data?.analysis);
-              setPhase("done");
-            }, 600);
-          } else if (s === "failed" || s === "not_found") {
-            clearInterval(pollRef.current);
-            clearTimeout(timeoutRef.current);
-            setErrMsg(status.data?.failReason || "Analysis failed.");
-            setPhase("error");
-            running.current = false;
-          }
-        } catch {
-          /* blip */
-        }
-      }, 2000);
-      timeoutRef.current = setTimeout(() => {
-        clearInterval(pollRef.current);
-        setErrMsg(
-          ["waiting", "delayed", "paused"].includes(lastStatus.current)
-            ? "Job queued — ensure npm run worker is running."
-            : "Analysis timed out.",
-        );
-        setPhase("error");
-        running.current = false;
-      }, 120_000);
     } catch (e) {
       setErrMsg(e.message);
       setPhase("error");
-      running.current = false;
     }
+  }
+
+  useEffect(() => {
+    if (startedRef.current) return;
+    beginTracking();
+  }, []); // eslint-disable-line
+
+  // This job keeps polling in the global tracker even if this modal
+  // unmounts — closing the modal never stops or resets progress. We just
+  // read whatever the tracker currently knows about it.
+  const job = jobId ? jobs[jobId] : null;
+  const pollCount = job?.pollCount ?? 0;
+
+  useEffect(() => {
+    if (!job || fetchedRef.current) return;
+    if (job.status === "completed") {
+      fetchedRef.current = true;
+      (async () => {
+        const full = await productApi.get(product._id);
+        setAnalysis(full.data?.analysis);
+        setPhase("done");
+      })();
+    } else if (job.status === "failed") {
+      fetchedRef.current = true;
+      setErrMsg(job.failReason || "Analysis failed.");
+      setPhase("error");
+    }
+  }, [job?.status]); // eslint-disable-line
+
+  function retry() {
+    startedRef.current = false;
+    fetchedRef.current = false;
+    setAnalysis(null);
+    setJobId(null);
+    setPhase("queuing");
+    beginTracking();
   }
 
   const stages = [
@@ -1874,6 +1974,12 @@ function AnalyseModal({ product, onClose, onDone }) {
           <p className="font-mono-sm text-mono-sm text-on-surface-variant text-center">
             Takes 15–30 seconds · {pollCount} checks
           </p>
+          <button
+            onClick={onClose}
+            className="self-center font-mono-sm text-[11px] font-semibold text-on-surface-variant hover:text-on-surface transition-colors"
+          >
+            Close — keep analysing in the background
+          </button>
         </div>
       )}
       {phase === "error" && (
@@ -1883,10 +1989,7 @@ function AnalyseModal({ product, onClose, onDone }) {
             {errMsg}
           </p>
           <button
-            onClick={() => {
-              running.current = false;
-              startAnalysis();
-            }}
+            onClick={retry}
             className="px-6 py-2 rounded-xl font-bold border border-error/40 text-error bg-error/10 hover:bg-error/20 transition-all text-[13px]"
           >
             Retry
@@ -2625,6 +2728,11 @@ export const loader = async () => null;
 /* ═══ PRODUCTS PAGE ════════════════════════════════════════════ */
 export default function Products() {
   const token = localStorage.getItem("recomind_token");
+  const {
+    startBulkAnalysis,
+    activeBatch,
+    showToast: trackerToast,
+  } = useAnalysisTracker();
 
   const [page, setPage] = useState(1),
     [sort, setSort] = useState("score_asc");
@@ -2636,23 +2744,29 @@ export default function Products() {
     [simulateTarget, setSimulateTarget] = useState(null);
   const [toast, setToast] = useState(null),
     [syncLoading, setSyncLoading] = useState(false),
-    [bulkLoading, setBulkLoading] = useState(false);
+    [bulkStarting, setBulkStarting] = useState(false);
 
   const dq = useDebounced(query, 220);
-  const params = { page, sort, limit: 25 };
+  const params = { page, sort, limit: 10 };
   if (statusFilter === "optimized") params.optimized = "true";
   if (statusFilter === "unoptimized") params.optimized = "false";
+  if (dq.trim()) params.search = dq.trim();
+
+  // A new search term invalidates whatever page you were on — landing on
+  // page 3 of a search that only has 1 page of results shows an empty list.
+  useEffect(() => {
+    setPage(1);
+  }, [dq]);
 
   const { data, loading, error, refetch } = useApi(
     token ? () => productApi.list(params) : null,
-    [token, page, sort, statusFilter],
+    [token, page, sort, statusFilter, dq],
   );
   const { data: countAll } = useApi(
     token ? () => productApi.list({ page: 1, limit: 20 }) : null,
     [token],
   );
 
-  console.log("countAll", countAll);
   const { data: countOpt } = useApi(
     token
       ? () => productApi.list({ page: 1, limit: 1, optimized: "true" })
@@ -2665,6 +2779,27 @@ export default function Products() {
       : null,
     [token],
   );
+
+  // Refetch the list whenever products get synced (ProductSyncModal) or an
+  // analysis (single or bulk) finishes anywhere — including if it finished
+  // while the user was on a different page and just navigated back here.
+  useEffect(() => {
+    function onProductsSynced() {
+      refetch();
+    }
+    function onAnalysisUpdated() {
+      refetch();
+    }
+    window.addEventListener("recomind:products-synced", onProductsSynced);
+    window.addEventListener("recomind:analysis-updated", onAnalysisUpdated);
+    return () => {
+      window.removeEventListener("recomind:products-synced", onProductsSynced);
+      window.removeEventListener(
+        "recomind:analysis-updated",
+        onAnalysisUpdated,
+      );
+    };
+  }, [refetch]);
 
   function showToast(msg, type = "success") {
     setToast({ msg, type });
@@ -2692,14 +2827,17 @@ export default function Products() {
     }
   }
   async function handleBulkAnalyse() {
-    setBulkLoading(true);
+    if (activeBatch) return; // a batch is already running — button is disabled anyway
+    setBulkStarting(true);
     try {
-      const r = await productApi.analyseBulk();
-      showToast(r.message || "Bulk analysis queued");
+      await startBulkAnalysis();
+      // The tracker's own toast covers "started"/"no products to analyse";
+      // no local toast needed here, and completion fires its own toast
+      // automatically once every job in the batch is done — from any page.
     } catch (e) {
-      showToast(e.message, "error");
+      trackerToast(e.message, "error");
     } finally {
-      setBulkLoading(false);
+      setBulkStarting(false);
     }
   }
 
@@ -2711,18 +2849,6 @@ export default function Products() {
   const avgScore = data?.avgScore,
     critCount = data?.criticalCount;
   const thisTabTotal = pagination?.total ?? products.length;
-
-  const filtered = products.filter((p) => {
-    const q = dq.trim().toLowerCase();
-    return (
-      !q ||
-      [p.title, p.vendor, p.productType]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(q)
-    );
-  });
 
   const tabItems = [
     { key: "all", label: "All Products", badge: totalCount },
@@ -2755,22 +2881,11 @@ export default function Products() {
               )}
               Sync Shopify
             </button>
-            <button
+            <BulkAnalyseButton
               onClick={handleBulkAnalyse}
-              disabled={bulkLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(17,24,68,0.35)] disabled:opacity-50 font-label-md text-label-md"
-            >
-              {bulkLoading ? (
-                <Loader2
-                  size={16}
-                  className="animate-spin shrink-0"
-                  strokeWidth={1.8}
-                />
-              ) : (
-                <Zap size={16} strokeWidth={1.8} className="shrink-0" />
-              )}
-              Bulk Analyse
-            </button>
+              starting={bulkStarting}
+              variant="compact"
+            />
           </>
         }
       />
@@ -2912,7 +3027,7 @@ export default function Products() {
                     </div>
                   </td>
                 </tr>
-              ) : filtered.length === 0 ? (
+              ) : products.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-16 text-center">
                     <div className="flex flex-col items-center gap-4">
@@ -2948,7 +3063,7 @@ export default function Products() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((p) => (
+                products.map((p) => (
                   <ProductRow
                     key={p._id}
                     product={p}
@@ -2966,46 +3081,18 @@ export default function Products() {
           <p className="font-mono-sm text-mono-sm text-on-surface-variant">
             Showing{" "}
             <span className="font-bold text-on-surface">
-              {filtered.length === 0
+              {products.length === 0
                 ? 0
-                : `${(page - 1) * 25 + 1}–${Math.min(page * 25, thisTabTotal)}`}
+                : `${(page - 1) * 10 + 1}–${Math.min(page * 10, thisTabTotal)}`}
             </span>{" "}
             of <span className="font-bold text-on-surface">{thisTabTotal}</span>
           </p>
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center gap-1.5">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-                className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant disabled:opacity-30 transition-colors"
-              >
-                <ChevronLeft size={16} strokeWidth={2} />
-              </button>
-              {Array.from(
-                { length: Math.min(5, pagination.totalPages) },
-                (_, i) => i + 1,
-              ).map((pg) => (
-                <button
-                  key={pg}
-                  onClick={() => setPage(pg)}
-                  className={`w-7 h-7 rounded-lg font-mono-sm text-[11px] font-bold transition-colors ${page === pg ? "bg-primary text-on-primary" : "hover:bg-surface-container text-on-surface"}`}
-                >
-                  {pg}
-                </button>
-              ))}
-              {pagination.totalPages > 5 && (
-                <span className="font-mono-sm text-mono-sm text-on-surface-variant px-1">
-                  …
-                </span>
-              )}
-              <button
-                disabled={page === pagination.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant disabled:opacity-30 transition-colors"
-              >
-                <ChevronRight size={16} strokeWidth={2} />
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={pagination.totalPages}
+              onChange={setPage}
+            />
           )}
         </div>
       </Card>
@@ -3042,22 +3129,11 @@ export default function Products() {
               )}
             </p>
             <div className="flex gap-3">
-              <button
+              <BulkAnalyseButton
                 onClick={handleBulkAnalyse}
-                disabled={bulkLoading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 font-label-md text-label-md"
-              >
-                {bulkLoading ? (
-                  <Loader2
-                    size={15}
-                    className="animate-spin"
-                    strokeWidth={1.8}
-                  />
-                ) : (
-                  <Play size={15} strokeWidth={1.8} />
-                )}
-                Run Bulk Analysis
-              </button>
+                starting={bulkStarting}
+                variant="cta"
+              />
               <button className="flex items-center gap-2 px-5 py-2.5 border border-outline-variant text-on-surface font-bold rounded-xl hover:bg-surface-container transition-colors font-label-md text-label-md">
                 <Download size={15} strokeWidth={1.8} />
                 Export Report

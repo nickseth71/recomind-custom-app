@@ -70,11 +70,7 @@ export function PageHeader({ title, subtitle, actions }) {
         <h1 className="font-headline-lg text-headline-lg text-on-surface">
           {title}
         </h1>
-        {subtitle && (
-          <p className="text-secondary-fixed-dim mt-1 text-body-md">
-            {subtitle}
-          </p>
-        )}
+        {subtitle && <p className="text-black mt-1 text-body-md">{subtitle}</p>}
       </div>
       {actions && <div className="flex gap-2 shrink-0">{actions}</div>}
     </div>
@@ -279,7 +275,7 @@ export function ScoreBar({ value, max }) {
   const pct = Math.min(100, Math.round((value / max) * 100));
   const col = pct >= 70 ? "#00e29e" : pct >= 40 ? "#e9ba00" : "#ba1a1a";
   return (
-    <div className="h-1.5 rounded-full overflow-hidden bg-outline-variant flex-1">
+    <div className="h-1.5 rounded-full overflow-hidden bg-[#fff8f1] flex-1">
       <div
         className="h-full rounded-full"
         style={{
