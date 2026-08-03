@@ -122,7 +122,7 @@ function PlanBar({ limits, plan }) {
 /* ═══ MAIN PAGE ════════════════════════════════════════════════ */
 export default function PromptWinDashboard() {
   const { token } = useAuth();
-  const decoded = jwtDecode(token);
+  const decoded = token ? jwtDecode(token) : {};
   const plan = decoded.storePlan;
 
   const [activeTab, setActiveTab] = useState("missing");

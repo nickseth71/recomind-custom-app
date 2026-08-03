@@ -164,7 +164,7 @@ import { authenticate } from "../shopify.server";
 import { AnalysisTrackerProvider } from "../context/AnalysisTrackerContext";
 import GlobalAnalysisToast from "../components/GlobalAnalysisToast";
 import { getToken, upsertJwt } from "../models/jwt.server";
-import { AuthProvider } from "../context/Authcontext"
+import { AuthProvider } from "../context/Authcontext";
 
 // function getStoredShop() {
 //   if (typeof window === "undefined" || !window.localStorage) return null;
@@ -187,30 +187,62 @@ export const loader = async ({ request }) => {
   let token = null;
 
   if (shop) {
-
-    token = await getToken(shop)
-
-    if(!token){
-    const backendUrl =
-      process.env.VITE_BASE_URL || "http://localhost:3000/recomind/v1";
-
-    const res = await fetch(
-      `${backendUrl}/stores/token?shop=${encodeURIComponent(shop)}`,
+    token = await getToken(shop);
+    console.log(
+      `[app.jsx loader] getToken(${shop}) from DB ->`,
+      token ? "found" : "not found",
     );
 
-    if (res.ok) {
-      const data = await res.json();
+    if (!token) {
+      const backendUrl =
+        process.env.VITE_BASE_URL || "http://localhost:3000/recomind/v1";
+      const fetchUrl = `${backendUrl}/stores/token?shop=${encodeURIComponent(shop)}`;
+      console.log(`[app.jsx loader] Fetching token from backend: ${fetchUrl}`);
 
-      if (data.success && data.token) {
-        token = data.token;
-        await upsertJwt(shop, token);
+      try {
+        const res = await fetch(fetchUrl);
+        console.log(
+          `[app.jsx loader] Backend responded with status ${res.status}`,
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log(`[app.jsx loader] Backend response body:`, {
+            success: data.success,
+            hasToken: !!data.token,
+            store: data.store?.shopDomain,
+          });
+
+          if (data.success && data.token) {
+            token = data.token;
+            await upsertJwt(shop, token);
+            console.log(`[app.jsx loader] Token persisted to DB for ${shop}`);
+          } else {
+            console.error(
+              `[app.jsx loader] Backend returned success:false or no token`,
+              data,
+            );
+          }
+        } else {
+          const body = await res.text().catch(() => "");
+          console.error(
+            `[app.jsx loader] Backend returned non-OK status ${res.status}: ${body}`,
+          );
+        }
+      } catch (err) {
+        // Backend unreachable (cold start, network blip, misconfigured
+        // VITE_BASE_URL, etc.) — don't crash the whole app shell over it.
+        // token stays null; downstream pages already gate their useApi
+        // calls on it, so they just show their own loading/empty state.
+        console.error(
+          `[app.jsx loader] Failed to reach backend at ${fetchUrl}: ${err.message}`,
+        );
       }
     }
   }
-}
 
   return {
-    apiKey: import.meta.env.SHOPIFY_API_KEY || "",
+    apiKey: process.env.SHOPIFY_API_KEY || "",
     shop,
     token,
   };
@@ -222,13 +254,13 @@ export default function App() {
   return (
     <EmbeddedAppProvider apiKey={apiKey}>
       <AuthProvider shop={shop} token={token}>
-      <AnalysisTrackerProvider>
-        <Layout>
-          <ProductSyncGate />
-          <GlobalAnalysisToast />
-          <Outlet />
-        </Layout>
-      </AnalysisTrackerProvider>
+        <AnalysisTrackerProvider>
+          <Layout>
+            <ProductSyncGate />
+            <GlobalAnalysisToast />
+            <Outlet />
+          </Layout>
+        </AnalysisTrackerProvider>
       </AuthProvider>
     </EmbeddedAppProvider>
   );
