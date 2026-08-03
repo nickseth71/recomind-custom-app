@@ -7,7 +7,6 @@ embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-include_config_on_deploy = true
 
 [webhooks]
 api_version = "2026-07"
@@ -17,4 +16,8 @@ api_version = "2026-07"
 scopes = "write_products,read_reports,read_orders,read_markets"
 
 [auth]
-redirect_urls = [ "https://recomindai.onrender.com" ]
+redirect_urls = [
+    "https://recomindai.onrender.com/auth/callback",
+    "https://recomindai.onrender.com/auth/shopify/callback",
+    "https://recomindai.onrender.com/api/auth/callback"
+]
