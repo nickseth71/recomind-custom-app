@@ -28,7 +28,8 @@ model Session {
   refreshTokenExpires DateTime? // Expiration for the refresh token (optional)
 }
 
-model Jwt{
-  id    String    @id @default(auto()) @map("_id") @db.ObjectId // Unique session ID (MongoDB ObjectId)
-  token   String?
+model Jwt {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  recomind_token  String
+  recomind_shop   String
 }
