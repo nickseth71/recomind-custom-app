@@ -195,7 +195,7 @@ export const loader = async ({ request }) => {
 
     if (!token) {
       const backendUrl =
-        import.meta.env.VITE_BASE_URL || "http://localhost:3000/recomind/v1";
+        process.env.VITE_BASE_URL || "http://localhost:3000/recomind/v1";
       const fetchUrl = `${backendUrl}/stores/token?shop=${encodeURIComponent(shop)}`;
       console.log(`[app.jsx loader] Fetching token from backend: ${fetchUrl}`);
 
