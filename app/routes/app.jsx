@@ -164,6 +164,7 @@ import ProductSyncGate from "../components/ProductSyncGate";
 import { authenticate } from "../shopify.server";
 import { AnalysisTrackerProvider } from "../context/AnalysisTrackerContext";
 import GlobalAnalysisToast from "../components/GlobalAnalysisToast";
+import db from "../db.server";
 
 function getStoredShop() {
   if (typeof window === "undefined" || !window.localStorage) return null;
@@ -249,8 +250,14 @@ export default function App() {
       const data = await res.json();
 
       if (data.success && data.token) {
-        localStorage.setItem("recomind_token", data.token);
-        localStorage.setItem("recomind_shop", shopDomain);
+        //localStorage.setItem("recomind_token", data.token);
+        //localStorage.setItem("recomind_shop", shopDomain);
+        await db.jwt.create({
+          data: {
+            recomind_token: data.token,
+            recomind_shop: shopDomain,
+          },
+        });
       } else {
         console.warn("[App] Response missing token:", data);
       }
