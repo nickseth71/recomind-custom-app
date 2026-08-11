@@ -640,10 +640,10 @@ export default function Index() {
               </button>
             ))}
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl text-[13px] font-semibold hover:opacity-90 transition-opacity">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl text-[13px] font-semibold hover:opacity-90 transition-opacity">
             <Icon name="Bolt" size={14} className="text-on-primary" />
             Simulate
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -1280,11 +1280,11 @@ export default function Index() {
                     </td>
 
                     {/* Action */}
-                    <td className="px-4 py-4 text-right">
+                    {/* <td className="px-4 py-4 text-right">
                       <button className="px-3 py-1.5 bg-primary text-on-primary rounded-lg font-mono-sm text-[11px] font-semibold hover:opacity-90 transition-opacity">
                         Optimize
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })
