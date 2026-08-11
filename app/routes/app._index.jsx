@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useApi } from "../hooks/useApi";
 import { productApi, storeApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
-import { authenticate } from "../shopify.server";
 import { useAuth } from "../context/Authcontext";
 
 // ─── lucide-react — one named import per icon, fully tree-shakeable ──────────
@@ -495,10 +494,7 @@ function PromptRow({ item }) {
 }
 
 /* ─── Page ───────────────────────────────────────────────────────── */
-export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-  return null;
-};
+export const loader = async () => null;
 
 export default function Index() {
   const [timePeriod, setTimePeriod] = useState("30d");
