@@ -642,4 +642,13 @@ export const ENGINE_COLORS = {
   perplexity: "#111844", // was --color-on-primary-container (#dbe1ff, too light) -> dark navy
   gemini: "#00875a", // darkened from #00e29e for label-text contrast on light tile
   aiOverview: "#187bda",
+  claude: "#c96442", // Anthropic's brand terracotta — Growth+ only, see ENGINE_LABELS below
+};
+
+export const ENGINE_LABELS = {
+  chatgpt: "ChatGPT",
+  perplexity: "Perplexity",
+  gemini: "Gemini",
+  aiOverview: "AI Overviews",
+  claude: "Claude",
 };

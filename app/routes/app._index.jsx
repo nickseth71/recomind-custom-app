@@ -3,7 +3,7 @@ import { useApi } from "../hooks/useApi";
 import { productApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
-import {useAuth} from "../context/Authcontext"
+import { useAuth } from "../context/Authcontext";
 
 // ─── lucide-react — one named import per icon, fully tree-shakeable ──────────
 import {
@@ -44,6 +44,7 @@ const ICON_MAP = {
   ChatGPT: MessageSquare,
   Perplexity: Compass,
   GeminiIcon: Layers,
+  ClaudeIcon: WandSparkles,
   Globe: Globe2,
   // ui
   Inventory: Package,
@@ -167,6 +168,12 @@ const ENGINE_BASE = [
   },
   { key: "gemini", label: "Gemini", sub: "Google", iconName: "GeminiIcon" },
   {
+    key: "claude",
+    label: "Claude",
+    sub: "Anthropic",
+    iconName: "ClaudeIcon",
+  },
+  {
     key: "aiOverview",
     label: "AI Overview",
     sub: "Search SGE",
@@ -192,6 +199,12 @@ const ENGINE_RANK_COLORS = [
     colorClass: "text-tertiary",
     bgClass: "bg-tertiary/10",
     borderClass: "border-tertiary/20",
+  },
+  {
+    hex: "#c96442",
+    colorClass: "text-[#c96442]",
+    bgClass: "bg-[#c96442]/10",
+    borderClass: "border-[#c96442]/20",
   },
   {
     hex: "#585e71",
@@ -484,7 +497,7 @@ export default function Index() {
   const [timePeriod, setTimePeriod] = useState("30d");
   const [promptTab, setPromptTab] = useState("missing");
   const { token } = useAuth();
-  
+
   const {
     data: dashboardResponse,
     loading,
@@ -529,10 +542,17 @@ export default function Index() {
       ? "bg-error"
       : "bg-[#00e29e]";
 
-  // Sort top-3 engines by coverage desc; pin aiOverview last
+  // Sort top engines by coverage desc; pin aiOverview last. Claude only
+  // appears when the store's plan includes it — the backend omits the key
+  // entirely for Starter, so coverage.claude is undefined there and this
+  // filters it out with zero visual change for those merchants.
   const sortedEngines = useMemo(() => {
     const pinned = ENGINE_BASE.find((e) => e.key === "aiOverview");
-    const dynamic = ENGINE_BASE.filter((e) => e.key !== "aiOverview");
+    const dynamic = ENGINE_BASE.filter(
+      (e) =>
+        e.key !== "aiOverview" &&
+        (e.key !== "claude" || coverage.claude != null),
+    );
     const sorted = dynamic
       .map((e) => ({ ...e, value: coverage[e.key] ?? 0 }))
       .sort((a, b) => b.value - a.value)
@@ -542,7 +562,7 @@ export default function Index() {
       {
         ...pinned,
         value: coverage["aiOverview"] ?? 0,
-        ...ENGINE_RANK_COLORS[3],
+        ...ENGINE_RANK_COLORS[sorted.length],
       },
     ];
   }, [coverage]);

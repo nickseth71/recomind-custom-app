@@ -18,6 +18,7 @@ uri = "https://staging-recomind-api.onrender.com/api/webhooks/products-create"
 
 [[webhooks.subscriptions]]
 topics = ["products/update"]
+
 uri = "https://staging-recomind-api.onrender.com/api/webhooks/products-update"
 
 [[webhooks.subscriptions]]
