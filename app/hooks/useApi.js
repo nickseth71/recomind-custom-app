@@ -26,7 +26,7 @@ export function useApi(fn, deps = []) {
       const res = await fn();
       if (requestId !== requestIdRef.current) return; // a newer call superseded this one — drop it
       setData(res);
-      console.log(res, "useAPI's data");
+      //console.log(res, "useAPI's data");
     } catch (e) {
       if (requestId !== requestIdRef.current) return; // same guard for errors
       setError(e.message);

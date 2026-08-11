@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useApi } from "../hooks/useApi";
-import { productApi } from "../lib/api";
+import { productApi, storeApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import { useAuth } from "../context/Authcontext";
@@ -505,6 +505,22 @@ export default function Index() {
   const [promptTab, setPromptTab] = useState("missing");
   const { token } = useAuth();
 
+  // Store/plan NAME only, decoupled from the period toggle — this is what
+  // fixes the tab flash: previously availablePeriods derived from the
+  // period-scoped dashboard response's `plan`, which gets cleared to null
+  // on every period click while the new fetch is in flight, briefly
+  // collapsing the tab list to its single-item fallback. The plan name
+  // doesn't change when you switch time periods, so it shouldn't be
+  // re-fetched (or wiped) when you do. Everything else that reads the
+  // fuller `plan` object below (limits, tokenQuota, config.tagline) still
+  // comes from the dashboard response as before — this is purely for the
+  // tab list.
+  const { data: storeResponse } = useApi(
+    token ? () => storeApi.getMe() : null,
+    [token],
+  );
+  const accountPlanName = (storeResponse?.data?.plan || "").toLowerCase();
+
   const {
     data: dashboardResponse,
     loading,
@@ -575,7 +591,7 @@ export default function Index() {
   }, [coverage]);
 
   const availablePeriods = useMemo(() => {
-    const planName = (plan?.name || "").toLowerCase();
+    const planName = accountPlanName;
 
     if (planName === "starter") {
       return [{ value: "30d", label: "30D" }];
@@ -596,9 +612,9 @@ export default function Index() {
       ];
     }
 
-    // fallback
+    // fallback — still shown while accountPlanName hasn't loaded yet
     return [{ value: "30d", label: "30D" }];
-  }, [plan]);
+  }, [accountPlanName]);
 
   return (
     <div className="space-y-4">
