@@ -2,16 +2,14 @@
 // NOTE: filename uses "products_" (trailing underscore) so this is a
 // SIBLING route at /app/products/:id, not nested under app.products.jsx.
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router";
+import { useParams } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { jwtDecode } from "jwt-decode";
-import { ProductThumb } from "../components/UI";
 import { useAuth } from "../context/Authcontext";
 import {
   Card,
-  Divider,
   Eyebrow,
   BackLink,
   PillTabs,
@@ -27,6 +25,7 @@ import {
   scoreLabel,
   BREAKDOWN_META,
   ENGINE_COLORS,
+  ENGINE_LABELS,
 } from "../components/UI";
 import {
   CheckCircle2,
@@ -36,12 +35,10 @@ import {
   WandSparkles,
   Brain,
   BarChart2,
-  Eye,
   Wrench,
   HelpCircle,
   GitCompare,
   Search,
-  Star,
 } from "lucide-react";
 
 // function stripHtml(value = "") {
@@ -144,13 +141,26 @@ function OverviewPanel({ analysis, product }) {
 
       {analysis.engineCoverage && (
         <SBox label="AI Engine Coverage">
-          <div className="grid grid-cols-4 gap-3">
+          <div
+            className={`grid gap-3 ${
+              analysis.engineCoverage.claude != null
+                ? "grid-cols-5"
+                : "grid-cols-4"
+            }`}
+          >
             {[
-              { key: "chatgpt", label: "ChatGPT" },
-              { key: "perplexity", label: "Perplexity" },
-              { key: "gemini", label: "Gemini" },
-              { key: "aiOverview", label: "AI Overview" },
-            ].map(({ key, label }) => (
+              { key: "chatgpt" },
+              { key: "perplexity" },
+              { key: "gemini" },
+              { key: "aiOverview" },
+              // Claude is Growth+ only — the backend omits the key entirely
+              // for plans that don't include it, so this naturally stays
+              // hidden for Starter without duplicating plan-gating logic
+              // here.
+              ...(analysis.engineCoverage.claude != null
+                ? [{ key: "claude" }]
+                : []),
+            ].map(({ key }) => (
               <div
                 key={key}
                 className="rounded-xl border border-outline-variant bg-surface-container-highest p-4 text-center"
@@ -162,7 +172,7 @@ function OverviewPanel({ analysis, product }) {
                   {analysis.engineCoverage[key] ?? 0}%
                 </div>
                 <p className="font-mono-sm text-[11px] text-on-surface-variant mt-1">
-                  {label}
+                  {ENGINE_LABELS[key]}
                 </p>
               </div>
             ))}

@@ -181,6 +181,8 @@ const ENGINE_BASE = [
   },
 ];
 
+// Colors for the DYNAMIC (ranked) engines only — chatgpt/perplexity/gemini,
+// plus claude when the plan includes it. Up to 4 possible ranks.
 const ENGINE_RANK_COLORS = [
   {
     hex: "#00e29e",
@@ -206,13 +208,18 @@ const ENGINE_RANK_COLORS = [
     bgClass: "bg-[#c96442]/10",
     borderClass: "border-[#c96442]/20",
   },
-  {
-    hex: "#585e71",
-    colorClass: "text-secondary",
-    bgClass: "bg-secondary/10",
-    borderClass: "border-secondary/20",
-  },
 ];
+
+// AI Overview is always pinned last with this exact color, regardless of
+// how many dynamic engines precede it — it never participates in ranking,
+// so its appearance must never shift just because Claude is or isn't
+// present for a given plan.
+const PINNED_ENGINE_COLOR = {
+  hex: "#585e71",
+  colorClass: "text-secondary",
+  bgClass: "bg-secondary/10",
+  borderClass: "border-secondary/20",
+};
 
 const VISIBILITY_CONFIG = {
   HIGH: {
@@ -562,7 +569,7 @@ export default function Index() {
       {
         ...pinned,
         value: coverage["aiOverview"] ?? 0,
-        ...ENGINE_RANK_COLORS[sorted.length],
+        ...PINNED_ENGINE_COLOR,
       },
     ];
   }, [coverage]);
