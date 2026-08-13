@@ -182,7 +182,7 @@ export default function SimulationDetail() {
       </Card>
 
       {/* Market context */}
-      {sim.marketContext && Object.keys(sim.marketContext).length > 0 && (
+      {/* {sim.marketContext && Object.keys(sim.marketContext).length > 0 && (
         <Card className="p-5">
           <Eyebrow className="mb-3">Market Context</Eyebrow>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -200,17 +200,17 @@ export default function SimulationDetail() {
             ))}
           </div>
         </Card>
-      )}
+      )} */}
 
       {/* Raw AI response — debug/audit detail */}
-      {sim.rawAiResponse && (
+      {/* {sim.rawAiResponse && (
         <Card className="p-5">
           <Eyebrow className="mb-3">Raw AI Response</Eyebrow>
           <pre className="font-mono-sm text-[11px] text-on-surface-variant whitespace-pre-wrap break-words bg-surface-container-highest rounded-xl p-4 max-h-96 overflow-y-auto">
             {sim.rawAiResponse}
           </pre>
         </Card>
-      )}
+      )} */}
     </div>
   );
 }
