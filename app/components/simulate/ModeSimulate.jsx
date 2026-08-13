@@ -1,5 +1,6 @@
 // src/pages/simulate/ModeSimulate.jsx
 import { useState } from "react";
+import { Link } from "react-router";
 import { promptApi } from "../../lib/api";
 import {
   LikelihoodBadge,
@@ -53,7 +54,13 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           Product
         </p>
         {/* <ProductSelector token={token} value={productId} onChange={setProductId} /> */}
-        <ProductSelector token={token} value={productId} onChange={setProductId} pageSize={5} dropdownPosition="top"/>
+        <ProductSelector
+          token={token}
+          value={productId}
+          onChange={setProductId}
+          pageSize={5}
+          dropdownPosition="top"
+        />
 
         <ErrorBanner message={error} />
 
@@ -62,7 +69,8 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           loading={loading}
           disabled={!prompt.trim() || !productId}
           label="Run AI Simulation →"
-          loadingLabel="Running simulation…" className=""
+          loadingLabel="Running simulation…"
+          className=""
         />
       </div>
 
@@ -75,20 +83,18 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           //   Results will appear here once a simulation runs.
           // </div>
           <div
-  className="rounded-2xl border border-outline-variant bg-surface-bright
+            className="rounded-2xl border border-outline-variant bg-surface-bright
              min-h-[120px] flex flex-col items-center justify-center
              text-center text-sm text-on-surface-variant gap-3 px-8"
->
-  <span className="text-4xl">🎯</span>
+          >
+            <span className="text-4xl">🎯</span>
 
-  <p className="font-semibold text-on-surface">
-    No Simulation Yet
-  </p>
+            <p className="font-semibold text-on-surface">No Simulation Yet</p>
 
-  <p className="max-w-[260px]">
-    Results will appear here once the simulation runs.
-  </p>
-</div>
+            <p className="max-w-[260px]">
+              Results will appear here once the simulation runs.
+            </p>
+          </div>
         )}
 
         {result && (
@@ -102,11 +108,21 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
                   </p>
                   <p className="text-4xl font-black text-on-surface leading-none">
                     {result.recommendationScore ?? "—"}
-                    <span className="text-base font-semibold text-on-surface-variant ml-1">/100</span>
+                    <span className="text-base font-semibold text-on-surface-variant ml-1">
+                      /100
+                    </span>
                   </p>
                 </div>
                 <LikelihoodBadge value={result.likelihood} />
               </div>
+              {result._id && (
+                <Link
+                  to={`/app/simulation/${result._id}`}
+                  className="inline-block mt-3 text-[12px] font-bold text-primary hover:opacity-80 transition-opacity"
+                >
+                  View full detail →
+                </Link>
+              )}
             </div>
 
             {result.buyerIntent && (
@@ -119,8 +135,12 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
               <ResultCard label="Missing Signals" labelColor="text-error">
                 <div className="space-y-1.5">
                   {result.missingSignals.map((s) => (
-                    <div key={s} className="flex items-start gap-2 text-sm text-error">
-                      <span className="shrink-0 mt-0.5">⚠</span>{s}
+                    <div
+                      key={s}
+                      className="flex items-start gap-2 text-sm text-error"
+                    >
+                      <span className="shrink-0 mt-0.5">⚠</span>
+                      {s}
                     </div>
                   ))}
                 </div>
@@ -131,8 +151,12 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
               <ResultCard label="Recommendations">
                 <div className="space-y-1.5">
                   {result.recommendations.map((r) => (
-                    <div key={r} className="flex items-start gap-2 text-sm text-on-surface">
-                      <span className="text-primary shrink-0 mt-0.5">→</span>{r}
+                    <div
+                      key={r}
+                      className="flex items-start gap-2 text-sm text-on-surface"
+                    >
+                      <span className="text-primary shrink-0 mt-0.5">→</span>
+                      {r}
                     </div>
                   ))}
                 </div>
@@ -143,7 +167,10 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
               <ResultCard label="Competitors Winning This">
                 <div className="flex flex-wrap gap-2 mt-1">
                   {result.competitorDominating.map((c) => (
-                    <span key={c} className="rounded-full border border-error/30 bg-error/8 px-3 py-1 text-xs font-semibold text-error">
+                    <span
+                      key={c}
+                      className="rounded-full border border-error/30 bg-error/8 px-3 py-1 text-xs font-semibold text-error"
+                    >
                       {c}
                     </span>
                   ))}

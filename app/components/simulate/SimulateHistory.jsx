@@ -1,4 +1,5 @@
 // src/pages/simulate/SimulateHistory.jsx
+import { Link } from "react-router";
 import { LikelihoodBadge } from "./SimulateShared";
 
 export default function SimulateHistory({ history }) {
@@ -17,14 +18,17 @@ export default function SimulateHistory({ history }) {
         <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
           Recent Simulations
         </p>
-        <span className="text-xs text-on-surface-variant">{history.length} latest</span>
+        <span className="text-xs text-on-surface-variant">
+          {history.length} latest
+        </span>
       </div>
 
       {/* Rows */}
       <div className="divide-y divide-outline-variant/50">
         {history.map((item) => (
-          <div
+          <Link
             key={item._id}
+            to={`/app/simulation/${item._id}`}
             className="px-5 py-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between hover:bg-surface-container-highest/50 transition-colors"
           >
             <div className="min-w-0 flex-1">
@@ -32,7 +36,9 @@ export default function SimulateHistory({ history }) {
                 "{item.prompt}"
               </p>
               <p className="text-xs text-on-surface-variant truncate mt-0.5">
-                {item.productId?.title ?? item.productTitle ?? "Unknown product"}
+                {item.productId?.title ??
+                  item.productTitle ??
+                  "Unknown product"}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -41,7 +47,7 @@ export default function SimulateHistory({ history }) {
                 {item.recommendationScore ?? "—"}
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

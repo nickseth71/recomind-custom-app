@@ -93,6 +93,7 @@ export const promptApi = {
     const q = new URLSearchParams(params).toString();
     return request(`/prompts/history${q ? `?${q}` : ""}`);
   },
+  getSimulation: (id) => request(`/prompts/simulations/${id}`),
   getProductPrompts: (productId, params = {}) => {
     const q = new URLSearchParams(params).toString();
     return request(`/prompts/products/${productId}${q ? `?${q}` : ""}`);

@@ -1617,7 +1617,7 @@ import {
   WandSparkles,
   BarChart2,
 } from "lucide-react";
-import {useAuth} from "../context/Authcontext"
+import { useAuth } from "../context/Authcontext";
 
 function stripHtml(value = "") {
   return String(value)
@@ -2387,35 +2387,65 @@ function OptimiseModal({ product, onClose, onDone }) {
 
 /* ═══ SIMULATE MODAL ═══════════════════════════════════════════ */
 function SimulateModal({ product, onClose }) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false),
     [results, setResults] = useState([]),
     [err, setErr] = useState(null),
     [ran, setRan] = useState(false);
-  const PROMPTS = [
-    "Best product for my needs under budget",
-    "Top rated option for beginners",
-    "Best alternative to popular brands",
-  ];
+  const [promptsLoading, setPromptsLoading] = useState(true);
+  const [promptOptions, setPromptOptions] = useState([]);
+
+  // Pull this product's REAL, already-generated tracked prompts instead of
+  // a generic hardcoded set — those aren't grounded in what this specific
+  // product actually is, so simulating against them tests nothing useful
+  // (and pollutes simulation history with irrelevant records).
+  useEffect(() => {
+    let cancelled = false;
+    setPromptsLoading(true);
+    promptApi
+      .getProductPrompts(product._id, { limit: 3 })
+      .then((res) => {
+        if (cancelled) return;
+        const prompts = (res?.data?.prompts ?? res?.data ?? [])
+          .map((p) => p.prompt)
+          .filter(Boolean)
+          .slice(0, 3);
+        setPromptOptions(prompts);
+      })
+      .catch(() => {
+        if (!cancelled) setPromptOptions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setPromptsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [product._id]);
+
   async function run() {
+    if (promptOptions.length === 0) return;
     setLoading(true);
     setErr(null);
     setResults([]);
     try {
       const settled = await Promise.allSettled(
-        PROMPTS.map((p) => promptApi.simulate(p, product._id)),
+        promptOptions.map((p) => promptApi.simulate(p, product._id)),
       );
       setResults(
         settled.map((s, i) =>
           s.status === "fulfilled"
             ? {
-                prompt: PROMPTS[i],
+                id: s.value?.data?._id,
+                prompt: promptOptions[i],
                 score: s.value?.data?.recommendationScore ?? 0,
                 likelihood: s.value?.data?.likelihood ?? "LOW",
                 missingSignals: s.value?.data?.missingSignals ?? [],
                 recommendations: s.value?.data?.recommendations ?? [],
               }
             : {
-                prompt: PROMPTS[i],
+                id: null,
+                prompt: promptOptions[i],
                 score: 0,
                 likelihood: "LOW",
                 missingSignals: ["Simulation failed"],
@@ -2440,13 +2470,48 @@ function SimulateModal({ product, onClose }) {
         Preview how ChatGPT, Perplexity &amp; Gemini would recommend this
         product.
       </p>
-      {!ran && !loading && (
+      {!ran && !loading && promptsLoading && (
+        <div className="flex flex-col items-center py-8 gap-3">
+          <Loader2
+            size={28}
+            className="animate-spin text-primary"
+            strokeWidth={1.5}
+          />
+          <p className="font-mono-sm text-mono-sm text-on-surface-variant">
+            Loading this product's tracked prompts…
+          </p>
+        </div>
+      )}
+      {!ran && !loading && !promptsLoading && promptOptions.length === 0 && (
+        <div className="flex flex-col items-center py-8 gap-3 text-center">
+          <TriangleAlert
+            size={28}
+            className="text-on-surface-variant"
+            strokeWidth={1.5}
+          />
+          <p className="font-mono-sm text-mono-sm text-on-surface-variant max-w-xs">
+            This product has no tracked prompts yet — analyse it first so
+            RecoMind can generate the buyer prompts to simulate against.
+          </p>
+        </div>
+      )}
+      {!ran && !loading && !promptsLoading && promptOptions.length > 0 && (
         <div className="flex flex-col items-center py-8 gap-4">
           <Eye
             size={28}
             className="text-on-surface-variant"
             strokeWidth={1.5}
           />
+          <div className="flex flex-col gap-1.5 w-full max-w-sm">
+            {promptOptions.map((p) => (
+              <p
+                key={p}
+                className="font-mono-sm text-[11px] text-on-surface-variant text-center truncate"
+              >
+                {p}
+              </p>
+            ))}
+          </div>
           <button
             onClick={run}
             className="px-7 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity"
@@ -2491,7 +2556,12 @@ function SimulateModal({ product, onClose }) {
             return (
               <div
                 key={r.prompt}
-                className="rounded-xl border border-outline-variant bg-surface-container-low p-4"
+                onClick={() => r.id && navigate(`/app/simulation/${r.id}`)}
+                className={`rounded-xl border border-outline-variant bg-surface-container-low p-4 ${
+                  r.id
+                    ? "cursor-pointer hover:border-outline transition-colors"
+                    : ""
+                }`}
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <p className="text-[13px] text-on-surface font-medium">
