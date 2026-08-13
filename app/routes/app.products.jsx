@@ -1723,7 +1723,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
 
   if (activeJob) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary/10 text-primary border border-primary/25">
+      <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary/10 text-primary border border-primary/25">
         <Loader2
           size={12}
           className="animate-spin shrink-0"
@@ -1741,7 +1741,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
           e.stopPropagation();
           onConfirmAnalyse();
         }}
-        className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary text-on-primary hover:opacity-90 transition-opacity"
+        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary text-on-primary hover:opacity-90 transition-opacity"
       >
         Analyse
       </button>
@@ -1753,7 +1753,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
           e.stopPropagation();
           onOptimise();
         }}
-        className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold bg-secondary-container text-on-secondary-container border border-secondary-fixed/30 hover:opacity-90 transition-opacity"
+        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-secondary-container text-on-secondary-container border border-secondary-fixed/30 hover:opacity-90 transition-opacity"
       >
         Optimise
       </button>
@@ -1763,7 +1763,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
   // optimized, there's nothing actionable left for this button to do.
   // Just confirm the state instead of duplicating that action.
   return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold text-green-win bg-[#00e29e]/10 border border-[#00e29e]/25">
+    <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-green-win bg-[#00e29e]/10 border border-[#00e29e]/25">
       <CheckCircle2 size={13} strokeWidth={2.2} />
       Optimized
     </span>
@@ -2727,7 +2727,7 @@ function ProductRow({
                 e.stopPropagation();
                 onConfirmAnalyse();
               }}
-              className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
+              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
             >
               Re-analyze
             </button>
@@ -2737,7 +2737,7 @@ function ProductRow({
                 e.stopPropagation();
                 onSimulate();
               }}
-              className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
+              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
             >
               Simulate
             </button>
@@ -2747,6 +2747,15 @@ function ProductRow({
             onConfirmAnalyse={onConfirmAnalyse}
             onOptimise={onOptimise}
           />
+          {hasData && (
+            <Link
+              to={detailHref}
+              onClick={(e) => e.stopPropagation()}
+              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
+            >
+              View
+            </Link>
+          )}
           {showRemoveSync && (
             <button
               onClick={(e) => {
@@ -2755,19 +2764,10 @@ function ProductRow({
               }}
               title="Remove from sync"
               aria-label="Remove from sync"
-              className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors border-l border-outline-variant/60 ml-1 pl-2"
             >
               <Trash2 size={14} strokeWidth={2} />
             </button>
-          )}
-          {hasData && (
-            <Link
-              to={detailHref}
-              onClick={(e) => e.stopPropagation()}
-              className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
-            >
-              View
-            </Link>
           )}
         </div>
       </td>
@@ -2918,19 +2918,25 @@ export default function Products() {
     // productApi.sync() directly.
     window.dispatchEvent(new Event("recomind:open-sync-picker"));
   }
-  async function handleRemoveFromSync(product) {
-    if (
-      !window.confirm(
-        `Remove "${product.title}" from sync? Its analysis history is kept, and this frees a slot to add another product.`,
-      )
-    )
-      return;
+  const [removeSyncTarget, setRemoveSyncTarget] = useState(null);
+  const [removingSync, setRemovingSync] = useState(false);
+
+  function handleRemoveFromSync(product) {
+    setRemoveSyncTarget(product);
+  }
+
+  async function confirmRemoveFromSync() {
+    if (!removeSyncTarget) return;
+    setRemovingSync(true);
     try {
-      const r = await productApi.removeFromSync(product._id);
+      const r = await productApi.removeFromSync(removeSyncTarget._id);
       showToast(r.message || "Product removed from sync");
       refetch();
+      setRemoveSyncTarget(null);
     } catch (e) {
       showToast(e.message, "error");
+    } finally {
+      setRemovingSync(false);
     }
   }
   async function handleBulkAnalyse() {
@@ -3331,6 +3337,41 @@ export default function Products() {
           product={simulateTarget}
           onClose={() => setSimulateTarget(null)}
         />
+      )}
+      {removeSyncTarget && (
+        <Modal
+          title="Remove from sync"
+          onClose={() => !removingSync && setRemoveSyncTarget(null)}
+          maxWidth="max-w-md"
+        >
+          <p className="font-mono-sm text-mono-sm text-on-surface leading-relaxed">
+            Remove <span className="font-bold">"{removeSyncTarget.title}"</span>{" "}
+            from sync?
+          </p>
+          <p className="font-mono-sm text-mono-sm text-on-surface-variant mt-2 leading-relaxed">
+            Its analysis history is kept, and this frees a slot to add another
+            product.
+          </p>
+          <div className="flex items-center justify-end gap-2 mt-6">
+            <button
+              onClick={() => setRemoveSyncTarget(null)}
+              disabled={removingSync}
+              className="px-4 py-2 rounded-xl font-mono-sm text-mono-sm font-semibold border border-outline-variant text-on-surface-variant hover:text-on-surface transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmRemoveFromSync}
+              disabled={removingSync}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-mono-sm text-mono-sm font-bold bg-error text-on-error hover:opacity-90 transition-opacity disabled:opacity-60"
+            >
+              {removingSync && (
+                <Loader2 size={14} className="animate-spin" strokeWidth={2} />
+              )}
+              Remove
+            </button>
+          </div>
+        </Modal>
       )}
     </div>
   );
