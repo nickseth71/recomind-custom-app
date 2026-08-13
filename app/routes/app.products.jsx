@@ -1616,7 +1616,9 @@ import {
   Eye,
   WandSparkles,
   BarChart2,
+  Trash2,
 } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../context/Authcontext";
 
 function stripHtml(value = "") {
@@ -1756,16 +1758,15 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
         Optimise
       </button>
     );
+  // Re-analysis is now always available via the row's own "Re-analyze"
+  // button (independent of optimization status) — so once a product is
+  // optimized, there's nothing actionable left for this button to do.
+  // Just confirm the state instead of duplicating that action.
   return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onConfirmAnalyse();
-      }}
-      className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
-    >
-      Re-analyse
-    </button>
+    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold text-green-win bg-[#00e29e]/10 border border-[#00e29e]/25">
+      <CheckCircle2 size={13} strokeWidth={2.2} />
+      Optimized
+    </span>
   );
 }
 
@@ -2464,7 +2465,7 @@ function SimulateModal({ product, onClose }) {
     <Modal
       title={`Simulate — ${product.title}`}
       onClose={onClose}
-      maxWidth="max-w-xl"
+      maxWidth="max-w-2xl"
     >
       <p className="font-mono-sm text-mono-sm text-on-surface-variant mb-4">
         Preview how ChatGPT, Perplexity &amp; Gemini would recommend this
@@ -2496,20 +2497,20 @@ function SimulateModal({ product, onClose }) {
         </div>
       )}
       {!ran && !loading && !promptsLoading && promptOptions.length > 0 && (
-        <div className="flex flex-col items-center py-8 gap-4">
-          <Eye
-            size={28}
-            className="text-on-surface-variant"
-            strokeWidth={1.5}
-          />
-          <div className="flex flex-col gap-1.5 w-full max-w-sm">
+        <div className="flex flex-col items-center py-6 gap-4 w-full">
+          <p className="font-mono-sm text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            Prompts to simulate
+          </p>
+          <div className="flex flex-col gap-2.5 w-full max-w-lg">
             {promptOptions.map((p) => (
-              <p
+              <div
                 key={p}
-                className="font-mono-sm text-[11px] text-on-surface-variant text-center truncate"
+                className="rounded-xl border border-outline-variant bg-surface-container-low px-4 py-3"
               >
-                {p}
-              </p>
+                <p className="text-[14px] font-medium text-on-surface leading-snug">
+                  "{p}"
+                </p>
+              </div>
             ))}
           </div>
           <button
@@ -2628,7 +2629,14 @@ function SimulateModal({ product, onClose }) {
 }
 
 /* ═══ PRODUCT ROW ══════════════════════════════════════════════ */
-function ProductRow({ product, onConfirmAnalyse, onOptimise, onSimulate }) {
+function ProductRow({
+  product,
+  onConfirmAnalyse,
+  onOptimise,
+  onSimulate,
+  showRemoveSync,
+  onRemoveFromSync,
+}) {
   const sc = product.analysisScore,
     hasData = sc != null;
   const detailHref = `/app/products/${product._id}`;
@@ -2713,20 +2721,45 @@ function ProductRow({ product, onConfirmAnalyse, onOptimise, onSimulate }) {
           className="flex items-center justify-end gap-1.5"
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSimulate();
-            }}
-            className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
-          >
-            Simulate
-          </button>
+          {hasData ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onConfirmAnalyse();
+              }}
+              className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
+            >
+              Re-analyze
+            </button>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSimulate();
+              }}
+              className="px-3 py-1.5 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
+            >
+              Simulate
+            </button>
+          )}
           <ActionButton
             product={product}
             onConfirmAnalyse={onConfirmAnalyse}
             onOptimise={onOptimise}
           />
+          {showRemoveSync && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemoveFromSync();
+              }}
+              title="Remove from sync"
+              aria-label="Remove from sync"
+              className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors"
+            >
+              <Trash2 size={14} strokeWidth={2} />
+            </button>
+          )}
           {hasData && (
             <Link
               to={detailHref}
@@ -2799,6 +2832,9 @@ export const loader = async () => null;
 /* ═══ PRODUCTS PAGE ════════════════════════════════════════════ */
 export default function Products() {
   const { token } = useAuth();
+  const decoded = token ? jwtDecode(token) : null;
+  const storePlan = decoded?.storePlan?.toLowerCase();
+  const canManageSyncedProducts = storePlan && storePlan !== "starter";
   const {
     startBulkAnalysis,
     activeBatch,
@@ -3141,6 +3177,8 @@ export default function Products() {
                     onConfirmAnalyse={() => setConfirmTarget(p)}
                     onOptimise={() => setOptimiseTarget(p)}
                     onSimulate={() => setSimulateTarget(p)}
+                    showRemoveSync={canManageSyncedProducts}
+                    onRemoveFromSync={() => handleRemoveFromSync(p)}
                   />
                 ))
               )}
