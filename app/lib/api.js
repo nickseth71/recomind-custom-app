@@ -116,6 +116,18 @@ export const reportApi = {
     if (!res.ok) throw new Error("Failed to generate llms.txt");
     return res.text();
   },
+  competitorGap: async () => {
+    const res = await fetch(`${BASE}/reports/competitor-gap`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      throw new Error(
+        body?.error || "Failed to generate competitor gap report",
+      );
+    }
+    return res.blob();
+  },
   auditLog: (params = {}) => {
     const q = new URLSearchParams(params).toString();
     return request(`/reports/audit-log${q ? `?${q}` : ""}`);

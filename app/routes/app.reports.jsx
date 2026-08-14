@@ -14,6 +14,7 @@ import {
   Clock,
 } from "lucide-react";
 import { reportApi, storeApi } from "../lib/api";
+import { useAuth } from "../context/Authcontext";
 import { useApi } from "../hooks/useApi";
 import {
   PageHeader,
@@ -55,13 +56,19 @@ export default function Reports() {
   const [auditPage, setAuditPage] = useState(1);
 
   // Store plan now comes from the actual auth'd store, not a missing prop
-  const { data: storeRes } = useApi(() => storeApi.getMe(), []);
+  const { token } = useAuth();
+  const { data: storeRes } = useApi(token ? () => storeApi.getMe() : null, [
+    token,
+  ]);
   const storePlan = storeRes?.store?.plan ?? storeRes?.plan;
 
-  const { data: summaryRes } = useApi(() => reportApi.summary(), []);
+  const { data: summaryRes } = useApi(
+    token ? () => reportApi.summary() : null,
+    [token],
+  );
   const { data: auditRes, loading: auditLoading } = useApi(
-    () => reportApi.auditLog({ page: auditPage, limit: 10 }),
-    [auditPage],
+    token ? () => reportApi.auditLog({ page: auditPage, limit: 10 }) : null,
+    [token, auditPage],
   );
 
   const s = summaryRes?.data?.summary ?? summaryRes?.summary;
@@ -106,7 +113,26 @@ export default function Reports() {
     }
   }
 
-  const isGrowthPlus = ["growth", "agency"].includes(storePlan);
+  async function downloadCompetitorGap() {
+    setLoadingKey("competitor");
+    try {
+      const blob = await reportApi.competitorGap();
+      triggerDownload(
+        blob,
+        `competitor-gap-report-${new Date().toISOString().slice(0, 10)}.xlsx`,
+      );
+      showToast("Competitor gap report downloaded");
+    } catch (e) {
+      showToast(e.message, "error");
+    } finally {
+      setLoadingKey(null);
+    }
+  }
+
+  // Real plan tiers are starter / growth / pro — "agency" isn't an actual
+  // plan on the backend, and competitorGap is available on both growth
+  // and pro (never starter), so check against that directly instead.
+  const isGrowthPlus = storePlan && storePlan !== "starter";
   const isAgency = storePlan === "agency";
 
   const reportCards = [
@@ -139,6 +165,7 @@ export default function Reports() {
       desc: "Compare your products against competitors in AI recommendation scenarios.",
       locked: !isGrowthPlus,
       lockLabel: "Growth+",
+      action: downloadCompetitorGap,
     },
     {
       key: "whitelabel",
