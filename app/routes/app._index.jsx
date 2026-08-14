@@ -1171,10 +1171,10 @@ export default function Index() {
                   item.productId?.title ?? item.productTitle ?? "Untitled";
                 const bestFor = (item.bestFor ?? []).slice(0, 2).join(", ");
                 const conf = CONF_CONFIG[item.interpretationConf || "UNKNOWN"];
-                const detailHref = `/app/products/${item._id}`;
+                const detailHref = `/app/products/${item.productId?._id}`;
                 return (
                   <tr
-                    onClick={() => item._id && navigate(detailHref)}
+                    onClick={() => item.productId?._id && navigate(detailHref)}
                     key={item._id}
                     className="hover:bg-surface-container-low/50 transition-colors"
                   >
