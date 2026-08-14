@@ -3,6 +3,7 @@ import { useApi } from "../hooks/useApi";
 import { productApi, storeApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { useAuth } from "../context/Authcontext";
+import { useNavigate } from "react-router";
 
 // ─── lucide-react — one named import per icon, fully tree-shakeable ──────────
 import {
@@ -37,6 +38,7 @@ import {
   User,
   Wrench,
 } from "lucide-react";
+
 
 const ICON_MAP = {
   // engines
@@ -390,7 +392,7 @@ function TokenRing({ pct }) {
 }
 
 /* ─── EngineRow ──────────────────────────────────────────────────── */
-const RANK_LABELS = ["#1", "#2", "#3", "SGE"];
+const RANK_LABELS = ["#1", "#2", "#3", "#4", "SGE"];
 
 function EngineRow({ engine, value, loading, rank }) {
   return (
@@ -537,6 +539,7 @@ export default function Index() {
   const plan = stats?.plan ?? {};
   const tokenQuota = plan?.tokenQuota ?? {};
   const promptSummary = promptWin?.summary ?? {};
+  const navigate = useNavigate()
 
   const tableProducts = recentAnalyses
     .slice()
@@ -1171,6 +1174,7 @@ export default function Index() {
 
                 return (
                   <tr
+                    onClick={() => item._id && navigate(`/app/products/${item._id}`)}
                     key={item._id}
                     className="hover:bg-surface-container-low/50 transition-colors"
                   >

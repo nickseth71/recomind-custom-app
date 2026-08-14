@@ -62,7 +62,7 @@ export default function Reports() {
   ]);
   const storePlan = storeRes?.data?.plan ?? storeRes?.plan;
 
-  console.log(storePlan, "storePlan");
+  //console.log(storePlan, "storePlan");
 
   const { data: summaryRes } = useApi(
     token ? () => reportApi.summary() : null,
@@ -169,16 +169,16 @@ export default function Reports() {
       lockLabel: "Growth+",
       action: downloadCompetitorGap,
     },
-    {
-      key: "whitelabel",
-      icon: Sparkles,
-      iconColor: "#7b5800",
-      title: "White-label Agency Report",
-      badge: "PDF",
-      desc: "Branded PDF for client delivery with your logo and commentary. Agency plan only.",
-      locked: !isAgency,
-      lockLabel: "Agency",
-    },
+    // {
+    //   key: "whitelabel",
+    //   icon: Sparkles,
+    //   iconColor: "#7b5800",
+    //   title: "White-label Agency Report",
+    //   badge: "PDF",
+    //   desc: "Branded PDF for client delivery with your logo and commentary. Agency plan only.",
+    //   locked: !isAgency,
+    //   lockLabel: "Agency",
+    // },
   ];
 
   const stats = s
