@@ -62,7 +62,7 @@ export default function Reports() {
   ]);
   const storePlan = storeRes?.store?.plan ?? storeRes?.plan;
 
-  console.log(storePlan, "storePlan");
+  console.log(storeRes, "storePlan");
 
   const { data: summaryRes } = useApi(
     token ? () => reportApi.summary() : null,
