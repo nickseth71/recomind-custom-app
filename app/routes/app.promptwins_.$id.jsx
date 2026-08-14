@@ -5,7 +5,11 @@ import { useParams } from "react-router";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { useAuth } from "../context/Authcontext";
-import { PageHeader, BackLink, Card, Eyebrow } from "../components/UI";
+import {
+  PageHeader,
+  BackLink,
+  ENGINE_LABELS,
+} from "../components/UI";
 import AiSpinner from "../components/loader/AiSpinner";
 import { AlertTriangle } from "lucide-react";
 
@@ -73,7 +77,14 @@ export default function PromptDetail() {
   const competitorSignals =
     prompt.competitorDominating || prompt.comparison || [];
   const reasoning = prompt.reasoning || analysis?.reasoning;
-  const engineComparison = analysis?.comparison?.slice?.(0, 4) || [];
+  const engineComparison = analysis?.engineCoverage
+    ? Object.entries(analysis.engineCoverage)
+        .filter(([, score]) => score != null)
+        .map(([key, score]) => ({
+          name: ENGINE_LABELS[key] || key,
+          score,
+        }))
+    : [];
 
   return (
     <div className="space-y-6">

@@ -1,6 +1,10 @@
 import { Card, Eyebrow } from "../UI";
 
-export default function EngineComparisonCard({ title = "AI Visibility", items = [], className = "" }) {
+export default function EngineComparisonCard({
+  title = "AI Visibility",
+  items = [],
+  className = "",
+}) {
   const maxScore = Math.max(1, ...items.map((c) => Number(c.score) || 0));
 
   return (
@@ -12,7 +16,7 @@ export default function EngineComparisonCard({ title = "AI Visibility", items = 
         </p>
       ) : (
         <div className="flex flex-col gap-3">
-          {items.slice(0, 4).map((c, i) => {
+          {items.slice(0, 5).map((c, i) => {
             const score = Number(c.score) || 0;
             const pct = Math.round((score / maxScore) * 100);
             return (
