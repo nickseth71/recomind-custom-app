@@ -2139,7 +2139,6 @@ function OptimiseModal({ product, onClose, onDone }) {
           ]
             .filter(Boolean)
             .slice(0, 8),
-          // faqs: (analysis?.faq || []).filter(Boolean).slice(0, 6),
         });
       } catch {
         if (!cancelled) {
@@ -2156,7 +2155,6 @@ function OptimiseModal({ product, onClose, onDone }) {
               ) || "No product description available yet.",
             nextDescription: "Preview unavailable right now.",
             keywords: [],
-            faqs: [],
           });
         }
       } finally {
@@ -2186,8 +2184,8 @@ function OptimiseModal({ product, onClose, onDone }) {
         <div className="flex flex-col gap-4">
           <div className="rounded-xl border border-outline-variant bg-surface-container-low p-4">
             <p className="text-[13px] text-on-surface-variant leading-relaxed">
-              Push the AI-optimised title, description, tags and FAQ to your
-              Shopify product. Score:{" "}
+              Push the AI-optimised title, description and tags to your Shopify
+              product. Score:{" "}
               <span
                 className={`font-bold ${scoreTextClass(product.analysisScore)}`}
               >
@@ -2279,28 +2277,12 @@ function OptimiseModal({ product, onClose, onDone }) {
                   )}
                 </div>
 
-                {preview.faqs.length > 0 && (
-                  <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
-                    <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
-                      FAQ items to sync
-                    </p>
-                    <ul className="mt-2 space-y-1.5 text-sm text-on-surface">
-                      {preview.faqs.map((faq) => (
-                        <li key={faq.question || faq} className="flex gap-2">
-                          <span className="text-primary">•</span>
-                          <span>{faq.question || faq}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
                 <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
                   <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
                     Shopify fields that will change
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {["Title", "Description", "Tags", "FAQ"].map((field) => (
+                    {["Title", "Description", "Tags"].map((field) => (
                       <span
                         key={field}
                         className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-[11px] text-on-surface-variant"
