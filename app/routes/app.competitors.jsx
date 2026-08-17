@@ -72,7 +72,7 @@ const Competitors = () => {
       ? () =>
           productApi.list({
             page: productPage,
-            limit: 20,
+            limit: 5,
             search: productSearch.trim(),
           })
       : null,

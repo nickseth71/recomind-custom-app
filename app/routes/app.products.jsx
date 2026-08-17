@@ -1684,7 +1684,7 @@ function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
       <button
         onClick={onClick}
         disabled={starting}
-        className="flex items-center gap-2 px-5 py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 font-label-md text-label-md"
+        className="flex items-center gap-2 px-5 py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 font-label-md text-label-md cursor-pointer"
       >
         {starting ? (
           <Loader2 size={15} className="animate-spin" strokeWidth={1.8} />
@@ -3231,10 +3231,10 @@ export default function Products() {
                 starting={bulkStarting}
                 variant="cta"
               />
-              <button className="flex items-center gap-2 px-5 py-2.5 border border-outline-variant text-on-surface font-bold rounded-xl hover:bg-surface-container transition-colors font-label-md text-label-md">
+              <Link to="/app/reports" className="flex items-center gap-2 px-5 py-2.5 border border-outline-variant text-on-surface font-bold rounded-xl hover:bg-surface-container transition-colors font-label-md text-label-md cursor-pointer">
                 <Download size={15} strokeWidth={1.8} />
                 Export Report
-              </button>
+              </Link>
             </div>
           </div>
         </Card>

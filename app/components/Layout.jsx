@@ -60,7 +60,7 @@ const Layout = ({ children }) => {
   }`}
 > */}
 <main
-  className={`scrollable-container pt-12 px-margin-desktop pb-12 transition-all duration-300 overflow-x-hidden ${
+  className={`h-screen scrollable-container pt-12 px-margin-desktop pb-12 transition-all duration-300 overflow-x-hidden ${
     sidebarOpen ? "ml-64" : "ml-20"
   }`}
 >
