@@ -2139,7 +2139,7 @@ function OptimiseModal({ product, onClose, onDone }) {
           ]
             .filter(Boolean)
             .slice(0, 8),
-          faqs: (analysis?.faq || []).filter(Boolean).slice(0, 6),
+          // faqs: (analysis?.faq || []).filter(Boolean).slice(0, 6),
         });
       } catch {
         if (!cancelled) {

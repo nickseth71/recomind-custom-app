@@ -974,7 +974,7 @@ export default function ProductDetail() {
                     </div>
                   </div>
                 )}
-                {previewFaqs.length > 0 && (
+                {/* {previewFaqs.length > 0 && (
                   <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
                     <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
                       FAQ items to sync
@@ -988,13 +988,13 @@ export default function ProductDetail() {
                       ))}
                     </ul>
                   </div>
-                )}
+                )} */}
                 <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
                   <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
                     Shopify fields that will change
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {["Title", "Description", "Tags", "FAQ"].map((field) => (
+                    {["Title", "Description", "Tags"].map((field) => (
                       <span
                         key={field}
                         className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-[11px] text-on-surface-variant"
