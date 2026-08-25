@@ -24,6 +24,23 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState(null);
   const listRef = useRef(null);
+  const collectionPickerRef = useRef(null);
+  const [collectionPickerOpen, setCollectionPickerOpen] = useState(false);
+
+  useEffect(() => {
+    function handleOutsidePointerDown(event) {
+      if (
+        collectionPickerRef.current &&
+        !collectionPickerRef.current.contains(event.target)
+      ) {
+        setCollectionPickerOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handleOutsidePointerDown);
+    return () =>
+      document.removeEventListener("pointerdown", handleOutsidePointerDown);
+  }, []);
 
   const { data: collectionsRaw } = useApi(
     () =>
@@ -63,9 +80,14 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
   // Accumulate results (new search resets the list; "load more" appends)
   useEffect(() => {
     if (!searchRaw?.data?.products) return;
-    setAllProducts((prev) =>
-      cursor ? [...prev, ...searchRaw.data.products] : searchRaw.data.products,
-    );
+    setAllProducts((prev) => {
+      const products = cursor
+        ? [...prev, ...searchRaw.data.products]
+        : searchRaw.data.products;
+      return Array.from(
+        new Map(products.map((product) => [product.shopifyProductId, product])),
+      ).map(([, product]) => product);
+    });
   }, [searchRaw]);
 
   // A collection is an intent to sync its whole catalog. Select each page as
@@ -92,6 +114,7 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
     setCursor(null);
     setAllProducts([]);
     setSelected(new Map());
+    setCollectionPickerOpen(false);
   }
 
   const pageInfo = searchRaw?.data?.pageInfo;
@@ -154,7 +177,7 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
         </div>
 
         {/* Search bar */}
-        <div className="relative">
+        <div className="relative" ref={collectionPickerRef}>
           <Search
             size={16}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
@@ -163,8 +186,10 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
             type="text"
             placeholder="Search collections..."
             value={collectionSearch}
+            onClick={() => setCollectionPickerOpen(true)}
             onChange={(e) => {
               setCollectionSearch(e.target.value);
+              setCollectionPickerOpen(true);
               setSelectedCollection(null);
               setCursor(null);
               setAllProducts([]);
@@ -172,23 +197,25 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
             }}
             className="w-full rounded-xl border border-outline-variant bg-surface-container-lowest pl-10 pr-9 py-2.5 text-sm font-semibold text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary transition-colors"
           />
-          {collections.length > 0 && !selectedCollection && (
-            <div className="absolute z-10 top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-xl border border-outline-variant bg-surface-bright shadow-lg">
-              {collections.map((collection) => (
-                <button
-                  key={collection.shopifyCollectionId}
-                  type="button"
-                  onClick={() => chooseCollection(collection)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 text-left text-[13px] font-semibold text-on-surface hover:bg-surface-container-low"
-                >
-                  <span>{collection.title}</span>
-                  <span className="text-[11px] text-on-surface-variant">
-                    {collection.productCount} products
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
+          {collectionPickerOpen &&
+            collections.length > 0 &&
+            !selectedCollection && (
+              <div className="absolute z-10 top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-xl border border-outline-variant bg-surface-bright shadow-lg">
+                {collections.map((collection) => (
+                  <button
+                    key={collection.shopifyCollectionId}
+                    type="button"
+                    onClick={() => chooseCollection(collection)}
+                    className="w-full flex items-center justify-between px-4 py-2.5 text-left text-[13px] font-semibold text-on-surface hover:bg-surface-container-low"
+                  >
+                    <span>{collection.title}</span>
+                    <span className="text-[11px] text-on-surface-variant">
+                      {collection.productCount} products
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
         </div>
 
         {selectedCollection && (
@@ -199,6 +226,7 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
               onClick={() => {
                 setSelectedCollection(null);
                 setCollectionSearch("");
+                setCollectionPickerOpen(false);
                 setCursor(null);
                 setAllProducts([]);
                 setSelected(new Map());
@@ -337,6 +365,8 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
         <div className="flex items-center justify-between gap-3 pt-1">
           <span className="text-[12px] text-on-surface-variant">
             {selectedCount} selected
+            {selectedCollection &&
+              ` of ${selectedCollection.productCount} in collection`}
           </span>
           <div className="flex gap-2">
             <Btn variant="ghost" onClick={onClose} className="w-auto px-5">
