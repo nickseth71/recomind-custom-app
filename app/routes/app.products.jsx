@@ -2495,12 +2495,13 @@ function SimulateModal({ product, onClose }) {
               </div>
             ))}
           </div>
+          {/* Simulation is temporarily disabled while the simulation flow is being revised.
           <button
             onClick={run}
             className="px-7 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity"
           >
             Run Simulation
-          </button>
+          </button> */}
         </div>
       )}
       {loading && (
@@ -3231,7 +3232,10 @@ export default function Products() {
                 starting={bulkStarting}
                 variant="cta"
               />
-              <Link to="/app/reports" className="flex items-center gap-2 px-5 py-2.5 border border-outline-variant text-on-surface font-bold rounded-xl hover:bg-surface-container transition-colors font-label-md text-label-md cursor-pointer">
+              <Link
+                to="/app/reports"
+                className="flex items-center gap-2 px-5 py-2.5 border border-outline-variant text-on-surface font-bold rounded-xl hover:bg-surface-container transition-colors font-label-md text-label-md cursor-pointer"
+              >
                 <Download size={15} strokeWidth={1.8} />
                 Export Report
               </Link>

@@ -135,6 +135,7 @@ const Competitors = () => {
 
   // Column headers: skip index 0 (Feature / Signal), keep rest
   const headerCols = columns.slice(1); // ["You", "Tiffany...", "Cartier...", ...]
+  const competitorUrls = benchmark?.competitorUrls ?? [];
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef(null);
@@ -549,7 +550,20 @@ const Competitors = () => {
                     fontSize: 13,
                   }}
                 >
-                  {col}
+                  {isYou ||
+                  !/^https?:\/\//i.test(competitorUrls[i - 1] || "") ? (
+                    col
+                  ) : (
+                    <a
+                      href={competitorUrls[i - 1]}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline decoration-dotted underline-offset-2 hover:text-white"
+                      title={`Open ${col}`}
+                    >
+                      {col}
+                    </a>
+                  )}
                 </div>
               );
             })}

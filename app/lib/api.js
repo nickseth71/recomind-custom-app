@@ -56,6 +56,10 @@ export const productApi = {
     const q = new URLSearchParams(params).toString();
     return request(`/products/shopify-search${q ? `?${q}` : ""}`);
   },
+  searchShopifyCollections: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/products/shopify-collections${q ? `?${q}` : ""}`);
+  },
   syncSelected: (shopifyProductIds) =>
     request("/products/sync-selected", {
       method: "POST",

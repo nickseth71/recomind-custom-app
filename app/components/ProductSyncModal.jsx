@@ -15,12 +15,22 @@ import { useDebounced, Modal, Btn } from "./UI";
 export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounced(search, 400);
+  const [collectionSearch, setCollectionSearch] = useState("");
+  const debouncedCollectionSearch = useDebounced(collectionSearch, 300);
+  const [selectedCollection, setSelectedCollection] = useState(null);
   const [cursor, setCursor] = useState(null);
   const [allProducts, setAllProducts] = useState([]); // accumulated across "load more"
   const [selected, setSelected] = useState(new Map()); // shopifyProductId -> product
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState(null);
   const listRef = useRef(null);
+
+  const { data: collectionsRaw } = useApi(
+    () =>
+      productApi.searchShopifyCollections({ query: debouncedCollectionSearch }),
+    [debouncedCollectionSearch],
+  );
+  const collections = collectionsRaw?.data?.collections || [];
 
   const limit = syncSlots?.limit ?? Infinity;
   const alreadyUsed = syncSlots?.used ?? 0;
@@ -37,10 +47,11 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
     () =>
       productApi.searchShopify({
         query: debouncedSearch,
+        collectionId: selectedCollection?.shopifyCollectionId || "",
         cursor: cursor || "",
         limit: 20,
       }),
-    [debouncedSearch, cursor],
+    [debouncedSearch, selectedCollection, cursor],
   );
 
   // Reset pagination whenever the search term changes
@@ -56,6 +67,32 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
       cursor ? [...prev, ...searchRaw.data.products] : searchRaw.data.products,
     );
   }, [searchRaw]);
+
+  // A collection is an intent to sync its whole catalog. Select each page as
+  // it arrives, then keep fetching until Shopify reports the final page.
+  useEffect(() => {
+    if (!selectedCollection || searchLoading || !searchRaw?.data?.products)
+      return;
+    setSelected((prev) => {
+      const next = new Map(prev);
+      searchRaw.data.products.forEach((product) => {
+        if (!product.isSynced) next.set(product.shopifyProductId, product);
+      });
+      return next;
+    });
+    if (searchRaw.data.pageInfo?.hasNextPage && !searchLoading) {
+      setCursor(searchRaw.data.pageInfo.endCursor);
+    }
+  }, [searchRaw, selectedCollection, searchLoading]);
+
+  function chooseCollection(collection) {
+    setSelectedCollection(collection);
+    setCollectionSearch(collection.title);
+    setSearch("");
+    setCursor(null);
+    setAllProducts([]);
+    setSelected(new Map());
+  }
 
   const pageInfo = searchRaw?.data?.pageInfo;
 
@@ -124,6 +161,63 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
           />
           <input
             type="text"
+            placeholder="Search collections..."
+            value={collectionSearch}
+            onChange={(e) => {
+              setCollectionSearch(e.target.value);
+              setSelectedCollection(null);
+              setCursor(null);
+              setAllProducts([]);
+              setSelected(new Map());
+            }}
+            className="w-full rounded-xl border border-outline-variant bg-surface-container-lowest pl-10 pr-9 py-2.5 text-sm font-semibold text-on-surface placeholder:text-on-surface-variant outline-none focus:border-primary transition-colors"
+          />
+          {collections.length > 0 && !selectedCollection && (
+            <div className="absolute z-10 top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-xl border border-outline-variant bg-surface-bright shadow-lg">
+              {collections.map((collection) => (
+                <button
+                  key={collection.shopifyCollectionId}
+                  type="button"
+                  onClick={() => chooseCollection(collection)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-left text-[13px] font-semibold text-on-surface hover:bg-surface-container-low"
+                >
+                  <span>{collection.title}</span>
+                  <span className="text-[11px] text-on-surface-variant">
+                    {collection.productCount} products
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {selectedCollection && (
+          <div className="flex items-center justify-between rounded-xl border border-primary/25 bg-primary/5 px-4 py-2.5 text-[12px] font-semibold text-primary">
+            <span>Collection: {selectedCollection.title}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCollection(null);
+                setCollectionSearch("");
+                setCursor(null);
+                setAllProducts([]);
+                setSelected(new Map());
+              }}
+              className="text-on-surface-variant hover:text-on-surface"
+              aria-label="Clear collection"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
+        <div className="relative">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+          />
+          <input
+            type="text"
             placeholder="Search your Shopify products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -167,6 +261,7 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
             const isDisabled =
               !isSelected &&
               !product.isSynced &&
+              !selectedCollection &&
               remaining !== Infinity &&
               selectedCount >= remaining;
 
