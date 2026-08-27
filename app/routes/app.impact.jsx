@@ -6,10 +6,10 @@ import {
   Banknote,
   Zap,
   ChevronRight,
-  Loader2,
 } from "lucide-react";
 import { useApi } from "../hooks/useApi";
 import { impactApi } from "../lib/api";
+import { useAuth } from "../context/Authcontext";
 import AiSpinner from "../components/loader/AiSpinner";
 
 const METRIC_ICONS = {
@@ -28,9 +28,10 @@ const METRIC_COLORS = {
 
 const Impact = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const { token } = useAuth();
   const { data, loading, error } = useApi(
-    () => impactApi.dashboard({ windowDays: 7 }),
-    [],
+    token ? () => impactApi.dashboard({ windowDays: 7 }) : null,
+    [token],
   );
 
   const payload = data?.data;

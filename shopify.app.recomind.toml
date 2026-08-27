@@ -2,19 +2,42 @@
 
 client_id = "56333f90e32fd303bab3a2668a834bfe"
 name = "RecoMind"
-application_url = "https://example.com"
+application_url = "https://recomindai.onrender.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-include_config_on_deploy = true
 
 [webhooks]
 api_version = "2026-07"
+
+[[webhooks.subscriptions]]
+topics = ["products/create"]
+uri = "https://staging-recomind-api.onrender.com/api/webhooks/products-create"
+
+[[webhooks.subscriptions]]
+topics = ["products/update"]
+uri = "https://staging-recomind-api.onrender.com/api/webhooks/products-update"
+
+[[webhooks.subscriptions]]
+topics = ["products/delete"]
+uri = "https://staging-recomind-api.onrender.com/api/webhooks/products-delete"
+
+[[webhooks.subscriptions]]
+topics = ["app/uninstalled"]
+uri = "https://staging-recomind-api.onrender.com/api/webhooks/app-uninstalled"
+
+[[webhooks.subscriptions]]
+topics = ["markets/update"]
+uri = "https://staging-recomind-api.onrender.com/api/webhooks/markets-update"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "write_products,read_reports,read_orders,read_markets"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+    "https://recomindai.onrender.com/auth/callback",
+    "https://recomindai.onrender.com/auth/shopify/callback",
+    "https://recomindai.onrender.com/api/auth/callback"
+]

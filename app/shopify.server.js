@@ -7,6 +7,7 @@ import {
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
+import { upsertJwt } from "./models/jwt.server";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -19,19 +20,39 @@ const shopify = shopifyApp({
   distribution: AppDistribution.AppStore,
   hooks: {
     afterAuth: async ({ session }) => {
-      console.log("DEBUGSTATEMENT afterAuth", session);
-      const { shop, accessToken, scope } = session;
+      const {
+        shop,
+        accessToken,
+        scope,
+        refreshToken,
+        expires,
+        refreshTokenExpires,
+      } = session;
 
       try {
-        const backendUrl = process.env.VITE_BASE_URL || "http://localhost:5000";
+        const backendUrl =
+          process.env.VITE_BASE_URL ||
+          "https://staging-recomind-api.onrender.com/recomind/v1";
         const response = await fetch(`${backendUrl}/stores`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ shop, accessToken, scope }),
+          body: JSON.stringify({
+            shop,
+            accessToken,
+            scope,
+            refreshToken,
+            expiresAt: expires ? new Date(expires).toISOString() : undefined,
+            refreshTokenExpiresAt: refreshTokenExpires
+              ? new Date(refreshTokenExpires).toISOString()
+              : undefined,
+          }),
         });
 
         if (response.ok) {
           const data = await response.json();
+          if (data.token) {
+            await upsertJwt(shop, data.token);
+          }
           console.log("[afterAuth] Store registered in backend:", {
             shop: data.store?.shopDomain,
             plan: data.store?.plan,

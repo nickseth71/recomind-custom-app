@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useApi } from "../hooks/useApi";
+import { useAuth } from "../context/Authcontext";
 import { productApi } from "../lib/api";
 
 // ─── Value renderer ───────────────────────────────────────────
@@ -55,10 +56,7 @@ function CellValue({ value, isYou, isScoreRow, isReviewRow }) {
 
 // ─── Main Component ───────────────────────────────────────────
 const Competitors = () => {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("recomind_token")
-      : null;
+  const { token } = useAuth();
 
   const [selectedProductId, setSelectedProductId] = useState("");
   const [productPage, setProductPage] = useState(1);
@@ -74,7 +72,7 @@ const Competitors = () => {
       ? () =>
           productApi.list({
             page: productPage,
-            limit: 20,
+            limit: 5,
             search: productSearch.trim(),
           })
       : null,
@@ -137,6 +135,7 @@ const Competitors = () => {
 
   // Column headers: skip index 0 (Feature / Signal), keep rest
   const headerCols = columns.slice(1); // ["You", "Tiffany...", "Cartier...", ...]
+  const competitorUrls = benchmark?.competitorUrls ?? [];
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef(null);
@@ -551,7 +550,20 @@ const Competitors = () => {
                     fontSize: 13,
                   }}
                 >
-                  {col}
+                  {isYou ||
+                  !/^https?:\/\//i.test(competitorUrls[i - 1] || "") ? (
+                    col
+                  ) : (
+                    <a
+                      href={competitorUrls[i - 1]}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline decoration-dotted underline-offset-2 hover:text-white"
+                      title={`Open ${col}`}
+                    >
+                      {col}
+                    </a>
+                  )}
                 </div>
               );
             })}

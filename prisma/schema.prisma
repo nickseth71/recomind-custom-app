@@ -1,34 +1,35 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
-// enough when changing adapters.
-// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.sqlite"
+  provider = "mongodb"
+  url      = env("DB_URI")
 }
 
 model Session {
-  id            String    @id
-  shop          String
-  state         String
-  isOnline      Boolean   @default(false)
-  scope         String?
-  expires       DateTime?
-  accessToken   String
-  userId        BigInt?
-  firstName     String?
-  lastName      String?
-  email         String?
-  accountOwner  Boolean   @default(false)
-  locale        String?
-  collaborator  Boolean?  @default(false)
-  emailVerified Boolean?  @default(false)
-  refreshToken        String?
-  refreshTokenExpires DateTime?
+  session_id    String    @id @default(auto()) @map("_id") @db.ObjectId // Unique session ID (MongoDB ObjectId)
+  id            String    @unique // Unique identifier for the session
+  shop          String // Shop name or domain for the session
+  state         String // Current state of the session
+  isOnline      Boolean   @default(false) // Online status of the session
+  scope         String? // Scope of access (optional)
+  expires       DateTime? // Expiration date of the session (optional)
+  accessToken   String // Access token for authentication
+  userId        BigInt? // User ID associated with the session (optional)
+  firstName     String? // First name of the user (optional)
+  lastName      String? // Last name of the user (optional)
+  email         String? // Email address of the user (optional)
+  accountOwner  Boolean   @default(false) // Indicates if the user is the account owner
+  locale        String? // Locale of the user (optional)
+  collaborator  Boolean?  @default(false) // Indicates if the user is a collaborator (optional)
+  emailVerified Boolean?  @default(false) // Indicates if the user's email is verified
+  refreshToken  String? // Refresh token for offline sessions (optional)
+  refreshTokenExpires DateTime? // Expiration for the refresh token (optional)
+}
+
+model Jwt {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  recomind_token  String
+  recomind_shop   String @unique
 }

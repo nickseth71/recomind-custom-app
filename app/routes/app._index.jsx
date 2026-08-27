@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useApi } from "../hooks/useApi";
-import { productApi } from "../lib/api";
+import { productApi, storeApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
-import { authenticate } from "../shopify.server";
+import { useAuth } from "../context/Authcontext";
+import { useNavigate } from "react-router";
 
 // ─── lucide-react — one named import per icon, fully tree-shakeable ──────────
 import {
@@ -38,11 +39,13 @@ import {
   Wrench,
 } from "lucide-react";
 
+
 const ICON_MAP = {
   // engines
   ChatGPT: MessageSquare,
   Perplexity: Compass,
   GeminiIcon: Layers,
+  ClaudeIcon: WandSparkles,
   Globe: Globe2,
   // ui
   Inventory: Package,
@@ -166,6 +169,12 @@ const ENGINE_BASE = [
   },
   { key: "gemini", label: "Gemini", sub: "Google", iconName: "GeminiIcon" },
   {
+    key: "claude",
+    label: "Claude",
+    sub: "Anthropic",
+    iconName: "ClaudeIcon",
+  },
+  {
     key: "aiOverview",
     label: "AI Overview",
     sub: "Search SGE",
@@ -173,6 +182,8 @@ const ENGINE_BASE = [
   },
 ];
 
+// Colors for the DYNAMIC (ranked) engines only — chatgpt/perplexity/gemini,
+// plus claude when the plan includes it. Up to 4 possible ranks.
 const ENGINE_RANK_COLORS = [
   {
     hex: "#00e29e",
@@ -193,12 +204,23 @@ const ENGINE_RANK_COLORS = [
     borderClass: "border-tertiary/20",
   },
   {
-    hex: "#585e71",
-    colorClass: "text-secondary",
-    bgClass: "bg-secondary/10",
-    borderClass: "border-secondary/20",
+    hex: "#c96442",
+    colorClass: "text-[#c96442]",
+    bgClass: "bg-[#c96442]/10",
+    borderClass: "border-[#c96442]/20",
   },
 ];
+
+// AI Overview is always pinned last with this exact color, regardless of
+// how many dynamic engines precede it — it never participates in ranking,
+// so its appearance must never shift just because Claude is or isn't
+// present for a given plan.
+const PINNED_ENGINE_COLOR = {
+  hex: "#585e71",
+  colorClass: "text-secondary",
+  bgClass: "bg-secondary/10",
+  borderClass: "border-secondary/20",
+};
 
 const VISIBILITY_CONFIG = {
   HIGH: {
@@ -370,7 +392,7 @@ function TokenRing({ pct }) {
 }
 
 /* ─── EngineRow ──────────────────────────────────────────────────── */
-const RANK_LABELS = ["#1", "#2", "#3", "SGE"];
+const RANK_LABELS = ["#1", "#2", "#3", "#4", "SGE"];
 
 function EngineRow({ engine, value, loading, rank }) {
   return (
@@ -474,16 +496,29 @@ function PromptRow({ item }) {
 }
 
 /* ─── Page ───────────────────────────────────────────────────────── */
-export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-  return null;
-};
+export const loader = async () => null;
 
 export default function Index() {
   const [timePeriod, setTimePeriod] = useState("30d");
   const [promptTab, setPromptTab] = useState("missing");
-  const token = localStorage.getItem("recomind_token");
-  
+  const { token } = useAuth();
+
+  // Store/plan NAME only, decoupled from the period toggle — this is what
+  // fixes the tab flash: previously availablePeriods derived from the
+  // period-scoped dashboard response's `plan`, which gets cleared to null
+  // on every period click while the new fetch is in flight, briefly
+  // collapsing the tab list to its single-item fallback. The plan name
+  // doesn't change when you switch time periods, so it shouldn't be
+  // re-fetched (or wiped) when you do. Everything else that reads the
+  // fuller `plan` object below (limits, tokenQuota, config.tagline) still
+  // comes from the dashboard response as before — this is purely for the
+  // tab list.
+  const { data: storeResponse } = useApi(
+    token ? () => storeApi.getMe() : null,
+    [token],
+  );
+  const accountPlanName = (storeResponse?.data?.plan || "").toLowerCase();
+
   const {
     data: dashboardResponse,
     loading,
@@ -504,6 +539,7 @@ export default function Index() {
   const plan = stats?.plan ?? {};
   const tokenQuota = plan?.tokenQuota ?? {};
   const promptSummary = promptWin?.summary ?? {};
+  const navigate = useNavigate()
 
   const tableProducts = recentAnalyses
     .slice()
@@ -528,10 +564,17 @@ export default function Index() {
       ? "bg-error"
       : "bg-[#00e29e]";
 
-  // Sort top-3 engines by coverage desc; pin aiOverview last
+  // Sort top engines by coverage desc; pin aiOverview last. Claude only
+  // appears when the store's plan includes it — the backend omits the key
+  // entirely for Starter, so coverage.claude is undefined there and this
+  // filters it out with zero visual change for those merchants.
   const sortedEngines = useMemo(() => {
     const pinned = ENGINE_BASE.find((e) => e.key === "aiOverview");
-    const dynamic = ENGINE_BASE.filter((e) => e.key !== "aiOverview");
+    const dynamic = ENGINE_BASE.filter(
+      (e) =>
+        e.key !== "aiOverview" &&
+        (e.key !== "claude" || coverage.claude != null),
+    );
     const sorted = dynamic
       .map((e) => ({ ...e, value: coverage[e.key] ?? 0 }))
       .sort((a, b) => b.value - a.value)
@@ -541,13 +584,13 @@ export default function Index() {
       {
         ...pinned,
         value: coverage["aiOverview"] ?? 0,
-        ...ENGINE_RANK_COLORS[3],
+        ...PINNED_ENGINE_COLOR,
       },
     ];
   }, [coverage]);
 
   const availablePeriods = useMemo(() => {
-    const planName = (plan?.name || "").toLowerCase();
+    const planName = accountPlanName;
 
     if (planName === "starter") {
       return [{ value: "30d", label: "30D" }];
@@ -568,9 +611,9 @@ export default function Index() {
       ];
     }
 
-    // fallback
+    // fallback — still shown while accountPlanName hasn't loaded yet
     return [{ value: "30d", label: "30D" }];
-  }, [plan]);
+  }, [accountPlanName]);
 
   return (
     <div className="space-y-4">
@@ -612,10 +655,10 @@ export default function Index() {
               </button>
             ))}
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl text-[13px] font-semibold hover:opacity-90 transition-opacity">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl text-[13px] font-semibold hover:opacity-90 transition-opacity">
             <Icon name="Bolt" size={14} className="text-on-primary" />
             Simulate
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -1128,9 +1171,10 @@ export default function Index() {
                   item.productId?.title ?? item.productTitle ?? "Untitled";
                 const bestFor = (item.bestFor ?? []).slice(0, 2).join(", ");
                 const conf = CONF_CONFIG[item.interpretationConf || "UNKNOWN"];
-
+                const detailHref = `/app/products/${item.productId?._id}`;
                 return (
                   <tr
+                    onClick={() => item.productId?._id && navigate(detailHref)}
                     key={item._id}
                     className="hover:bg-surface-container-low/50 transition-colors"
                   >
@@ -1252,11 +1296,11 @@ export default function Index() {
                     </td>
 
                     {/* Action */}
-                    <td className="px-4 py-4 text-right">
+                    {/* <td className="px-4 py-4 text-right">
                       <button className="px-3 py-1.5 bg-primary text-on-primary rounded-lg font-mono-sm text-[11px] font-semibold hover:opacity-90 transition-opacity">
                         Optimize
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })

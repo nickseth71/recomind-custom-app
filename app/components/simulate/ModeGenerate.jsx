@@ -65,10 +65,10 @@ export default function ModeGenerate({ token }) {
     // <div className="flex flex-col items-center justify-center gap-2">
     <div className="space-y-4">
       {/* ── Left: Controls ── */}
-        <div>
+      <div>
         {/* <div className="rounded-2xl border border-outline-variant bg-surface p-5 space-y-5">
          */}
-         <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 ml-1 space-y-5">
+        <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 ml-1 space-y-5">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
               Product
@@ -83,6 +83,7 @@ export default function ModeGenerate({ token }) {
             token={token}
             value={productId}
             onChange={setProductId}
+            pageSize={5}
           />
 
           <div>
@@ -184,7 +185,8 @@ export default function ModeGenerate({ token }) {
                       <Link
                         to={`/app/promptwins/${item._id}`}
                         className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-gray-300 bg-gray-100 text-gray-700 font-mono-sm text-[11px]
-                         font-bold hover:bg-gray-200 hover:text-gray-900 transition-colors">
+                         font-bold hover:bg-gray-200 hover:text-gray-900 transition-colors"
+                      >
                         Detail
                       </Link>
                     </div>
@@ -239,7 +241,8 @@ export default function ModeGenerate({ token }) {
                       <Link
                         to={`/app/promptwins/${item._id}`}
                         className="inline-flex items-center justify-center h-6 px-4 rounded-xl border border-gray-300 bg-gray-100 
-                        text-gray-700 font-mono-sm text-[11px] font-bold hover:bg-gray-200 hover:text-gray-900 transition-colors">
+                        text-gray-700 font-mono-sm text-[11px] font-bold hover:bg-gray-200 hover:text-gray-900 transition-colors"
+                      >
                         Detail
                       </Link>
                     </div>

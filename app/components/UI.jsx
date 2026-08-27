@@ -70,11 +70,7 @@ export function PageHeader({ title, subtitle, actions }) {
         <h1 className="font-headline-lg text-headline-lg text-on-surface">
           {title}
         </h1>
-        {subtitle && (
-          <p className="text-secondary-fixed-dim mt-1 text-body-md">
-            {subtitle}
-          </p>
-        )}
+        {subtitle && <p className="text-black mt-1 text-body-md">{subtitle}</p>}
       </div>
       {actions && <div className="flex gap-2 shrink-0">{actions}</div>}
     </div>
@@ -279,7 +275,7 @@ export function ScoreBar({ value, max }) {
   const pct = Math.min(100, Math.round((value / max) * 100));
   const col = pct >= 70 ? "#00e29e" : pct >= 40 ? "#e9ba00" : "#ba1a1a";
   return (
-    <div className="h-1.5 rounded-full overflow-hidden bg-outline-variant flex-1">
+    <div className="h-1.5 rounded-full overflow-hidden bg-[#fff8f1] flex-1">
       <div
         className="h-full rounded-full"
         style={{
@@ -471,7 +467,7 @@ export function Modal({ title, onClose, children, maxWidth = "max-w-lg" }) {
   }, [onClose]);
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="w-full h-full fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.6)" }}
       onClick={onClose}
     >
@@ -646,4 +642,13 @@ export const ENGINE_COLORS = {
   perplexity: "#111844", // was --color-on-primary-container (#dbe1ff, too light) -> dark navy
   gemini: "#00875a", // darkened from #00e29e for label-text contrast on light tile
   aiOverview: "#187bda",
+  claude: "#c96442", // Anthropic's brand terracotta — Growth+ only, see ENGINE_LABELS below
+};
+
+export const ENGINE_LABELS = {
+  chatgpt: "ChatGPT",
+  perplexity: "Perplexity",
+  gemini: "Gemini",
+  aiOverview: "AI Overviews",
+  claude: "Claude",
 };
