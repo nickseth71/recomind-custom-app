@@ -101,11 +101,11 @@ export default function Billing() {
           </div>
 
           <div className="flex gap-4">
-            <button className="rounded-xl border px-2 py-2 h-8 text-on-surface-variant text-mono-sm">
+            <button className="rounded-xl border px-2 py-2 h-8 text-on-surface-variant text-mono-sm cursor-pointer">
               Cancel Plan
             </button>
 
-            <button className="rounded-xl  px-2 py-2 h-8 text-white text-mono-sm bg-[#111844]">
+            <button className="rounded-xl  px-2 py-2 h-8 text-white text-mono-sm bg-[#111844] cursor-pointer">
               Upgrade Plan
             </button>
           </div>

@@ -3,7 +3,7 @@ import { useApi } from "../hooks/useApi";
 import { productApi, storeApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { useAuth } from "../context/Authcontext";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 
 // ─── lucide-react — one named import per icon, fully tree-shakeable ──────────
 import {
@@ -38,7 +38,6 @@ import {
   User,
   Wrench,
 } from "lucide-react";
-
 
 const ICON_MAP = {
   // engines
@@ -539,7 +538,7 @@ export default function Index() {
   const plan = stats?.plan ?? {};
   const tokenQuota = plan?.tokenQuota ?? {};
   const promptSummary = promptWin?.summary ?? {};
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const tableProducts = recentAnalyses
     .slice()
@@ -643,7 +642,7 @@ export default function Index() {
                 key={period.value}
                 onClick={() => setTimePeriod(period.value)}
                 className={`
-        px-4 py-2 rounded-lg text-[12px] font-semibold transition-all
+        px-4 py-2 rounded-lg text-[12px] font-semibold transition-all cursor-pointer
         ${
           timePeriod === period.value
             ? "bg-primary text-on-primary shadow-md"
@@ -856,7 +855,7 @@ export default function Index() {
               <button
                 key={tab.id}
                 onClick={() => setPromptTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-mono-sm text-[11px] font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-mono-sm text-[11px] font-semibold transition-all cursor-pointer ${
                   promptTab === tab.id
                     ? "bg-primary text-on-primary"
                     : "text-on-surface-variant hover:bg-surface-container"
@@ -1110,9 +1109,12 @@ export default function Index() {
               </h3>
             </div>
           </div>
-          <button className="font-mono-sm text-mono-sm font-semibold text-secondary hover:underline">
+          <Link
+            to="/app/products"
+            className="font-mono-sm text-mono-sm font-semibold text-secondary hover:underline cursor-pointer"
+          >
             View all →
-          </button>
+          </Link>
         </div>
         <Divider />
         <table className="w-full text-left">
@@ -1179,7 +1181,7 @@ export default function Index() {
                     className="hover:bg-surface-container-low/50 transition-colors"
                   >
                     {/* Product */}
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4 cursor-pointer">
                       <div className="flex items-center gap-3">
                         <ProductThumb images={item.images ?? []} />
                         <div className="min-w-0">
@@ -1196,14 +1198,14 @@ export default function Index() {
                     </td>
 
                     {/* Best For */}
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4  cursor-pointer">
                       <p className="font-mono-sm text-mono-sm text-on-surface-variant max-w-[130px] truncate">
                         {bestFor || "—"}
                       </p>
                     </td>
 
                     {/* Score */}
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4  cursor-pointer">
                       <div className="flex items-center gap-2">
                         <div className="w-12 h-[3px] bg-surface-container-highest rounded-full overflow-hidden">
                           <div
@@ -1220,7 +1222,7 @@ export default function Index() {
                     </td>
 
                     {/* Buyer Profile */}
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4  cursor-pointer">
                       {item.primaryBuyer ? (
                         <div className="flex items-start gap-1.5 max-w-[150px]">
                           <Icon
@@ -1247,7 +1249,7 @@ export default function Index() {
                     </td>
 
                     {/* High-impact fixes */}
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4 cursor-pointer">
                       {item.highImpactFixes > 0 ? (
                         <div className="flex items-center gap-1.5">
                           <Icon
@@ -1276,7 +1278,7 @@ export default function Index() {
                     </td>
 
                     {/* Shopify status */}
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4 cursor-pointer">
                       <span
                         className={`flex items-center gap-1.5 font-mono-sm text-[11px] font-semibold ${item.appliedToShopify ? "text-green-win" : "text-on-surface-variant"}`}
                       >

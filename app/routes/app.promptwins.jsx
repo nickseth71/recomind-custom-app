@@ -7,7 +7,7 @@ import { Link } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { promptApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
-import {useAuth} from "../context/Authcontext"
+import { useAuth } from "../context/Authcontext";
 import AiSpinner from "../components/loader/AiSpinner";
 import ProgressCircle from "../components/ProgressCircle";
 import PromptRow from "../components/PromptRow";
@@ -196,7 +196,7 @@ export default function PromptWinDashboard() {
           <button
             onClick={refetchAll}
             disabled={summaryLoading}
-            className="flex items-center gap-2 px-4 py-2 glass-card rounded-xl text-on-surface hover:brightness-95 transition-all disabled:opacity-50 font-label-md text-label-md"
+            className="flex items-center gap-2 px-4 py-2 glass-card rounded-xl text-on-surface hover:brightness-95 transition-all disabled:opacity-50 font-label-md text-label-md cursor-pointer"
           >
             {summaryLoading ? (
               <Loader2 size={15} className="animate-spin" strokeWidth={1.8} />
@@ -326,7 +326,7 @@ export default function PromptWinDashboard() {
                       <button
                         key={key}
                         onClick={() => setActiveTab(key)}
-                        className={`flex items-center gap-1.5 pb-3.5 px-4 font-mono-sm text-[12px] font-bold border-b-2 transition-all ${active ? "border-primary text-primary" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}
+                        className={`flex items-center gap-1.5 pb-3.5 px-4 font-mono-sm text-[12px] font-bold border-b-2 transition-all  cursor-pointer ${active ? "border-primary text-primary" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}
                       >
                         {label}
                         <span

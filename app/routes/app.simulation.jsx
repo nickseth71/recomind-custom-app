@@ -28,33 +28,27 @@ export default function Simulate() {
   //   [token],
   // );
   const {
-  data: historyRes,
-  loading,
-  error,
-  refetch: refetchHistory,
-} = useApi(
-  token ? () => promptApi.history({ limit: 8 }) : null,
-  [token],
-);
+    data: historyRes,
+    loading,
+    error,
+    refetch: refetchHistory,
+  } = useApi(token ? () => promptApi.history({ limit: 8 }) : null, [token]);
   const history = historyRes?.data ?? [];
   if (loading) {
-  return (
-    <div className="flex min-h-[70vh] items-center justify-center">
-      <AiSpinner
-        size={70}
-        label="Loading simulator..."
-      />
-    </div>
-  );
-}
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <AiSpinner size={70} label="Loading simulator..." />
+      </div>
+    );
+  }
 
-if (error) {
-  return (
-    <div className="flex min-h-[70vh] items-center justify-center text-error text-lg font-semibold">
-      {error}
-    </div>
-  );
-}
+  if (error) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center text-error text-lg font-semibold">
+        {error}
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <PageHeader
@@ -69,7 +63,7 @@ if (error) {
             key={key}
             type="button"
             onClick={() => setMode(key)}
-            className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-all ${
+            className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-all cursor-pointer ${
               mode === key
                 ? "bg-primary text-on-primary shadow-sm"
                 : "bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"

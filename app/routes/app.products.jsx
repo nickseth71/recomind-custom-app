@@ -1641,8 +1641,8 @@ function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
     const label = `Analysing ${activeBatch.completed + activeBatch.failed}/${activeBatch.total}…`;
     if (variant === "cta") {
       return (
-        <div className="flex flex-col gap-1.5 min-w-[220px]">
-          <div className="flex items-center gap-2 font-mono-sm text-[12px] font-bold text-on-surface">
+        <div className="flex flex-col gap-1.5 min-w-[220px]  cursor-pointer">
+          <div className="flex items-center gap-2 font-mono-sm text-[12px] font-bold text-on-surface ">
             <Loader2
               size={14}
               className="animate-spin text-primary shrink-0"
@@ -1700,7 +1700,7 @@ function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
     <button
       onClick={onClick}
       disabled={starting}
-      className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(17,24,68,0.35)] disabled:opacity-50 font-label-md text-label-md"
+      className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(17,24,68,0.35)] disabled:opacity-50 font-label-md text-label-md cursor-pointer"
     >
       {starting ? (
         <Loader2
@@ -1723,7 +1723,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
 
   if (activeJob) {
     return (
-      <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary/10 text-primary border border-primary/25">
+      <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary/10 text-primary border border-primary/25 cursor-pointer">
         <Loader2
           size={12}
           className="animate-spin shrink-0"
@@ -1741,7 +1741,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
           e.stopPropagation();
           onConfirmAnalyse();
         }}
-        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary text-on-primary hover:opacity-90 transition-opacity"
+        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary text-on-primary hover:opacity-90 transition-opacity cursor-pointer"
       >
         Analyse
       </button>
@@ -1753,7 +1753,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
           e.stopPropagation();
           onOptimise();
         }}
-        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-secondary-container text-on-secondary-container border border-secondary-fixed/30 hover:opacity-90 transition-opacity"
+        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-secondary-container text-on-secondary-container border border-secondary-fixed/30 hover:opacity-90 transition-opacity cursor-pointer"
       >
         Optimise
       </button>
@@ -1763,7 +1763,7 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
   // optimized, there's nothing actionable left for this button to do.
   // Just confirm the state instead of duplicating that action.
   return (
-    <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-green-win bg-[#00e29e]/10 border border-[#00e29e]/25">
+    <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-green-win bg-[#00e29e]/10 border border-[#00e29e]/25  cursor-pointer">
       <CheckCircle2 size={13} strokeWidth={2.2} />
       Optimized
     </span>
@@ -1837,14 +1837,14 @@ function ConfirmAnalyseModal({ product, onClose, onConfirm }) {
         <div className="flex gap-3">
           <button
             onClick={onConfirm}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity cursor-pointer"
           >
             <Zap size={15} strokeWidth={1.8} />
             Run Analysis
           </button>
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl font-bold text-[13px] border border-outline-variant text-on-surface-variant hover:text-on-surface transition-colors"
+            className="px-5 py-2.5 rounded-xl font-bold text-[13px] border border-outline-variant text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
           >
             Cancel
           </button>
@@ -2303,14 +2303,14 @@ function OptimiseModal({ product, onClose, onDone }) {
           <div className="flex gap-3">
             <button
               onClick={apply}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity cursor-pointer"
             >
               <WandSparkles size={15} strokeWidth={1.8} />
               Apply to Shopify
             </button>
             <button
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl font-bold text-[13px] border border-outline-variant text-on-surface-variant hover:text-on-surface transition-colors"
+              className="px-5 py-2.5 rounded-xl font-bold text-[13px] border border-outline-variant text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -2704,27 +2704,30 @@ function ProductRow({
           className="flex items-center justify-end gap-1.5"
           onClick={(e) => e.stopPropagation()}
         >
-          {hasData ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onConfirmAnalyse();
-              }}
-              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
-            >
-              Re-analyze
-            </button>
-          ) : (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onSimulate();
-              }}
-              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
-            >
-              Simulate
-            </button>
-          )}
+          {
+            hasData && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onConfirmAnalyse();
+                }}
+                className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors cursor-pointer"
+              >
+                Re-analyze
+              </button>
+            )
+            // ) : (
+            //   <button
+            //     onClick={(e) => {
+            //       e.stopPropagation();
+            //       onSimulate();
+            //     }}
+            //     className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors  cursor-pointer"
+            //   >
+            //     Simulate
+            //   </button>
+            // )
+          }
           <ActionButton
             product={product}
             onConfirmAnalyse={onConfirmAnalyse}
@@ -2734,7 +2737,7 @@ function ProductRow({
             <Link
               to={detailHref}
               onClick={(e) => e.stopPropagation()}
-              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
+              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors cursor-pointer"
             >
               View
             </Link>
@@ -2747,7 +2750,7 @@ function ProductRow({
               }}
               title="Remove from sync"
               aria-label="Remove from sync"
-              className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors border-l border-outline-variant/60 ml-1 pl-2"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors border-l border-outline-variant/60 ml-1 pl-2  cursor-pointer"
             >
               <Trash2 size={14} strokeWidth={2} />
             </button>
@@ -2964,7 +2967,7 @@ export default function Products() {
             <button
               onClick={handleSync}
               disabled={syncLoading}
-              className="flex items-center gap-2 px-4 py-2 glass-card rounded-xl text-on-surface hover:brightness-95 transition-all disabled:opacity-50 font-label-md text-label-md"
+              className="flex items-center gap-2 px-4 py-2 glass-card rounded-xl text-on-surface hover:brightness-95 transition-all disabled:opacity-50 font-label-md text-label-md  cursor-pointer"
             >
               {syncLoading ? (
                 <Loader2
@@ -3032,7 +3035,7 @@ export default function Products() {
           <div className="relative ">
             <Search
               size={14}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant  cursor-pointer"
               strokeWidth={1.8}
             />
             <input

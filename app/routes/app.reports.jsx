@@ -257,6 +257,7 @@ export default function Reports() {
                   onClick={r.locked ? undefined : r.action}
                   disabled={r.locked || loadingKey === r.key}
                   variant={r.locked ? "ghost" : "primary"}
+                  className="cursor-pointer"
                 >
                   {loadingKey === r.key ? (
                     <>

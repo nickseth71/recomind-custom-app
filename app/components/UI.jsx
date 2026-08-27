@@ -111,7 +111,7 @@ export function PillTabs({
           <button
             key={item.key}
             onClick={() => onChange(item.key)}
-            className={`flex items-center gap-1.5 px-2 py-2 rounded-xl font-mono-sm text-[12px] font-bold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-2 py-2 rounded-xl font-mono-sm text-[12px] font-bold transition-all whitespace-nowrap cursor-pointer${
               active
                 ? "bg-primary text-on-primary shadow-md"
                 : "text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface"

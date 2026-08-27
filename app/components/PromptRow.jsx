@@ -52,7 +52,7 @@ export default function PromptRow({ item }) {
     >
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full text-left px-4 py-3.5 flex items-start gap-3"
+        className="w-full text-left px-4 py-3.5 flex items-start gap-3 cursor-pointer"
       >
         <div
           className="mt-1 shrink-0 w-2 h-2 rounded-full"
