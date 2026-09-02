@@ -79,7 +79,7 @@ export default function Billing() {
 
       {/* Current Plan */}
 
-      <div className="mt-5 rounded-xl glass-card p-8">
+      {/* <div className="mt-5 rounded-xl glass-card p-8">
         <div className="flex justify-between">
           <div>
             <p className="text-on-surface-variant text-mono-sm">Current Plan</p>
@@ -113,7 +113,7 @@ export default function Billing() {
 
         {/* Progress */}
 
-        <div className="mt-5 grid grid-cols-3 gap-4">
+        {/* <div className="mt-5 grid grid-cols-3 gap-4">
           {usageData.map((item) => (
             <div key={item.title}>
               <div className="mb-2 flex justify-between">
@@ -144,7 +144,8 @@ export default function Billing() {
             </div>
           ))}
         </div>
-      </div>
+      </div>  */}
+
       {/* Plans */}
 
       <div className="mt-5 rounded-xl border glass-card  p-5">
