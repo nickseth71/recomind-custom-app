@@ -1,10 +1,18 @@
 // /app/lib.js/api.js
 // Central API client — all calls to the RecoMind Express backend
 
-const BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+const BASE =
+  import.meta.env.VITE_BASE_URL ||
+  "https://staging-recomind-api.onrender.com/recomind/v1";
+
+let currentToken = null;
+
+export function setAuthToken(token) {
+  currentToken = token;
+}
 
 function getToken() {
-  return localStorage.getItem("recomind_token");
+  return currentToken;
 }
 
 async function request(path, options = {}) {
@@ -44,6 +52,20 @@ export const productApi = {
       body: JSON.stringify({ analysisId }),
     }),
   sync: () => request("/products/sync", { method: "POST" }),
+  searchShopify: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/products/shopify-search${q ? `?${q}` : ""}`);
+  },
+  searchShopifyCollections: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/products/shopify-collections${q ? `?${q}` : ""}`);
+  },
+  syncSelected: (shopifyProductIds) =>
+    request("/products/sync-selected", {
+      method: "POST",
+      body: JSON.stringify({ shopifyProductIds }),
+    }),
+  removeFromSync: (id) => request(`/products/${id}/sync`, { method: "DELETE" }),
   jobStatus: (jobId) => request(`/products/jobs/${jobId}`),
 };
 
@@ -51,6 +73,10 @@ export const promptApi = {
   dashboard: ({ params = {} }) => {
     const q = new URLSearchParams(params).toString();
     return request(`/prompts/win-dashboard${q ? `?${q}` : ""}`);
+  },
+  dashboardPrompts: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/prompts/win-dashboard/prompts${q ? `?${q}` : ""}`);
   },
   simulate: (prompt, productId) =>
     request("/prompts/simulate", {
@@ -71,6 +97,7 @@ export const promptApi = {
     const q = new URLSearchParams(params).toString();
     return request(`/prompts/history${q ? `?${q}` : ""}`);
   },
+  getSimulation: (id) => request(`/prompts/simulations/${id}`),
   getProductPrompts: (productId, params = {}) => {
     const q = new URLSearchParams(params).toString();
     return request(`/prompts/products/${productId}${q ? `?${q}` : ""}`);
@@ -92,6 +119,18 @@ export const reportApi = {
     });
     if (!res.ok) throw new Error("Failed to generate llms.txt");
     return res.text();
+  },
+  competitorGap: async () => {
+    const res = await fetch(`${BASE}/reports/competitor-gap`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      throw new Error(
+        body?.error || "Failed to generate competitor gap report",
+      );
+    }
+    return res.blob();
   },
   auditLog: (params = {}) => {
     const q = new URLSearchParams(params).toString();

@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "56333f90e32fd303bab3a2668a834bfe"
-name = "RecoMind"
+client_id = "005293cbf0eb091c3ef5661dbdbe9372"
+name = "RecoMind-2"
 application_url = "https://recomindai.onrender.com"
 embedded = true
 

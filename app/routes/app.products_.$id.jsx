@@ -2,15 +2,14 @@
 // NOTE: filename uses "products_" (trailing underscore) so this is a
 // SIBLING route at /app/products/:id, not nested under app.products.jsx.
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router";
+import { useParams } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
 import { jwtDecode } from "jwt-decode";
-import { ProductThumb } from "../components/UI";
+import { useAuth } from "../context/Authcontext";
 import {
   Card,
-  Divider,
   Eyebrow,
   BackLink,
   PillTabs,
@@ -26,6 +25,7 @@ import {
   scoreLabel,
   BREAKDOWN_META,
   ENGINE_COLORS,
+  ENGINE_LABELS,
 } from "../components/UI";
 import {
   CheckCircle2,
@@ -35,12 +35,10 @@ import {
   WandSparkles,
   Brain,
   BarChart2,
-  Eye,
   Wrench,
   HelpCircle,
   GitCompare,
   Search,
-  Star,
 } from "lucide-react";
 
 // function stripHtml(value = "") {
@@ -143,13 +141,26 @@ function OverviewPanel({ analysis, product }) {
 
       {analysis.engineCoverage && (
         <SBox label="AI Engine Coverage">
-          <div className="grid grid-cols-4 gap-3">
+          <div
+            className={`grid gap-3 ${
+              analysis.engineCoverage.claude != null
+                ? "grid-cols-5"
+                : "grid-cols-4"
+            }`}
+          >
             {[
-              { key: "chatgpt", label: "ChatGPT" },
-              { key: "perplexity", label: "Perplexity" },
-              { key: "gemini", label: "Gemini" },
-              { key: "aiOverview", label: "AI Overview" },
-            ].map(({ key, label }) => (
+              { key: "chatgpt" },
+              { key: "perplexity" },
+              { key: "gemini" },
+              { key: "aiOverview" },
+              // Claude is Growth+ only — the backend omits the key entirely
+              // for plans that don't include it, so this naturally stays
+              // hidden for Starter without duplicating plan-gating logic
+              // here.
+              ...(analysis.engineCoverage.claude != null
+                ? [{ key: "claude" }]
+                : []),
+            ].map(({ key }) => (
               <div
                 key={key}
                 className="rounded-xl border border-outline-variant bg-surface-container-highest p-4 text-center"
@@ -161,7 +172,7 @@ function OverviewPanel({ analysis, product }) {
                   {analysis.engineCoverage[key] ?? 0}%
                 </div>
                 <p className="font-mono-sm text-[11px] text-on-surface-variant mt-1">
-                  {label}
+                  {ENGINE_LABELS[key]}
                 </p>
               </div>
             ))}
@@ -222,7 +233,7 @@ function OverviewPanel({ analysis, product }) {
 }
 
 /* ═══ INTELLIGENCE PANEL ════════════════════════════════════════ */
-function IntelligencePanel({ interpretation }) {
+function IntelligencePanel({ interpretation, plan }) {
   if (!interpretation?.productIdentity)
     return (
       <p className="font-mono-sm text-mono-sm text-on-surface-variant text-center py-16">
@@ -375,36 +386,37 @@ function IntelligencePanel({ interpretation }) {
         </SBox>
       )}
 
-      {(comp.directCompetitors?.length > 0 ||
-        comp.differentiators?.length > 0) && (
-        <div className="grid grid-cols-2 gap-4">
-          {comp.directCompetitors?.length > 0 && (
-            <SBox
-              label="Direct Competitors"
-              labelClass="text-on-secondary-container"
-            >
-              <div className="flex flex-wrap">
-                {comp.directCompetitors.map((c) => (
-                  <Chip key={c} text={c} />
-                ))}
-              </div>
-            </SBox>
-          )}
-          {comp.differentiators?.length > 0 && (
-            <SBox label="Differentiators" labelClass="text-green-win">
-              {comp.differentiators.map((d) => (
-                <div
-                  key={d}
-                  className="flex gap-2 py-1.5 font-mono-sm text-mono-sm text-on-surface border-b border-outline-variant/30 last:border-0"
-                >
-                  <span className="text-green-win shrink-0">✓</span>
-                  {d}
+      {plan !== "starter" &&
+        (comp.directCompetitors?.length > 0 ||
+          comp.differentiators?.length > 0) && (
+          <div className="grid grid-cols-2 gap-4">
+            {comp.directCompetitors?.length > 0 && (
+              <SBox
+                label="Direct Competitors"
+                labelClass="text-on-secondary-container"
+              >
+                <div className="flex flex-wrap">
+                  {comp.directCompetitors.map((c) => (
+                    <Chip key={c} text={c} />
+                  ))}
                 </div>
-              ))}
-            </SBox>
-          )}
-        </div>
-      )}
+              </SBox>
+            )}
+            {comp.differentiators?.length > 0 && (
+              <SBox label="Differentiators" labelClass="text-green-win">
+                {comp.differentiators.map((d) => (
+                  <div
+                    key={d}
+                    className="flex gap-2 py-1.5 font-mono-sm text-mono-sm text-on-surface border-b border-outline-variant/30 last:border-0"
+                  >
+                    <span className="text-green-win shrink-0">✓</span>
+                    {d}
+                  </div>
+                ))}
+              </SBox>
+            )}
+          </div>
+        )}
 
       {gaps.criticalGaps?.length > 0 && (
         <div className="rounded-xl border border-error/20 bg-error/5 p-5">
@@ -772,7 +784,7 @@ export const loader = async () => null;
 /* ═══ PRODUCT DETAIL PAGE ══════════════════════════════════════ */
 export default function ProductDetail() {
   const { id } = useParams();
-  const token = localStorage.getItem("recomind_token");
+  const { token } = useAuth();
   console.log(token);
   const decoded = token ? jwtDecode(token) : null;
   const storePlan = decoded?.storePlan?.toLowerCase(); //added
@@ -962,7 +974,7 @@ export default function ProductDetail() {
                     </div>
                   </div>
                 )}
-                {previewFaqs.length > 0 && (
+                {/* {previewFaqs.length > 0 && (
                   <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
                     <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
                       FAQ items to sync
@@ -976,13 +988,13 @@ export default function ProductDetail() {
                       ))}
                     </ul>
                   </div>
-                )}
+                )} */}
                 <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
                   <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
                     Shopify fields that will change
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {["Title", "Description", "Tags", "FAQ"].map((field) => (
+                    {["Title", "Description", "Tags"].map((field) => (
                       <span
                         key={field}
                         className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-[11px] text-on-surface-variant"
@@ -1141,7 +1153,10 @@ export default function ProductDetail() {
               <OverviewPanel analysis={analysis} product={product} />
             )}
             {tab === "intelligence" && (
-              <IntelligencePanel interpretation={interpretation} />
+              <IntelligencePanel
+                interpretation={interpretation}
+                plan={storePlan}
+              />
             )}
             {tab === "prompts" && (
               <SmartPromptsPanel smartPrompts={smartPrompts} />
