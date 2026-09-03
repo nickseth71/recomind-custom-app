@@ -2,7 +2,7 @@
 // NOTE: filename uses "products_" (trailing underscore) so this is a
 // SIBLING route at /app/products/:id, not nested under app.products.jsx.
 import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { productApi } from "../lib/api";
 import { useApi } from "../hooks/useApi";
@@ -17,7 +17,6 @@ import {
   Chip,
   ScoreRing,
   ScoreBar,
-  Modal,
   confColors,
   impactColors,
   effortColors,
@@ -32,7 +31,6 @@ import {
   TriangleAlert,
   Loader2,
   Package,
-  WandSparkles,
   Brain,
   BarChart2,
   Wrench,
@@ -791,10 +789,6 @@ export default function ProductDetail() {
   // const decoded = jwtDecode(token)
   console.log("Decoded Token", decoded);
   const [tab, setTab] = useState("overview");
-  const [applyLoading, setApplyLoading] = useState(false);
-  const [applyDone, setApplyDone] = useState(false);
-  const [applyErr, setApplyErr] = useState(null);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   const { data, loading, error, refetch } = useApi(
     token && id ? () => productApi.get(id) : null,
@@ -808,37 +802,6 @@ export default function ProductDetail() {
   const smartPrompts = analysis?.smartPrompts || detail?.smartPrompts;
   const fixes = analysis?.prioritizedFixes || detail?.prioritizedFixes || [];
   const highFixCount = fixes.filter((f) => f.impact === "HIGH").length;
-
-  async function handleOpenPreview() {
-    setApplyErr(null);
-    setShowUpdateModal(true);
-  }
-
-  async function handleApply() {
-    setApplyLoading(true);
-    setApplyErr(null);
-    try {
-      await productApi.optimise(id);
-      setApplyDone(true);
-      setShowUpdateModal(false);
-      refetch();
-    } catch (e) {
-      setApplyErr(e.message);
-    } finally {
-      setApplyLoading(false);
-    }
-  }
-
-  const previewTitle =
-    analysis?.optimizedTitle || product?.title || "Current product title";
-  const previewDescription =
-    stripHtml(analysis?.optimizedDescription || "") ||
-    "A richer, AI-ready description will be written for this product.";
-  const previewKeywords = [
-    ...(analysis?.bestFor || []),
-    ...(analysis?.intentKeywords || []),
-  ].filter(Boolean);
-  const previewFaqs = (analysis?.faq || []).filter(Boolean).slice(0, 3);
 
   const tabItems = [
     { key: "overview", label: "Overview", icon: BarChart2 },
@@ -896,148 +859,13 @@ export default function ProductDetail() {
             </>
           )}
         </div>
-        {!loading && analysis && !product?.isOptimized && (
-          <div className="shrink-0">
-            {applyDone ? (
-              <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono-sm text-[13px] font-bold text-green-win bg-[#00e29e]/12 border border-[#00e29e]/35">
-                <CheckCircle2 size={15} strokeWidth={2} />
-                Applied to Shopify
-              </span>
-            ) : (
-              <button
-                onClick={handleOpenPreview}
-                disabled={applyLoading}
-                className="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary font-bold rounded-xl font-mono-sm text-[13px] hover:opacity-90 transition-opacity disabled:opacity-60"
-              >
-                {applyLoading ? (
-                  <Loader2
-                    size={15}
-                    className="animate-spin"
-                    strokeWidth={1.8}
-                  />
-                ) : (
-                  <WandSparkles size={15} strokeWidth={1.8} />
-                )}
-                Apply to Shopify
-              </button>
-            )}
-            {applyErr && (
-              <p className="text-error font-mono-sm text-[11px] mt-1.5">
-                {applyErr}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {showUpdateModal && analysis && (
-        <Modal
-          title="What will update on Shopify"
-          onClose={() => setShowUpdateModal(false)}
+        <Link
+          to="/app/ai-index"
+          className="shrink-0 rounded-xl border border-primary/40 px-4 py-2.5 font-mono-sm text-[13px] font-bold text-primary hover:bg-primary/10"
         >
-          <div className="flex flex-col gap-4">
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
-              <p className="font-mono-sm text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
-                Preview before applying
-              </p>
-              <div className="space-y-3">
-                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
-                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
-                    Title
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-on-surface">
-                    {previewTitle}
-                  </p>
-                </div>
-                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
-                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
-                    Description
-                  </p>
-                  <p className="mt-2 text-sm text-on-surface leading-6">
-                    {previewDescription}
-                  </p>
-                </div>
-                {previewKeywords.length > 0 && (
-                  <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
-                    <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
-                      Buyer-intent keywords
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {previewKeywords.slice(0, 8).map((item) => (
-                        <span
-                          key={item}
-                          className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 font-mono-sm text-[11px] text-on-surface-variant"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {/* {previewFaqs.length > 0 && (
-                  <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
-                    <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
-                      FAQ items to sync
-                    </p>
-                    <ul className="mt-2 space-y-1.5 text-sm text-on-surface">
-                      {previewFaqs.map((faq) => (
-                        <li key={faq.question || faq} className="flex gap-2">
-                          <span className="text-primary">•</span>
-                          <span>{faq.question || faq}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )} */}
-                <div className="rounded-lg border border-outline-variant/60 bg-surface/80 p-3">
-                  <p className="font-mono-sm text-[10px] font-semibold uppercase text-on-surface-variant">
-                    Shopify fields that will change
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {["Title", "Description", "Tags"].map((field) => (
-                      <span
-                        key={field}
-                        className="rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-[11px] text-on-surface-variant"
-                      >
-                        {field}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handleApply}
-                disabled={applyLoading}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity disabled:opacity-60"
-              >
-                {applyLoading ? (
-                  <Loader2
-                    size={15}
-                    className="animate-spin"
-                    strokeWidth={1.8}
-                  />
-                ) : (
-                  <WandSparkles size={15} strokeWidth={1.8} />
-                )}
-                Apply to Shopify
-              </button>
-              <button
-                onClick={() => setShowUpdateModal(false)}
-                className="px-5 py-2.5 rounded-xl font-bold text-[13px] border border-outline-variant text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-            {applyErr && (
-              <p className="text-error font-mono-sm text-[11px] text-center">
-                {applyErr}
-              </p>
-            )}
-          </div>
-        </Modal>
-      )}
+          Publish AI Store Index
+        </Link>
+      </div>
 
       {loading && (
         <div className="flex flex-col items-center justify-center py-24 gap-4">

@@ -17,6 +17,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [csvName, setCsvName] = useState("");
 
   async function run() {
     if (!prompt.trim() || !productId) return;
@@ -25,6 +26,24 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
     setResult(null);
     try {
       const res = await promptApi.simulate(prompt, productId);
+      setResult(res.data ?? res);
+      refetchHistory();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function runCsv(event) {
+    const file = event.target.files?.[0];
+    if (!file || !productId) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    setCsvName(file.name);
+    try {
+      const res = await promptApi.simulateCsv(await file.text(), productId);
       setResult(res.data ?? res);
       refetchHistory();
     } catch (e) {
@@ -61,6 +80,22 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           pageSize={5}
           dropdownPosition="top"
         />
+
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+          CSV prompt batch
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            onChange={runCsv}
+            disabled={!productId || loading}
+            className="mt-2 block w-full text-sm normal-case tracking-normal"
+          />
+          {csvName && (
+            <span className="mt-1 block text-xs font-normal normal-case tracking-normal">
+              {csvName}
+            </span>
+          )}
+        </label>
 
         <ErrorBanner message={error} />
 
@@ -99,6 +134,23 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
 
         {result && (
           <>
+            {result.unsimulatedPromptNumbers && (
+              <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-5 text-sm text-on-surface">
+                <p>
+                  Simulated prompts:{" "}
+                  {result.simulatedPromptNumbers.join(", ") || "none"}
+                </p>
+                <p>
+                  Remaining prompts:{" "}
+                  {result.unsimulatedPromptNumbers.join(", ") || "none"}
+                </p>
+                {result.needsMoreTokens && (
+                  <p className="mt-2 text-error">
+                    No tokens remain. Purchase more tokens to continue.
+                  </p>
+                )}
+              </div>
+            )}
             {/* Score + likelihood */}
             <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-5">
               <div className="flex items-center justify-between gap-4">

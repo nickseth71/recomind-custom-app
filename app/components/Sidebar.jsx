@@ -8,6 +8,7 @@ import {
   ChartBarBig,
   ChartNoAxesCombined,
   Receipt,
+  Bot,
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../context/Authcontext";
@@ -105,6 +106,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       to: "/app/reports",
       icon: <FileText size={sidebarOpen ? "16" : "20"} />,
       label: "Reports",
+    },
+    {
+      to: "/app/ai-index",
+      icon: <Bot size={sidebarOpen ? "16" : "20"} />,
+      label: "AI Store Index",
     },
     {
       to: "/app/billing",

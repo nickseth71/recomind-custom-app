@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { billingApi } from "../lib/api";
 // export default Billing
 import AiSpinner from "../components/loader/AiSpinner";
@@ -8,6 +8,8 @@ export default function Billing() {
   const [plans, setPlans] = useState([]);
   const [billing, setBilling] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [tokenAmount, setTokenAmount] = useState(1000);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
   useEffect(() => {
     fetchBillingData();
   }, []);
@@ -29,38 +31,13 @@ export default function Billing() {
       setLoading(false);
     }
   };
-  const usageData = billing
-    ? [
-        {
-          title: "Products Tracked",
-          used: billing.usage.productsAnalyzed,
-          total: billing.usage.maxProductsAnalyzed, // null = unlimited (Pro plan)
-          percentage:
-            billing.usage.maxProductsAnalyzed != null
-              ? (billing.usage.productsAnalyzed /
-                  billing.usage.maxProductsAnalyzed) *
-                100
-              : 0,
-        },
-        {
-          title: "Prompts Used",
-          used: billing.tokenQuota.used,
-          total: billing.tokenQuota.monthly, // null = unlimited (Pro plan)
-          percentage:
-            billing.tokenQuota.monthly != null
-              ? billing.tokenQuota.percentUsed
-              : 0,
-        },
-        {
-          title: "Products Synced",
-          used: billing.products.analyzed,
-          total: billing.products.total,
-          percentage: billing.products.total
-            ? (billing.products.analyzed / billing.products.total) * 100
-            : 0,
-        },
-      ]
-    : [];
+  async function purchaseTokens() {
+    setPurchaseLoading(true);
+    try {
+      const result = await billingApi.purchaseTokens(tokenAmount);
+      if (result.data?.confirmationUrl) window.open(result.data.confirmationUrl, "_blank", "noopener,noreferrer");
+    } catch (err) { console.error(err); } finally { setPurchaseLoading(false); }
+  }
   if (loading) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
@@ -147,6 +124,14 @@ export default function Billing() {
       </div>  */}
 
       {/* Plans */}
+
+      <div className="mt-5 rounded-xl border glass-card p-5">
+        <h2 className="text-on-surface text-headline-md">Buy monthly tokens</h2>
+        <p className="mt-2 text-on-surface-variant text-mono-sm">Purchased tokens expire at the next monthly renewal.</p>
+        <input className="mt-5 w-full" type="range" min="1000" max="100000" step="1000" value={tokenAmount} onChange={(event) => setTokenAmount(Number(event.target.value))} />
+        <div className="mt-3 flex items-center justify-between text-on-surface"><strong>{tokenAmount.toLocaleString()} tokens</strong><strong>${((tokenAmount / 1000) * 10).toFixed(2)} / month</strong></div>
+        <button onClick={purchaseTokens} disabled={purchaseLoading} className="mt-4 rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold">{purchaseLoading ? "Opening Shopify billing..." : "Purchase tokens"}</button>
+      </div>
 
       <div className="mt-5 rounded-xl border glass-card  p-5">
         <div className="mb-5 flex items-center justify-between">

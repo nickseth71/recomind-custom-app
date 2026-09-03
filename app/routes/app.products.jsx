@@ -1748,15 +1748,9 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
     );
   if (!product.isOptimized)
     return (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onOptimise();
-        }}
-        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-secondary-container text-on-secondary-container border border-secondary-fixed/30 hover:opacity-90 transition-opacity"
-      >
-        Optimise
-      </button>
+      <span className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-on-surface-variant border border-outline-variant">
+        Analysis ready
+      </span>
     );
   // Re-analysis is now always available via the row's own "Re-analyze"
   // button (independent of optimization status) — so once a product is
@@ -2830,8 +2824,7 @@ export default function Products() {
     [query, setQuery] = useState("");
   const [confirmTarget, setConfirmTarget] = useState(null),
     [analyseTarget, setAnalyseTarget] = useState(null);
-  const [optimiseTarget, setOptimiseTarget] = useState(null),
-    [simulateTarget, setSimulateTarget] = useState(null);
+  const [simulateTarget, setSimulateTarget] = useState(null);
   const [toast, setToast] = useState(null),
     [syncLoading, setSyncLoading] = useState(false),
     [bulkStarting, setBulkStarting] = useState(false);
@@ -3164,7 +3157,6 @@ export default function Products() {
                     key={p._id}
                     product={p}
                     onConfirmAnalyse={() => setConfirmTarget(p)}
-                    onOptimise={() => setOptimiseTarget(p)}
                     onSimulate={() => setSimulateTarget(p)}
                     showRemoveSync={canManageSyncedProducts}
                     onRemoveFromSync={() => handleRemoveFromSync(p)}
@@ -3309,13 +3301,6 @@ export default function Products() {
             setAnalyseTarget(null);
             refetch();
           }}
-        />
-      )}
-      {optimiseTarget && (
-        <OptimiseModal
-          product={optimiseTarget}
-          onClose={() => setOptimiseTarget(null)}
-          onDone={() => refetch()}
         />
       )}
       {simulateTarget && (
