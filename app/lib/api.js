@@ -45,7 +45,6 @@ export const productApi = {
   analyse: (id) => request(`/products/${id}/analyse`, { method: "POST" }),
   analyseBulk: () => request("/products/analyse-bulk", { method: "POST" }),
   getAnalyses: (id) => request(`/products/${id}/analysis`),
-  optimise: (id) => request(`/products/${id}/optimise`, { method: "POST" }),
   rollback: (id, analysisId) =>
     request(`/products/${id}/rollback`, {
       method: "POST",
@@ -82,6 +81,11 @@ export const promptApi = {
     request("/prompts/simulate", {
       method: "POST",
       body: JSON.stringify({ prompt, productId }),
+    }),
+  simulateCsv: (csv, productId) =>
+    request("/prompts/simulate/csv", {
+      method: "POST",
+      body: JSON.stringify({ csv, productId }),
     }),
   analyse: (prompt) =>
     request("/prompts/analyse", {
@@ -159,4 +163,15 @@ export const impactApi = {
 export const billingApi = {
   getPlans: () => request("/stores/plans"),
   getBilling: () => request("/stores/billing"),
+  purchaseTokens: (amount) =>
+    request("/stores/billing/tokens", {
+      method: "POST",
+      body: JSON.stringify({ amount }),
+    }),
+};
+
+export const llmFilesApi = {
+  get: () => request("/llm-files"),
+  generate: () => request("/llm-files/generate", { method: "POST" }),
+  publish: () => request("/llm-files/publish", { method: "POST" }),
 };
