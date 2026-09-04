@@ -861,7 +861,7 @@ export default function ProductDetail() {
         </div>
         <Link
           to="/app/ai-index"
-          className="shrink-0 rounded-xl border border-primary/40 px-4 py-2.5 font-mono-sm text-[13px] font-bold text-primary hover:bg-primary/10"
+          className="shrink-0 rounded-xl bg-primary border border-primary/40 px-4 py-2.5 font-mono-sm text-[13px] font-bold text-on-primary hover:bg-primary/10"
         >
           Publish AI Store Index
         </Link>

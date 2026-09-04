@@ -259,7 +259,7 @@ export function SBox({
   children,
 }) {
   return (
-    <div className="rounded-xl border border-outline-variant bg-surface-container-low p-4">
+    <div className="rounded-xl border border-outline-variant p-4">
       <p
         className={`text-[10px] font-bold uppercase tracking-[0.15em] mb-3 ${labelClass}`}
       >

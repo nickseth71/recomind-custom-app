@@ -232,7 +232,7 @@ const Impact = () => {
                   onClick={() =>
                     setOpenIndex(openIndex === index ? null : index)
                   }
-                  className="text-primary font-medium flex items-center gap-1"
+                  className="text-primary font-medium flex items-center gap-1 cursor-pointer"
                 >
                   View Details
                   <span

@@ -4,6 +4,7 @@ import { productApi, storeApi } from "../lib/api";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { useAuth } from "../context/Authcontext";
 import { useNavigate } from "react-router";
+import SetupDashboard from "../components/SetupDashboard";
 
 // ─── lucide-react — one named import per icon, fully tree-shakeable ──────────
 import {
@@ -38,7 +39,6 @@ import {
   User,
   Wrench,
 } from "lucide-react";
-
 
 const ICON_MAP = {
   // engines
@@ -447,7 +447,7 @@ function PromptRow({ item }) {
   const vis = VISIBILITY_CONFIG[item.visibility] || VISIBILITY_CONFIG.MEDIUM;
   const score = item.intentCoverageScore ?? 0;
   return (
-    <div className="flex items-start gap-3 px-6 py-4 hover:bg-surface-container-low/60 transition-colors border-b border-outline-variant last:border-0">
+    <div className="flex items-start gap-3 px-6 py-4 transition-colors border-b border-outline-variant last:border-0">
       <Icon
         name={vis.iconName}
         size={16}
@@ -539,7 +539,7 @@ export default function Index() {
   const plan = stats?.plan ?? {};
   const tokenQuota = plan?.tokenQuota ?? {};
   const promptSummary = promptWin?.summary ?? {};
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const tableProducts = recentAnalyses
     .slice()
@@ -615,8 +615,12 @@ export default function Index() {
     return [{ value: "30d", label: "30D" }];
   }, [accountPlanName]);
 
+  if (!loading && !error && Number(aiScore) === 0) {
+    return <SetupDashboard />;
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="glass-surface min-h-full space-y-4 rounded-xl p-4">
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-2">
         <div>
@@ -643,7 +647,7 @@ export default function Index() {
                 key={period.value}
                 onClick={() => setTimePeriod(period.value)}
                 className={`
-        px-4 py-2 rounded-lg text-[12px] font-semibold transition-all
+        px-4 py-2 rounded-lg cursor-pointer text-[12px] font-semibold transition-all
         ${
           timePeriod === period.value
             ? "bg-primary text-on-primary shadow-md"
@@ -878,9 +882,7 @@ export default function Index() {
                 />
               </div>
             ) : promptItems.length === 0 ? (
-              <div className="py-10 text-center font-mono-sm text-mono-sm text-on-surface-variant">
-                No data for this period.
-              </div>
+              <div className="min-h-20" aria-hidden="true" />
             ) : (
               promptItems.map((item) => (
                 <PromptRow key={item._id} item={item} />
@@ -1110,14 +1112,14 @@ export default function Index() {
               </h3>
             </div>
           </div>
-          <button className="font-mono-sm text-mono-sm font-semibold text-secondary hover:underline">
+          <button className="font-mono-sm text-mono-sm font-semibold text-secondary hover:underline cursor-pointer">
             View all →
           </button>
         </div>
         <Divider />
         <table className="w-full text-left">
           <thead>
-            <tr className="bg-surface-container-low">
+            <tr className="bg-primary">
               {[
                 "Product",
                 "Best For",
@@ -1129,7 +1131,7 @@ export default function Index() {
               ].map((h, i) => (
                 <th
                   key={h || i}
-                  className={`px-4 py-3 font-mono-sm text-[10px] font-semibold text-on-surface-variant uppercase tracking-[0.12em] ${i === 6 ? "text-right" : ""}`}
+                  className={`px-4 py-3 font-mono-sm text-[10px] font-semibold text-on-primary uppercase tracking-[0.12em] ${i === 6 ? "text-right" : ""}`}
                 >
                   {h}
                 </th>
@@ -1176,7 +1178,7 @@ export default function Index() {
                   <tr
                     onClick={() => item.productId?._id && navigate(detailHref)}
                     key={item._id}
-                    className="hover:bg-surface-container-low/50 transition-colors"
+                    className="hover:bg-[#D9DEE5] transition-colors cursor-pointer"
                   >
                     {/* Product */}
                     <td className="px-4 py-4">

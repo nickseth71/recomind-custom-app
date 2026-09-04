@@ -167,7 +167,7 @@ const Competitors = () => {
       <div
         className="rounded-xl px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between "
         style={{
-          background: "var(--color-surface-container-low)",
+          // background: "var(--color-surface-container-low)",
           border: "1px solid var(--color-outline-variant)",
         }}
       >
@@ -253,7 +253,7 @@ const Competitors = () => {
               onClick={() => setIsOpen((prev) => !prev)}
               className="w-full flex items-center justify-between gap-3 rounded-2xl px-5 py-3 text-left disabled:opacity-50 transition-all duration-300"
               style={{
-                background: "rgba(255,248,240,0.65)",
+                background: "rgba(255, 255, 255, 1)",
                 backdropFilter: "blur(16px)",
                 WebkitBackdropFilter: "blur(16px)",
                 border: "1px solid rgba(28,36,84,.15)",
@@ -294,7 +294,8 @@ const Competitors = () => {
               <div
                 className="absolute left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
                 style={{
-                  background: "rgba(255,248,240,.82)",
+                  // background: "rgba(255,248,240,.82)",
+                  background: "rgba(255, 255, 255, 1)",
                   backdropFilter: "blur(20px)",
                   WebkitBackdropFilter: "blur(20px)",
                   border: "1px solid rgba(28,36,84,.12)",
@@ -307,9 +308,10 @@ const Competitors = () => {
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
                     placeholder="Search products"
-                    className="w-full rounded-xl px-3 py-2 text-sm outline-none"
+                    className="w-full rounded-xl px-3 py-2 text-sm outline-none "
                     style={{
-                      background: "rgba(255,248,240,.95)",
+                      // background: "rgba(255,248,240,.95)",
+                      background: "rgba(255, 255, 255, 1)",
                       border: "1px solid rgba(28,36,84,.12)",
                       color: "var(--color-on-surface)",
                     }}
@@ -337,12 +339,12 @@ const Competitors = () => {
               ${
                 selectedProductId === p._id
                   ? "bg-[#1C2454] text-white"
-                  : "text-on-surface hover:bg-[rgba(28,36,84,0.08)]"
+                  : "text-on-surface hover:bg-[#c1c8f2]/10"
               }
             `}
                       onMouseEnter={(e) => {
                         if (selectedProductId !== p._id) {
-                          e.currentTarget.style.background = "#F7EFD9";
+                          e.currentTarget.style.background = "#";
                         }
                       }}
                       onMouseLeave={(e) => {
@@ -380,7 +382,7 @@ const Competitors = () => {
                         value={pageInput}
                         onChange={(e) => setPageInput(Number(e.target.value))}
                         className="w-14 rounded-lg border border-[rgba(28,36,84,0.12)] px-2 py-1 text-center text-sm outline-none"
-                        style={{ background: "rgba(255,248,240,.95)" }}
+                        style={{ background: "rgba(255,255,255,1)" }}
                       />
                       <span className="text-xs font-semibold text-on-surface-variant">
                         / {pagination.totalPages || 1}
@@ -470,7 +472,7 @@ const Competitors = () => {
         <div
           className="rounded-xl px-6 py-8 text-center"
           style={{
-            background: "var(--color-surface-container-low)",
+            // background: "var(--color-surface-container-low)",
             border: "1px solid var(--color-outline-variant)",
           }}
         >
