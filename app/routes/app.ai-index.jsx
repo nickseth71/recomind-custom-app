@@ -48,25 +48,18 @@ export default function AiIndex() {
       <div>
         <h1 className="text-on-surface text-headline-md">AI Store Index</h1>
         <p className="mt-2 text-on-surface-variant text-mono-sm">
-          Generate and publish Shopify's agent-discovery templates without
-          changing product data.
+          These files update automatically when products are analysed. Publish
+          the latest version to Shopify when you are ready.
         </p>
       </div>
       {error && <p className="text-error text-sm">{error}</p>}
       <div className="flex gap-3">
         <button
-          onClick={generate}
-          disabled={busy}
-          className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold cursor-pointer"
-        >
-          {busy ? "Working..." : "Generate files"}
-        </button>
-        <button
           onClick={publish}
           disabled={busy || !files.agents}
-          className="rounded-xl border border-outline-variant px-4 py-3 text-on-surface font-semibold cursor-pointer"
+          className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold cursor-pointer"
         >
-          Publish to Shopify
+          {busy ? "Publishing..." : "Publish to Shopify"}
         </button>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
