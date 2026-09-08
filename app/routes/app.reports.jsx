@@ -131,12 +131,6 @@ export default function Reports() {
     }
   }
 
-  // Real plan tiers are starter / growth / pro — "agency" isn't an actual
-  // plan on the backend, and competitorGap is available on both growth
-  // and pro (never starter), so check against that directly instead.
-  const isGrowthPlus = storePlan && storePlan !== "starter";
-  const isAgency = storePlan === "agency";
-
   const reportCards = [
     {
       key: "summary",
@@ -165,8 +159,7 @@ export default function Reports() {
       title: "Competitor Gap Report",
       badge: "XLSX",
       desc: "Compare your products against competitors in AI recommendation scenarios.",
-      locked: !isGrowthPlus,
-      lockLabel: "Growth+",
+      locked: false,
       action: downloadCompetitorGap,
     },
     // {

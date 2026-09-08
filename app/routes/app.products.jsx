@@ -2811,7 +2811,7 @@ export default function Products() {
   const { token } = useAuth();
   const decoded = token ? jwtDecode(token) : null;
   const storePlan = decoded?.storePlan?.toLowerCase();
-  const canManageSyncedProducts = storePlan && storePlan !== "starter";
+  const canManageSyncedProducts = true;
   const {
     startBulkAnalysis,
     activeBatch,

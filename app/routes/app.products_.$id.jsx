@@ -384,37 +384,36 @@ function IntelligencePanel({ interpretation, plan }) {
         </SBox>
       )}
 
-      {plan !== "starter" &&
-        (comp.directCompetitors?.length > 0 ||
-          comp.differentiators?.length > 0) && (
-          <div className="grid grid-cols-2 gap-4">
-            {comp.directCompetitors?.length > 0 && (
-              <SBox
-                label="Direct Competitors"
-                labelClass="text-on-secondary-container"
-              >
-                <div className="flex flex-wrap">
-                  {comp.directCompetitors.map((c) => (
-                    <Chip key={c} text={c} />
-                  ))}
-                </div>
-              </SBox>
-            )}
-            {comp.differentiators?.length > 0 && (
-              <SBox label="Differentiators" labelClass="text-green-win">
-                {comp.differentiators.map((d) => (
-                  <div
-                    key={d}
-                    className="flex gap-2 py-1.5 font-mono-sm text-mono-sm text-on-surface border-b border-outline-variant/30 last:border-0"
-                  >
-                    <span className="text-green-win shrink-0">✓</span>
-                    {d}
-                  </div>
+      {(comp.directCompetitors?.length > 0 ||
+        comp.differentiators?.length > 0) && (
+        <div className="grid grid-cols-2 gap-4">
+          {comp.directCompetitors?.length > 0 && (
+            <SBox
+              label="Direct Competitors"
+              labelClass="text-on-secondary-container"
+            >
+              <div className="flex flex-wrap">
+                {comp.directCompetitors.map((c) => (
+                  <Chip key={c} text={c} />
                 ))}
-              </SBox>
-            )}
-          </div>
-        )}
+              </div>
+            </SBox>
+          )}
+          {comp.differentiators?.length > 0 && (
+            <SBox label="Differentiators" labelClass="text-green-win">
+              {comp.differentiators.map((d) => (
+                <div
+                  key={d}
+                  className="flex gap-2 py-1.5 font-mono-sm text-mono-sm text-on-surface border-b border-outline-variant/30 last:border-0"
+                >
+                  <span className="text-green-win shrink-0">✓</span>
+                  {d}
+                </div>
+              ))}
+            </SBox>
+          )}
+        </div>
+      )}
 
       {gaps.criticalGaps?.length > 0 && (
         <div className="rounded-xl border border-error/20 bg-error/5 p-5">
@@ -820,9 +819,7 @@ export default function ProductDetail() {
     { key: "fixes", label: "Fixes", icon: Wrench, badge: highFixCount || null },
     { key: "faq", label: "FAQ", icon: HelpCircle },
     // { key: "comparison", label: "Comparison", icon: GitCompare },
-    ...(storePlan !== "starter"
-      ? [{ key: "comparison", label: "Comparison", icon: GitCompare }] //checks plan and shows comparison
-      : []),
+    { key: "comparison", label: "Comparison", icon: GitCompare },
   ];
 
   return (
@@ -959,18 +956,12 @@ export default function ProductDetail() {
           </Card>
 
           {/* Tab bar — glass-card pills, readable on dark body */}
-          <div
-            className={`mx-auto transition-all duration-300 ${
-              storePlan === "starter" ? "w-fit" : "w-full"
-            }`}
-          >
+          <div className="mx-auto w-full transition-all duration-300">
             <PillTabs
               items={tabItems}
               value={tab}
               onChange={setTab}
-              className={
-                storePlan !== "starter" ? "w-full  justify-center" : "w-fit"
-              }
+              className="w-full justify-center"
             />
           </div>
           {/* Tab content */}
@@ -991,9 +982,7 @@ export default function ProductDetail() {
             )}
             {tab === "fixes" && <FixesPanel fixes={fixes} />}
             {tab === "faq" && <FaqPanel analysis={analysis} />}
-            {tab === "comparison" && storePlan !== "starter" && (
-              <ComparisonPanel analysis={analysis} />
-            )}
+            {tab === "comparison" && <ComparisonPanel analysis={analysis} />}
             {/* {tab === "comparison" && <ComparisonPanel analysis={analysis} />} */}
           </div>
         </div>

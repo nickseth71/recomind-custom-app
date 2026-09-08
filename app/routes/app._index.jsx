@@ -592,27 +592,11 @@ export default function Index() {
   const availablePeriods = useMemo(() => {
     const planName = accountPlanName;
 
-    if (planName === "starter") {
-      return [{ value: "30d", label: "30D" }];
-    }
-
-    if (planName === "growth") {
-      return [
-        { value: "30d", label: "30D" },
-        { value: "3months", label: "3M" },
-      ];
-    }
-
-    if (planName === "pro") {
-      return [
-        { value: "30d", label: "30D" },
-        { value: "3months", label: "3M" },
-        { value: "6months", label: "6M" },
-      ];
-    }
-
-    // fallback — still shown while accountPlanName hasn't loaded yet
-    return [{ value: "30d", label: "30D" }];
+    return [
+      { value: "30d", label: "30D" },
+      { value: "3months", label: "3M" },
+      { value: "6months", label: "6M" },
+    ];
   }, [accountPlanName]);
 
   if (!loading && !error && Number(aiScore) === 0) {
