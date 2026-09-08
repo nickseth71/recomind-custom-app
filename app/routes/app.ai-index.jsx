@@ -57,14 +57,14 @@ export default function AiIndex() {
         <button
           onClick={generate}
           disabled={busy}
-          className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold"
+          className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold cursor-pointer"
         >
           {busy ? "Working..." : "Generate files"}
         </button>
         <button
           onClick={publish}
           disabled={busy || !files.agents}
-          className="rounded-xl border border-outline-variant px-4 py-3 text-on-surface font-semibold"
+          className="rounded-xl border border-outline-variant px-4 py-3 text-on-surface font-semibold cursor-pointer"
         >
           Publish to Shopify
         </button>
@@ -77,7 +77,7 @@ export default function AiIndex() {
         ].map(([name, value]) => (
           <section
             key={name}
-            className="rounded-xl border border-outline-variant bg-surface-container-low p-4"
+            className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4"
           >
             <h2 className="font-semibold text-on-surface">{name}</h2>
             <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap text-xs text-on-surface-variant">

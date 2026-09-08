@@ -65,7 +65,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder='e.g. "best protein powder for beginners under $60"'
-          className={`${inputCls} min-h-[120px] resize-none bg-surface-bright`}
+          className={`${inputCls} min-h-[120px] resize-none bg-white`}
           // className={`${inputCls} min-h-[120px] resize-none bg-surface-container-low`}
         />
 
@@ -79,6 +79,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           onChange={setProductId}
           pageSize={5}
           dropdownPosition="top"
+          className="bg-white"
         />
 
         <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
