@@ -63,12 +63,12 @@ export default function ModeGenerate({ token }) {
 
   return (
     // <div className="flex flex-col items-center justify-center gap-2">
-    <div className="space-y-4">
+    <div className="space-y-4 ">
       {/* ── Left: Controls ── */}
       <div>
         {/* <div className="rounded-2xl border border-outline-variant bg-surface p-5 space-y-5">
          */}
-        <div className="rounded-2xl border border-outline-variant bg-surface-container p-5 ml-1 space-y-5">
+        <div className="rounded-2xl border border-outline-variant cursor-pointer bg-surface-container p-5 ml-1 space-y-5">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
               Product
@@ -99,13 +99,13 @@ export default function ModeGenerate({ token }) {
               placeholder={
                 "best protein for weight loss\nlow sugar whey protein\n…"
               }
-              className={`${inputCls} min-h-40 resize-none `}
+              className={`${inputCls} min-h-40 resize-none bg-blue-base`}
             />
           </div>
 
           <ErrorBanner message={error} />
 
-          <div className="space-y-3">
+          <div className="space-y-3 ">
             <RunButton
               onClick={generate}
               loading={generating}

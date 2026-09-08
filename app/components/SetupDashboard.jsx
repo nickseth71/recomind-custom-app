@@ -124,7 +124,7 @@ export default function SetupDashboard() {
             minutes.
           </p>
         </div>
-        <button
+        {/* <button
           type="button"
           onClick={() =>
             window.localStorage.setItem("recomind_onboarding_complete", "true")
@@ -132,7 +132,7 @@ export default function SetupDashboard() {
           className="flex items-center gap-2 rounded-lg border border-[#d1d7df] bg-white px-3 py-1.5 text-[12px] text-[#63738b]"
         >
           <X size={13} /> Skip intro
-        </button>
+        </button> */}
       </div>
 
       <p className="mb-3 mt-6 text-[12px] font-medium uppercase tracking-wide text-[#536783]">

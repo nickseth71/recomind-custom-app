@@ -615,6 +615,14 @@ export default function Index() {
     return [{ value: "30d", label: "30D" }];
   }, [accountPlanName]);
 
+  if (loading) {
+    return (
+      <div className="glass-surface flex min-h-full items-center justify-center rounded-xl p-4">
+        {/* <Loader2 size={24} className="animate-spin text-primary" /> */}
+      </div>
+    );
+  }
+
   if (!loading && !error && Number(aiScore) === 0) {
     return <SetupDashboard />;
   }
@@ -834,12 +842,12 @@ export default function Index() {
               ].map(({ key, label, textColor, bgColor, borderColor }) => (
                 <div
                   key={key}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full border font-mono-sm ${textColor} ${bgColor} ${borderColor}`}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full border font-mono-sm ${textColor} ${bgColor} ${borderColor} `}
                 >
-                  <span className="text-[14px] font-bold leading-none">
+                  <span className="text-[14px] font-bold leading-none ">
                     {promptSummary[key] ?? 0}
                   </span>
-                  <span className="text-[10px]">{label}</span>
+                  <span className="text-[10px] ">{label}</span>
                 </div>
               ))}
             </div>
@@ -860,7 +868,7 @@ export default function Index() {
               <button
                 key={tab.id}
                 onClick={() => setPromptTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-mono-sm text-[11px] font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-mono-sm text-[11px] cursor-pointer font-semibold transition-all ${
                   promptTab === tab.id
                     ? "bg-primary text-on-primary"
                     : "text-on-surface-variant hover:bg-surface-container"

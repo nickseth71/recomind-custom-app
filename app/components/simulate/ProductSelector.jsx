@@ -2,7 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { productApi } from "../../lib/api";
 
-export default function ProductSelector({ token, value, onChange, dropdownPosition = "bottom", pageSize=20 }) {
+export default function ProductSelector({
+  token,
+  value,
+  onChange,
+  dropdownPosition = "bottom",
+  pageSize = 20,
+}) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [pageInput, setPageInput] = useState(1);
@@ -10,10 +16,7 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
 
   const dropdownRef = useRef(null);
 
-  const {
-    data: productsData,
-    loading: productsLoading,
-  } = useApi(
+  const { data: productsData, loading: productsLoading } = useApi(
     token
       ? () =>
           productApi.list({
@@ -47,26 +50,19 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-    
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside,
-      );
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   const dropdownClass =
-  dropdownPosition === "top"
-    ? "absolute bottom-full mb-2 left-0 w-full"
-    : "absolute top-full mt-2 left-0 w-full";
+    dropdownPosition === "top"
+      ? "absolute bottom-full mb-2 left-0 w-full"
+      : "absolute top-full mt-2 left-0 w-full";
   return (
     <div className="relative w-full" ref={dropdownRef}>
       {/* Selected Product */}
@@ -76,7 +72,8 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
         onClick={() => setIsOpen((prev) => !prev)}
         className="w-full flex items-center justify-between gap-3 rounded-2xl px-5 py-3 text-left disabled:opacity-50 transition-all duration-300"
         style={{
-          background: "rgba(255,248,240,0.65)",
+          // background: "rgba(255,248,240,0.65)",
+          background: "rgba(255,255,255,1)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
           border: "1px solid rgba(28,36,84,.15)",
@@ -109,12 +106,13 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
       </button>
 
       {isOpen && (
-          // <div
-          // className="absolute  left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
-          <div
-  className={`${dropdownClass} rounded-2xl overflow-hidden z-50`}
+        // <div
+        // className="absolute  left-0 mt-2 w-full rounded-2xl overflow-hidden z-50"
+        <div
+          className={`${dropdownClass} rounded-2xl overflow-hidden z-50`}
           style={{
-            background: "rgba(255,248,240,.82)",
+            // background: "rgba(255,248,240,.82)",
+            background: "rgba(255,255,255,1)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(28,36,84,.12)",
@@ -128,18 +126,17 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
-                
               }}
               placeholder="Search products"
-              className="w-full rounded-xl px-3 py-2 text-sm font-semibold text-on-surface outline-none"
+              className="w-full rounded-xl px-3 py-2 text-sm font-semibold text-on-surface outline-none bg-surface-container-lowest"
               style={{
-                background: "rgba(255,248,240,.95)",
+                background: "rgba(255,255,255,.95)",
                 border: "1px solid rgba(28,36,84,.12)",
                 color: "var(--color-on-surface)",
               }}
             />
           </div>
-                    {productsLoading && (
+          {productsLoading && (
             <div className="px-5 py-3 text-on-surface-variant text-sm">
               Loading...
             </div>
@@ -163,11 +160,11 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
                 className={`w-full text-left px-5 py-3 transition-all duration-200 ${
                   value === p._id
                     ? "bg-[#1C2454] text-white"
-                    : "text-on-surface hover:bg-[rgba(28,36,84,0.08)]"
+                    : "text-on-surface hover:bg-[rgba(194,202,249,0.08)]"
                 }`}
                 onMouseEnter={(e) => {
                   if (value !== p._id) {
-                    e.currentTarget.style.background = "#F7EFD9";
+                    e.currentTarget.style.background = "#f1f4fb";
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -184,9 +181,7 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
             <div className="flex items-center justify-between gap-3 border-t border-[rgba(28,36,84,0.08)] px-3 py-3">
               <button
                 type="button"
-                onClick={() =>
-                  setPage((prev) => Math.max(1, prev - 1))
-                }
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                 disabled={page <= 1}
                 className="rounded-lg px-3 py-1.5 text-sm font-semibold disabled:opacity-40"
                 style={{
@@ -203,12 +198,10 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
                   min="1"
                   max={pagination.totalPages || 1}
                   value={pageInput}
-                  onChange={(e) =>
-                    setPageInput(Number(e.target.value))
-                  }
+                  onChange={(e) => setPageInput(Number(e.target.value))}
                   className="w-14 rounded-lg border border-[rgba(28,36,84,0.12)] px-2 py-1 text-center text-sm outline-none"
                   style={{
-                    background: "rgba(255,248,240,.95)",
+                    background: "rgba(255,255,255,0.95)",
                   }}
                 />
 
@@ -221,7 +214,7 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
                   onClick={() => {
                     const nextPage = Math.min(
                       Math.max(1, Number(pageInput) || 1),
-                      pagination.totalPages || 1
+                      pagination.totalPages || 1,
                     );
                     setPage(nextPage);
                   }}
@@ -237,9 +230,7 @@ export default function ProductSelector({ token, value, onChange, dropdownPositi
 
               <button
                 type="button"
-                onClick={() =>
-                  setPage((prev) => prev + 1)
-                }
+                onClick={() => setPage((prev) => prev + 1)}
                 disabled={page >= (pagination.totalPages || 1)}
                 className="rounded-lg px-3 py-1.5 text-sm font-semibold disabled:opacity-40"
                 style={{

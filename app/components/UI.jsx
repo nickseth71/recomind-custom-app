@@ -472,7 +472,7 @@ export function Modal({ title, onClose, children, maxWidth = "max-w-lg" }) {
       onClick={onClose}
     >
       <div
-        className={`glass-card rounded-2xl w-full ${maxWidth} max-h-[90vh] scrollable-container`}
+        className={`glass-card bg-blue-base rounded-2xl w-full ${maxWidth} max-h-[90vh] scrollable-container `}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 pt-5 pb-4">

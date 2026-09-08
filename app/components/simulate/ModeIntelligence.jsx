@@ -36,7 +36,7 @@ export default function ModeIntelligence() {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder='e.g. "best electrolyte drink for runners"'
-          className={`${inputCls} min-h-[120px] resize-none `}
+          className={`${inputCls} min-h-[120px] resize-none bg-white`}
         />
 
         <ErrorBanner message={error} />
@@ -65,13 +65,15 @@ export default function ModeIntelligence() {
             <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-5 space-y-3">
               <div className="flex flex-wrap gap-2">
                 {result.rankingCompetitiveness && (
-                  <span className={`rounded-full px-3 py-1 text-[11px] font-bold border ${
-                    result.rankingCompetitiveness === "LOW"
-                      ? "text-green-win bg-[#00e29e]/10 border-[#00e29e]/25"
-                      : result.rankingCompetitiveness === "MEDIUM"
-                      ? "text-on-tertiary-fixed-variant bg-tertiary-fixed/15 border-tertiary-fixed/30"
-                      : "text-error bg-error/10 border-error/25"
-                  }`}>
+                  <span
+                    className={`rounded-full px-3 py-1 text-[11px] font-bold border ${
+                      result.rankingCompetitiveness === "LOW"
+                        ? "text-green-win bg-[#00e29e]/10 border-[#00e29e]/25"
+                        : result.rankingCompetitiveness === "MEDIUM"
+                          ? "text-on-tertiary-fixed-variant bg-tertiary-fixed/15 border-tertiary-fixed/30"
+                          : "text-error bg-error/10 border-error/25"
+                    }`}
+                  >
                     {result.rankingCompetitiveness} Competition
                   </span>
                 )}
@@ -104,7 +106,10 @@ export default function ModeIntelligence() {
               <ResultCard label="Related Prompts to Target">
                 <div className="flex flex-wrap gap-2 mt-1">
                   {result.promptVariants.map((v) => (
-                    <span key={v} className="rounded-full border border-outline-variant bg-surface-container-highest px-3 py-1 text-xs text-on-surface">
+                    <span
+                      key={v}
+                      className="rounded-full border border-outline-variant bg-surface-container-highest px-3 py-1 text-xs text-on-surface"
+                    >
                       {v}
                     </span>
                   ))}
@@ -116,8 +121,12 @@ export default function ModeIntelligence() {
               <ResultCard label="Content Gaps" labelColor="text-error">
                 <div className="space-y-1.5">
                   {result.contentGaps.map((g) => (
-                    <div key={g} className="flex items-start gap-2 text-sm text-error">
-                      <span className="shrink-0">⚠</span>{g}
+                    <div
+                      key={g}
+                      className="flex items-start gap-2 text-sm text-error"
+                    >
+                      <span className="shrink-0">⚠</span>
+                      {g}
                     </div>
                   ))}
                 </div>

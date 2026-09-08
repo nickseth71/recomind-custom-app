@@ -1684,7 +1684,7 @@ function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
       <button
         onClick={onClick}
         disabled={starting}
-        className="flex items-center gap-2 px-5 py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 font-label-md text-label-md cursor-pointer"
+        className="flex items-center gap-2 px-5 py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 font-label-md text-label-md "
       >
         {starting ? (
           <Loader2 size={15} className="animate-spin" strokeWidth={1.8} />
@@ -1700,7 +1700,7 @@ function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
     <button
       onClick={onClick}
       disabled={starting}
-      className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(17,24,68,0.35)] disabled:opacity-50 font-label-md text-label-md"
+      className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(17,24,68,0.35)] disabled:opacity-50 cursor-pointer font-label-md text-label-md"
     >
       {starting ? (
         <Loader2
@@ -1709,7 +1709,7 @@ function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
           strokeWidth={1.8}
         />
       ) : (
-        <Zap size={16} strokeWidth={1.8} className="shrink-0" />
+        <Zap size={16} strokeWidth={1.8} className="shrink-0 " />
       )}
       Bulk Analyse
     </button>
@@ -2957,12 +2957,12 @@ export default function Products() {
             <button
               onClick={handleSync}
               disabled={syncLoading}
-              className="flex items-center gap-2 px-4 py-2 glass-card rounded-xl text-on-surface hover:brightness-95 transition-all disabled:opacity-50 font-label-md text-label-md"
+              className="flex items-center gap-2 cursor-pointer px-4 py-2 glass-card rounded-xl text-on-surface hover:brightness-95 transition-all disabled:opacity-50 font-label-md text-label-md"
             >
               {syncLoading ? (
                 <Loader2
                   size={16}
-                  className="animate-spin shrink-0"
+                  className="animate-spin shrink-0 cursor-pointer"
                   strokeWidth={1.8}
                 />
               ) : (

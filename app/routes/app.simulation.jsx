@@ -28,33 +28,27 @@ export default function Simulate() {
   //   [token],
   // );
   const {
-  data: historyRes,
-  loading,
-  error,
-  refetch: refetchHistory,
-} = useApi(
-  token ? () => promptApi.history({ limit: 8 }) : null,
-  [token],
-);
+    data: historyRes,
+    loading,
+    error,
+    refetch: refetchHistory,
+  } = useApi(token ? () => promptApi.history({ limit: 8 }) : null, [token]);
   const history = historyRes?.data ?? [];
   if (loading) {
-  return (
-    <div className="flex min-h-[70vh] items-center justify-center">
-      <AiSpinner
-        size={70}
-        label="Loading simulator..."
-      />
-    </div>
-  );
-}
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <AiSpinner size={70} label="Loading simulator..." />
+      </div>
+    );
+  }
 
-if (error) {
-  return (
-    <div className="flex min-h-[70vh] items-center justify-center text-error text-lg font-semibold">
-      {error}
-    </div>
-  );
-}
+  if (error) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center text-error text-lg font-semibold">
+        {error}
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <PageHeader
@@ -71,8 +65,8 @@ if (error) {
             onClick={() => setMode(key)}
             className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-all ${
               mode === key
-                ? "bg-primary text-on-primary shadow-sm"
-                : "bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
+                ? "bg-primary cursor-pointer text-on-primary shadow-sm"
+                : "bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface cursor-pointer"
             }`}
           >
             {label}
@@ -83,7 +77,7 @@ if (error) {
       {/* Mode content — each mode owns its own state */}
       <div
         className="rounded-2xl border border-outline-variant p-6"
-        style={{ background: "var(--color-surface-container-low)" }}
+        style={{ background: "var(--color-blue-base)" }}
       >
         {mode === "simulate" && (
           <ModeSimulate

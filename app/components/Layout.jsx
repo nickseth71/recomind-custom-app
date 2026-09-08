@@ -199,13 +199,13 @@ const Layout = ({ children }) => {
     };
   }, []);
 
-  if (onboardingComplete === null) {
-    return (
-      <div className="min-h-screen bg-[#fff8f1] flex items-center justify-center">
-        <AiSpinner label="Loading Workspace" />
-      </div>
-    );
-  }
+  // if (onboardingComplete === null) {
+  //   return (
+  //     <div className="min-h-screen bg-[#fff8f1] flex items-center justify-center">
+  //       <AiSpinner label="Loading Workspace" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="glass-surface min-h-screen text-[#101d34]">
