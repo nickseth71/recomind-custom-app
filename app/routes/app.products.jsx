@@ -2941,8 +2941,8 @@ export default function Products() {
 
   const tabItems = [
     { key: "all", label: "All Products", badge: totalCount },
-    { key: "optimized", label: "Optimized", badge: optCount },
-    { key: "unoptimized", label: "Unoptimized", badge: unoptCount },
+    { key: "optimized", label: "Analyzed", badge: optCount },
+    { key: "unoptimized", label: "Not Analyzed", badge: unoptCount },
   ];
 
   return (

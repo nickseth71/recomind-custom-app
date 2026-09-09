@@ -11,6 +11,7 @@ import ModeIntelligence from "../components/simulate/ModeIntelligence";
 import ModeScore from "../components/simulate/ModeScore";
 import ModeGenerate from "../components/simulate/ModeGenerate";
 import SimulateHistory from "../components/simulate/SimulateHistory";
+import Pagination from "../components/Pagination";
 
 const MODES = [
   { key: "simulate", label: "Prompt Simulator" },
@@ -22,18 +23,32 @@ const MODES = [
 export default function Simulate() {
   const { token } = useAuth();
   const [mode, setMode] = useState("simulate");
+  const [historyPage, setHistoryPage] = useState(1);
 
   // const { data: historyRes, refetch: refetchHistory } = useApi(
   //   token ? () => promptApi.history({ limit: 8 }) : null,
   //   [token],
   // );
+  // const {
+  //   data: historyRes,
+  //   loading,
+  //   error,
+  //   refetch: refetchHistory,
+  // } = useApi(token ? () => promptApi.history({ limit: 8 }) : null, [token]);
+  // const history = historyRes?.data ?? [];
+
   const {
     data: historyRes,
     loading,
     error,
     refetch: refetchHistory,
-  } = useApi(token ? () => promptApi.history({ limit: 8 }) : null, [token]);
+  } = useApi(
+    token ? () => promptApi.history({ limit: 20, page: historyPage }) : null,
+    [token, historyPage],
+  );
+
   const history = historyRes?.data ?? [];
+  const pagination = historyRes?.pagination;
   if (loading) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
@@ -92,7 +107,19 @@ export default function Simulate() {
       </div>
 
       {/* Shared history — only shown on simulate mode where it's relevant */}
-      {mode === "simulate" && <SimulateHistory history={history} />}
+      {/* {mode === "simulate" && <SimulateHistory history={history} />} */}
+      {mode === "simulate" && (
+        <>
+          <SimulateHistory history={history} />
+
+          <Pagination
+            page={historyPage}
+            totalPages={pagination?.totalPages}
+            onChange={setHistoryPage}
+            className="mt-4"
+          />
+        </>
+      )}
     </div>
   );
 }

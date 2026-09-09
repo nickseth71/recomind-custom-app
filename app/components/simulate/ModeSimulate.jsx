@@ -37,7 +37,15 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
 
   async function runCsv(event) {
     const file = event.target.files?.[0];
-    if (!file || !productId) return;
+    // if (!file || !productId) return;
+    // const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!productId) {
+      setError("Please select a product first.");
+      return;
+    }
     setLoading(true);
     setError(null);
     setResult(null);
@@ -82,7 +90,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           className="bg-white"
         />
 
-        <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+        {/* <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
           CSV prompt batch
           <input
             type="file"
@@ -96,6 +104,34 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
               {csvName}
             </span>
           )}
+        </label> */}
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+          CSV prompt batch
+          <div className="mt-2 flex items-center gap-3">
+            <input
+              id="csv-upload"
+              type="file"
+              accept=".csv,text/csv"
+              onChange={runCsv}
+              disabled={!productId || loading}
+              className="hidden"
+            />
+
+            <label
+              htmlFor="csv-upload"
+              className={`inline-flex items-center justify-center rounded-xl border border-outline-variant bg-surface-container-low px-5 py-2.5 text-sm font-bold normal-case tracking-normal text-on-surface transition-all ${
+                !productId || loading
+                  ? "cursor-not-allowed opacity-50"
+                  : "cursor-pointer hover:bg-surface-container-high"
+              }`}
+            >
+              Choose File
+            </label>
+
+            <span className="text-sm font-medium normal-case tracking-normal text-on-surface-variant">
+              {csvName || "No file chosen"}
+            </span>
+          </div>
         </label>
 
         <ErrorBanner message={error} />

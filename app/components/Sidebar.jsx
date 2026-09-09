@@ -64,7 +64,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     // const base =
     //   "flex items-center gap-3 px-4 py-2 rounded-lg font-semibold border-r-2 transition-all duration-200 ease-in-out";
     const base =
-      "flex items-center gap-2 px-3 py-2 rounded-lg font-medium border-r-2 transition-all duration-200";
+      "flex items-center gap-5 px-3 py-2 rounded-lg font-medium border-r-2 transition-all duration-200";
     if (active) {
       return `${base} text-secondary border-secondary bg-surface-container`;
     }
@@ -132,7 +132,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       onMouseLeave={() => {
         if (!isPinned) setSidebarOpen(false);
       }}
-      className={`h-screen fixed left-0 top-0 border-r border-outline-variant
+      className={`h-screen fixed left-0 top-0 pt-4 border-r border-outline-variant
   bg-surface-container-lowest flex flex-col py-gutter px-4 z-50
   transition-all duration-300 ease-in-out
   ${sidebarOpen ? "w-56" : "w-20"}`}
