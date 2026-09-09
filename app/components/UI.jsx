@@ -213,19 +213,12 @@ export function effortColors(v) {
   return { text: "text-error", bg: "bg-error/10", border: "border-error/30" };
 }
 
-/* ─── Status badge — fixed "Analysed" state (was light-on-light) ───── */
-export function StatusBadge({ analysisScore, isOptimized }) {
+/* ─── Analysis status badge ─────────────────────────────────────────── */
+export function StatusBadge({ analysisScore }) {
   if (analysisScore == null)
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-surface-container border-outline-variant text-on-surface-variant">
         Not Analysed
-      </span>
-    );
-  if (isOptimized)
-    return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#00e29e]/12 border-[#00e29e]/35 text-green-win">
-        <CheckCircle2 size={10} strokeWidth={2} />
-        Optimised
       </span>
     );
   return (

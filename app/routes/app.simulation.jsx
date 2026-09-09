@@ -36,7 +36,7 @@ export default function Simulate() {
   const history = historyRes?.data ?? [];
   if (loading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
+      <div className="flex min-h-[70vh] q-center justify-center">
         <AiSpinner size={70} label="Loading simulator..." />
       </div>
     );

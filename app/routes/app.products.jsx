@@ -1717,7 +1717,7 @@ function BulkAnalyseButton({ onClick, starting, variant = "compact" }) {
 }
 
 /* ─── Action button — three states based on product progress ──────────── */
-function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
+function ActionButton({ product, onConfirmAnalyse }) {
   const { getProductJob } = useAnalysisTracker();
   const activeJob = getProductJob(product._id);
 
@@ -1746,20 +1746,10 @@ function ActionButton({ product, onConfirmAnalyse, onOptimise }) {
         Analyse
       </button>
     );
-  if (!product.isOptimized)
-    return (
-      <span className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-on-surface-variant border border-outline-variant">
-        Analysis ready
-      </span>
-    );
-  // Re-analysis is now always available via the row's own "Re-analyze"
-  // button (independent of optimization status) — so once a product is
-  // optimized, there's nothing actionable left for this button to do.
-  // Just confirm the state instead of duplicating that action.
   return (
-    <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-green-win bg-[#00e29e]/10 border border-[#00e29e]/25">
+    <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-on-surface-variant bg-surface-container border border-outline-variant">
       <CheckCircle2 size={13} strokeWidth={2.2} />
-      Optimized
+      Analysed
     </span>
   );
 }
@@ -2609,7 +2599,6 @@ function SimulateModal({ product, onClose }) {
 function ProductRow({
   product,
   onConfirmAnalyse,
-  onOptimise,
   onSimulate,
   showRemoveSync,
   onRemoveFromSync,
@@ -2635,10 +2624,7 @@ function ProductRow({
                   {product.productCategory || product.vendor}
                 </span>
               )}
-              <StatusBadge
-                analysisScore={sc}
-                isOptimized={product.isOptimized}
-              />
+              <StatusBadge analysisScore={sc} />
             </div>
           </div>
         </div>
@@ -2719,11 +2705,7 @@ function ProductRow({
               Simulate
             </button>
           )}
-          <ActionButton
-            product={product}
-            onConfirmAnalyse={onConfirmAnalyse}
-            onOptimise={onOptimise}
-          />
+          <ActionButton product={product} onConfirmAnalyse={onConfirmAnalyse} />
           {hasData && (
             <Link
               to={detailHref}
@@ -2831,8 +2813,7 @@ export default function Products() {
 
   const dq = useDebounced(query, 220);
   const params = { page, sort, limit: 10 };
-  if (statusFilter === "optimized") params.optimized = "true";
-  if (statusFilter === "unoptimized") params.optimized = "false";
+  params.analysisStatus = statusFilter;
   if (dq.trim()) params.search = dq.trim();
 
   // A new search term invalidates whatever page you were on — landing on
@@ -2852,13 +2833,18 @@ export default function Products() {
 
   const { data: countOpt } = useApi(
     token
-      ? () => productApi.list({ page: 1, limit: 1, optimized: "true" })
+      ? () => productApi.list({ page: 1, limit: 1, analysisStatus: "analysed" })
       : null,
     [token],
   );
   const { data: countUnopt } = useApi(
     token
-      ? () => productApi.list({ page: 1, limit: 20, optimized: "false" })
+      ? () =>
+          productApi.list({
+            page: 1,
+            limit: 1,
+            analysisStatus: "non-analysed",
+          })
       : null,
     [token],
   );
@@ -2941,8 +2927,8 @@ export default function Products() {
 
   const tabItems = [
     { key: "all", label: "All Products", badge: totalCount },
-    { key: "optimized", label: "Optimized", badge: optCount },
-    { key: "unoptimized", label: "Unoptimized", badge: unoptCount },
+    { key: "analysed", label: "Analysed", badge: optCount },
+    { key: "non-analysed", label: "Non-analysed", badge: unoptCount },
   ];
 
   return (
@@ -2951,7 +2937,7 @@ export default function Products() {
 
       <PageHeader
         title="Product Inventory"
-        subtitle="Manage and optimize AI visibility across your commerce ecosystem."
+        subtitle="Analyse your catalog and improve visibility across AI shopping engines."
         actions={
           <>
             <button
@@ -3003,7 +2989,7 @@ export default function Products() {
         />
         <StatTile
           icon={Zap}
-          label="Optimised"
+          label="Analysed"
           value={optCount}
           loading={loading}
           accentLeft="border-l-2 border-l-[#00e29e]"
@@ -3236,9 +3222,9 @@ export default function Products() {
         </Card>
         <Card className="p-6 border-l-4 border-l-primary">
           <h3 className="font-headline-sm text-headline-sm text-on-surface mb-4">
-            Recent Optimizations
+            Recent Analyses
           </h3>
-          {products.filter((p) => p.isOptimized).length === 0 ? (
+          {products.filter((p) => p.analysisScore != null).length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-6">
               <CheckCircle2
                 size={32}
@@ -3246,13 +3232,13 @@ export default function Products() {
                 strokeWidth={1.5}
               />
               <p className="font-mono-sm text-mono-sm text-on-surface-variant text-center">
-                No products optimised yet.
+                No products analysed yet.
               </p>
             </div>
           ) : (
             <div className="space-y-2">
               {products
-                .filter((p) => p.isOptimized)
+                .filter((p) => p.analysisScore != null)
                 .slice(0, 4)
                 .map((p) => (
                   <Link
