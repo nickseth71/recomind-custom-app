@@ -155,7 +155,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           //   Results will appear here once a simulation runs.
           // </div>
           <div
-            className="rounded-2xl border border-outline-variant bg-surface-bright
+            className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-10
              min-h-[120px] flex flex-col items-center justify-center
              text-center text-sm text-on-surface-variant gap-3 px-8"
           >

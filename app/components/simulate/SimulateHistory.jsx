@@ -24,7 +24,7 @@ export default function SimulateHistory({ history }) {
       </div>
 
       {/* Rows */}
-      <div className="divide-y divide-outline-variant/50">
+      <div className="divide-y bg-white/20">
         {history.map((item) => (
           <Link
             key={item._id}

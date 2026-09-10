@@ -48,7 +48,7 @@ export default function PromptRow({ item }) {
 
   return (
     <div
-      className={`rounded-xl border bg-surface-container-low transition-all ${expanded ? "border-outline" : "border-outline-variant"}`}
+      className={`rounded-xl border bg-surface-container-low/50 transition-all ${expanded ? "border-outline" : "border-outline-variant"}`}
     >
       <button
         onClick={() => setExpanded((v) => !v)}
