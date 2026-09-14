@@ -1,6 +1,7 @@
 // src/pages/simulate/ModeScore.jsx
 import { useState } from "react";
 import { promptApi } from "../../lib/api";
+import { ChartColumnIncreasing } from "lucide-react";
 import {
   RunButton,
   ErrorBanner,
@@ -81,7 +82,13 @@ export default function ModeScore({ token }) {
       <div className="space-y-4 pt-7.5 ">
         {!result && (
           <div className="rounded-2xl border h-[120px] border-outline-variant bg-white p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
-            <span className="text-3xl">📊</span>
+            <span className="text-3xl">
+              <ChartColumnIncreasing
+                size={40}
+                strokeWidth={1.7}
+                className="text-primary"
+              />
+            </span>
             Score results will appear here.
           </div>
         )}

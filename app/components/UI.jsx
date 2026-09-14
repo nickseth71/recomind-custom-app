@@ -450,36 +450,96 @@ export function ProductThumb({ images = [] }) {
 }
 
 /* ─── Modal — div-based (fixes invalid button-in-button nesting) ──────── */
+// export function Modal({ title, onClose, children, maxWidth = "max-w-lg" }) {
+//   useEffect(() => {
+//     const h = (e) => {
+//       if (e.key === "Escape") onClose();
+//     };
+//     window.addEventListener("keydown", h);
+//     return () => window.removeEventListener("keydown", h);
+//   }, [onClose]);
+//   return (
+//     <div
+//       className="w-full h-full fixed inset-0 z-50 flex items-center justify-center p-4"
+//       style={{ background: "rgba(0,0,0,0.6)" }}
+//       onClick={onClose}
+//     >
+//       <div
+//         className={`glass-card bg-blue-base rounded-2xl w-full ${maxWidth} max-h-[90vh] scrollable-container `}
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         <div className="flex items-center justify-between px-6 pt-5 pb-4">
+//           <h3 className="font-headline-sm text-headline-sm text-on-surface">
+//             {title}
+//           </h3>
+//           <button
+//             onClick={onClose}
+//             className="text-on-surface-variant hover:text-on-surface transition-colors"
+//           >
+//             <X size={18} strokeWidth={2} />
+//           </button>
+//         </div>
+//         <Divider />
+//         <div className="px-6 py-5">{children}</div>
+//       </div>
+//     </div>
+//   );
+// }
+
+/* ─── Modal — div-based ─────────────────────────────────────────────── */
 export function Modal({ title, onClose, children, maxWidth = "max-w-lg" }) {
   useEffect(() => {
     const h = (e) => {
       if (e.key === "Escape") onClose();
     };
+
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, [onClose]);
+
   return (
     <div
-      className="w-full h-full fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.6)" }}
+      className="w-full h-full fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[3px]"
+      style={{ background: "rgba(25, 35, 65, 0.42)" }}
       onClick={onClose}
     >
       <div
-        className={`glass-card bg-blue-base rounded-2xl w-full ${maxWidth} max-h-[90vh] scrollable-container `}
+        className={`
+      bg-[rgba(217,221,226,0.98)]
+      backdrop-blur-xl
+      rounded-2xl
+      w-full
+      ${maxWidth}
+      max-h-[90vh]
+      scrollable-container
+      border border-white/60
+      shadow-[0_24px_70px_rgba(30,41,59,0.16)]
+    `}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 pt-5 pb-4">
           <h3 className="font-headline-sm text-headline-sm text-on-surface">
             {title}
           </h3>
+
           <button
             onClick={onClose}
-            className="text-on-surface-variant hover:text-on-surface transition-colors"
+            className="
+              flex items-center justify-center
+              w-8 h-8
+              rounded-lg
+              text-on-surface-variant
+              hover:text-on-surface
+              hover:bg-white/40
+              transition-all
+            "
           >
             <X size={18} strokeWidth={2} />
           </button>
         </div>
+
         <Divider />
+
         <div className="px-6 py-5">{children}</div>
       </div>
     </div>

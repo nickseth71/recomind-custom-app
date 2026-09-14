@@ -14,10 +14,26 @@ import SimulateHistory from "../components/simulate/SimulateHistory";
 import Pagination from "../components/Pagination";
 
 const MODES = [
-  { key: "simulate", label: "Prompt Simulator" },
-  { key: "intelligence", label: "Prompt Intelligence" },
-  { key: "score", label: "Score Prompt" },
-  { key: "generate", label: "Generate Prompts" },
+  {
+    key: "simulate",
+    label: "Prompt Simulator",
+    tooltip: "Test how AI engines recommend your products.",
+  },
+  {
+    key: "intelligence",
+    label: "Prompt Intelligence",
+    tooltip: "Understand what buyers are asking AI.",
+  },
+  {
+    key: "score",
+    label: "Score Prompt",
+    tooltip: "See how well a prompt matches your catalog.",
+  },
+  {
+    key: "generate",
+    label: "Generate Prompts",
+    tooltip: "Generate prompts based on your products.",
+  },
 ];
 
 export default function Simulate() {
@@ -72,20 +88,44 @@ export default function Simulate() {
       />
 
       {/* Mode tabs */}
+      {/* Mode tabs */}
       <div className="flex flex-wrap gap-2">
-        {MODES.map(({ key, label }) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setMode(key)}
-            className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-all ${
-              mode === key
-                ? "bg-primary cursor-pointer text-on-primary shadow-sm"
-                : "bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface cursor-pointer"
-            }`}
-          >
-            {label}
-          </button>
+        {MODES.map(({ key, label, tooltip }) => (
+          <div key={key} className="relative inline-flex">
+            <button
+              type="button"
+              onClick={() => setMode(key)}
+              className={`peer rounded-2xl px-4 py-2 text-sm font-semibold transition-all ${
+                mode === key
+                  ? "bg-primary cursor-pointer text-on-primary shadow-sm"
+                  : "bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface cursor-pointer"
+              }`}
+            >
+              {label}
+            </button>
+
+            <div
+              className="
+          pointer-events-none
+          absolute top-full left-1/2 -translate-x-1/2 mt-2
+          z-50
+          w-max max-w-[200px]
+          rounded-lg
+          bg-surface-container-high
+          border border-outline-variant
+          px-3 py-2
+          text-[11px] font-mono-sm
+          text-on-surface
+          text-center
+          shadow-lg
+          opacity-0 invisible
+          peer-hover:opacity-100 peer-hover:visible
+          transition-opacity
+        "
+            >
+              {tooltip}
+            </div>
+          </div>
         ))}
       </div>
 

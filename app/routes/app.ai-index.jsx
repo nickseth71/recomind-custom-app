@@ -1,4 +1,96 @@
+// import { useEffect, useState } from "react";
+// import { llmFilesApi } from "../lib/api";
+// import { useAuth } from "../context/Authcontext";
+
+// export const loader = async () => null;
+
+// export default function AiIndex() {
+//   const { token } = useAuth();
+//   const [data, setData] = useState(null);
+//   const [busy, setBusy] = useState(false);
+//   const [error, setError] = useState(null);
+//   const load = async () => {
+//     try {
+//       setData((await llmFilesApi.get()).data);
+//     } catch (e) {
+//       setError(e.message);
+//     }
+//   };
+//   useEffect(() => {
+//     if (token) load();
+//   }, [token]);
+//   async function generate() {
+//     setBusy(true);
+//     setError(null);
+//     try {
+//       setData((await llmFilesApi.generate()).data);
+//     } catch (e) {
+//       setError(e.message);
+//     } finally {
+//       setBusy(false);
+//     }
+//   }
+//   async function publish() {
+//     setBusy(true);
+//     setError(null);
+//     try {
+//       await llmFilesApi.publish();
+//       await load();
+//     } catch (e) {
+//       setError(e.message);
+//     } finally {
+//       setBusy(false);
+//     }
+//   }
+//   const files = data?.files || {};
+//   return (
+//     <div className="space-y-5">
+//       <div>
+//         <h1 className="text-on-surface text-headline-md">AI Store Index</h1>
+//         <p className="mt-2 text-on-surface-variant text-mono-sm">
+//           These files update automatically when products are analysed. Publish
+//           the latest version to Shopify when you are ready.
+//         </p>
+//       </div>
+//       {error && <p className="text-error text-sm">{error}</p>}
+//       <div className="flex gap-3">
+//         <button
+//           onClick={publish}
+//           disabled={busy || !files.agents}
+//           className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold cursor-pointer"
+//         >
+//           {busy ? "Publishing..." : "Publish to Shopify"}
+//         </button>
+//       </div>
+//       <div className="grid gap-4 md:grid-cols-3">
+//         {[
+//           ["agents.md", files.agents],
+//           ["llms.txt", files.llms],
+//           ["llms-full.txt", files.llmsFull],
+//         ].map(([name, value]) => (
+//           <section
+//             key={name}
+//             className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4"
+//           >
+//             <h2 className="font-semibold text-on-surface">{name}</h2>
+//             <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap text-xs text-on-surface-variant">
+//               {value || "Not generated"}
+//             </pre>
+//           </section>
+//         ))}
+//       </div>
+//       {data?.publishedAt && (
+//         <p className="text-sm text-green-win">
+//           Published {new Date(data.publishedAt).toLocaleString()}
+//         </p>
+//       )}
+//     </div>
+//   );
+// }
+
 import { useEffect, useState } from "react";
+import { CheckCircle2, Loader2, X } from "lucide-react";
+
 import { llmFilesApi } from "../lib/api";
 import { useAuth } from "../context/Authcontext";
 
@@ -6,22 +98,36 @@ export const loader = async () => null;
 
 export default function AiIndex() {
   const { token } = useAuth();
+
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const load = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
       setData((await llmFilesApi.get()).data);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    if (token) load();
+    if (token) {
+      load();
+    }
   }, [token]);
+
   async function generate() {
     setBusy(true);
     setError(null);
+
     try {
       setData((await llmFilesApi.generate()).data);
     } catch (e) {
@@ -30,38 +136,90 @@ export default function AiIndex() {
       setBusy(false);
     }
   }
+
   async function publish() {
     setBusy(true);
     setError(null);
+    setShowSuccess(false);
+
     try {
       await llmFilesApi.publish();
+
       await load();
+
+      // Show success notification only after publishing succeeds
+      setShowSuccess(true);
+
+      // Automatically hide after 4 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 4000);
     } catch (e) {
       setError(e.message);
     } finally {
       setBusy(false);
     }
   }
+
   const files = data?.files || {};
+
   return (
     <div className="space-y-5">
+      {/* Success Notification */}
+      {showSuccess && (
+        <div className="fixed top-5 right-5 z-[100] w-[360px]">
+          <div className="flex items-start gap-3 rounded-xl border border-green-win/30 bg-surface-container-highest/95 backdrop-blur-md px-4 py-3 shadow-lg">
+            <CheckCircle2
+              size={20}
+              className="text-green-win shrink-0 mt-0.5"
+              strokeWidth={2}
+            />
+
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-on-surface">
+                Published successfully
+              </p>
+
+              <p className="mt-0.5 text-xs text-on-surface-variant">
+                Your latest AI Store Index has been published to Shopify.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="text-on-surface-variant hover:text-on-surface transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Header */}
       <div>
         <h1 className="text-on-surface text-headline-md">AI Store Index</h1>
+
         <p className="mt-2 text-on-surface-variant text-mono-sm">
           These files update automatically when products are analysed. Publish
           the latest version to Shopify when you are ready.
         </p>
       </div>
+
+      {/* Error */}
       {error && <p className="text-error text-sm">{error}</p>}
+
+      {/* Publish Button */}
       <div className="flex gap-3">
         <button
           onClick={publish}
           disabled={busy || !files.agents}
-          className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold cursor-pointer"
+          className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {busy ? "Publishing..." : "Publish to Shopify"}
         </button>
       </div>
+
+      {/* Files */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
           ["agents.md", files.agents],
@@ -73,12 +231,25 @@ export default function AiIndex() {
             className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4"
           >
             <h2 className="font-semibold text-on-surface">{name}</h2>
-            <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap text-xs text-on-surface-variant">
-              {value || "Not generated"}
-            </pre>
+
+            {loading ? (
+              <div className="flex flex-col items-center justify-center h-80 gap-3">
+                <Loader2
+                  size={28}
+                  className="animate-spin text-primary"
+                  strokeWidth={1.5}
+                />
+              </div>
+            ) : (
+              <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap text-xs text-on-surface-variant">
+                {value || "Not generated"}
+              </pre>
+            )}
           </section>
         ))}
       </div>
+
+      {/* Published Date */}
       {data?.publishedAt && (
         <p className="text-sm text-green-win">
           Published {new Date(data.publishedAt).toLocaleString()}

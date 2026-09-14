@@ -1615,6 +1615,7 @@ import {
   Play,
   Eye,
   WandSparkles,
+  ChevronDown,
   BarChart2,
   Trash2,
 } from "lucide-react";
@@ -1736,16 +1737,40 @@ function ActionButton({ product, onConfirmAnalyse }) {
 
   if (product.analysisScore == null)
     return (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onConfirmAnalyse();
-        }}
-        className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary text-on-primary hover:opacity-90 transition-opacity"
-      >
-        Analyse
-      </button>
+      <div className="relative inline-flex">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onConfirmAnalyse();
+          }}
+          className="peer h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold bg-primary text-on-primary hover:opacity-90 transition-opacity"
+        >
+          Analyse
+        </button>
+
+        {/* Tooltip */}
+        <div
+          className="pointer-events-none
+    absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+    z-50
+    w-[160px]
+    rounded-md
+    bg-surface-container-high
+    border border-outline-variant
+    px-2.5 py-1.5
+    text-[10px] leading-4 font-mono-sm
+    text-on-surface
+    text-center
+    shadow-md
+    opacity-0 invisible
+    peer-hover:opacity-100 peer-hover:visible
+    transition-opacity"
+        >
+          Check AI readiness and identify issues.
+        </div>
+      </div>
     );
+
   return (
     <span className="h-8 inline-flex items-center gap-1.5 whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold text-on-surface-variant bg-surface-container border border-outline-variant">
       <CheckCircle2 size={13} strokeWidth={2.2} />
@@ -1759,7 +1784,7 @@ function ConfirmAnalyseModal({ product, onClose, onConfirm }) {
   return (
     <Modal title="Analyse Product" onClose={onClose}>
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-surface-container-low border border-outline-variant">
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-200/45 backdrop-blur-md border border-white/60">
           <ProductThumb images={product.images} />
           <div className="min-w-0">
             <p className="font-semibold text-on-surface text-[14px] truncate">
@@ -1777,7 +1802,7 @@ function ConfirmAnalyseModal({ product, onClose, onConfirm }) {
             )}
           </div>
         </div>
-        <div className="rounded-xl border border-outline-variant bg-surface-container-low p-4 flex flex-col gap-3">
+        <div className="rounded-xl bg-slate-200/45 backdrop-blur-md border border-white/60 p-4 flex flex-col gap-3">
           <Eyebrow>What this analysis does</Eyebrow>
           {[
             {
@@ -1922,12 +1947,20 @@ function AnalyseModal({ product, onClose, onDone }) {
       {["queuing", "polling"].includes(phase) && (
         <div className="flex flex-col gap-4">
           {stages.map(({ label, doneAfter }, i) => {
-            const done = pollCount > doneAfter,
-              active = !done && pollCount >= i * 4;
+            const done =
+              i === 2 ? job?.status === "completed" : pollCount > doneAfter;
+
+            const active =
+              !done &&
+              (i === 0
+                ? pollCount >= 0
+                : i === 1
+                  ? pollCount >= 4
+                  : pollCount >= 8);
             return (
               <div
                 key={label}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${done ? "border-[#00e29e]/30 bg-[#00e29e]/5" : active ? "border-primary/30 bg-primary/5" : "border-outline-variant bg-surface-container-low"}`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${done ? "border-[#00e29e]/30 bg-[#00e29e]/8" : active ? "border-primary/30 bg-primary/5" : "border-outline-variant bg-surface-container-low"}`}
               >
                 {done ? (
                   <CheckCircle2
@@ -2684,7 +2717,7 @@ function ProductRow({
           className="flex items-center justify-end gap-1.5"
           onClick={(e) => e.stopPropagation()}
         >
-          {hasData ? (
+          {/* {hasData ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -2703,6 +2736,17 @@ function ProductRow({
               className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
             >
               Simulate
+            </button>
+          )} */}
+          {hasData && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onConfirmAnalyse();
+              }}
+              className="h-8 inline-flex items-center whitespace-nowrap px-3 rounded-lg font-mono-sm text-[11px] font-semibold border border-outline-variant text-on-surface-variant bg-surface-container hover:text-on-surface transition-colors"
+            >
+              Re-analyse
             </button>
           )}
           <ActionButton product={product} onConfirmAnalyse={onConfirmAnalyse} />
@@ -2723,7 +2767,7 @@ function ProductRow({
               }}
               title="Remove from sync"
               aria-label="Remove from sync"
-              className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors border-l border-outline-variant/60 ml-1 pl-2"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors border-l border-outline-variant/60 ml-1 "
             >
               <Trash2 size={14} strokeWidth={2} />
             </button>
@@ -2916,6 +2960,16 @@ export default function Products() {
     }
   }
 
+  const [sortOpen, setSortOpen] = useState(false);
+
+  const sortOptions = [
+    { value: "score_asc", label: "Low to High" },
+    { value: "score_desc", label: "High to Low" },
+  ];
+
+  const selectedSort =
+    sortOptions.find((option) => option.value === sort)?.label || "Low to High";
+
   const products = data?.data ?? (Array.isArray(data) ? data : []);
   const pagination = data?.pagination;
   const totalCount = countAll?.pagination?.total ?? "—";
@@ -3021,23 +3075,81 @@ export default function Products() {
               className="pl-8 py-2 rounded-xl w-70 font-mono-sm text-mono-sm outline-none  bg-surface-container-highest border border-outline-variant text-on-surface placeholder:text-on-surface-variant focus:border-outline transition-colors"
             />
           </div>
-          <div className="flex items-center gap-0.5 font-mono-sm text-mono-sm glass-card rounded-xl px-2 py-1">
-            <ArrowUpDown
+
+          {/* <ArrowUpDown
               size={14}
               strokeWidth={1.8}
               className="text-on-surface-variant "
-            />
-            <select
-              value={sort}
-              onChange={(e) => {
-                setSort(e.target.value);
-                setPage(1);
-              }}
-              className="bg-transparent py-1 max-w-30 font-mono-sm text-mono-sm font-semibold text-on-surface cursor-pointer outline-none"
+            /> */}
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setSortOpen((prev) => !prev)}
+              className="
+      h-9 inline-flex items-center gap-2
+      px-3 rounded-lg
+      border border-outline-variant
+      bg-surface-container-low
+      text-on-surface
+      font-mono-sm text-[11px] font-semibold
+      hover:bg-surface-container
+      transition-colors
+    "
             >
-              <option value="score_asc">Low to High</option>
-              <option value="score_desc">High to Low</option>
-            </select>
+              <ArrowUpDown size={15} strokeWidth={1.8} />
+
+              <span>{selectedSort}</span>
+
+              <ChevronDown
+                size={14}
+                strokeWidth={1.8}
+                className={`transition-transform ${
+                  sortOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {sortOpen && (
+              <div
+                className="
+        absolute right-0 top-full mt-1
+        z-20 min-w-[140px]
+        rounded-lg
+        border border-outline-variant
+        bg-surface-container-lowest
+        shadow-lg
+        p-1
+      "
+              >
+                {sortOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      setSort(option.value);
+                      setPage(1);
+                      setSortOpen(false);
+                    }}
+                    className={`
+            w-full flex items-center
+            px-3 py-2
+            rounded-md
+            text-left
+            font-mono-sm text-[11px] font-semibold
+            transition-colors
+            ${
+              sort === option.value
+                ? "bg-primary/10 text-primary"
+                : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+            }
+          `}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

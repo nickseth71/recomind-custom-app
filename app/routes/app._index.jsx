@@ -311,7 +311,7 @@ function CardHeader({ eyebrow, title, right, className = "" }) {
 }
 
 /* ─── ScoreRing ──────────────────────────────────────────────────── */
-function ScoreRing({ score, size = 192, stroke = 10 }) {
+function ScoreRing({ score, size = 192, stroke = 10, loading = false }) {
   const r = (size - stroke * 2) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
@@ -338,8 +338,13 @@ function ScoreRing({ score, size = 192, stroke = 10 }) {
           strokeDasharray={c}
           strokeDashoffset={offset}
           strokeLinecap="round"
+          // style={{
+          //   transition: "stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)",
+          // }}
+          className={loading ? "animate-pulse" : ""}
           style={{
             transition: "stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)",
+            opacity: loading ? 0.55 : 1,
           }}
         />
       </svg>
@@ -423,17 +428,33 @@ function EngineRow({ engine, value, loading, rank }) {
             </span>
           </div>
         </div>
-        <span
+        {/* <span
           className={`font-mono-sm text-mono-sm font-semibold ${engine.colorClass}`}
         >
           {loading ? "—" : `${value}%`}
+        </span> */}
+        <span
+          className={`font-mono-sm text-mono-sm font-semibold ${engine.colorClass}`}
+        >
+          {value}%
         </span>
       </div>
-      <div className="h-[3px] w-full bg-surface-container-highest rounded-full overflow-hidden">
+      {/* <div className="h-[3px] w-full bg-surface-container-highest rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-1000"
           style={{
             width: loading ? "0%" : `${value}%`,
+            background: engine.hex,
+          }}
+        />
+      </div> */}
+      <div className="h-[3px] w-full bg-surface-container-highest rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-1000 ${
+            loading ? "animate-pulse opacity-60" : ""
+          }`}
+          style={{
+            width: `${value}%`,
             background: engine.hex,
           }}
         />
@@ -599,20 +620,21 @@ export default function Index() {
     ];
   }, [accountPlanName]);
 
-  if (loading) {
-    return (
-      <div className="glass-surface flex min-h-full items-center justify-center rounded-xl p-4">
-        {/* <Loader2 size={24} className="animate-spin text-primary" /> */}
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="glass-surface flex min-h-full items-center justify-center rounded-xl p-4">
+  //       {/* <Loader2 size={24} className="animate-spin text-primary" /> */}
+  //     </div>
+  //   );
+  // }
 
   if (!loading && !error && Number(aiScore) === 0) {
     return <SetupDashboard />;
   }
 
   return (
-    <div className="glass-surface min-h-full space-y-4 rounded-xl p-4">
+    // <div className="glass-surface min-h-full space-y-4 rounded-xl p-4">
+    <div className="space-y-4">
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-2">
         <div>
@@ -632,13 +654,17 @@ export default function Index() {
             AI Visibility Dashboard
           </h1>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="glass-card rounded-xl p-1 flex">
-            {availablePeriods.map((period) => (
-              <button
-                key={period.value}
-                onClick={() => setTimePeriod(period.value)}
-                className={`
+        <div>
+          <h3 className="text-[10px] font-semibold tracking-[0.18em] uppercase text-on-surface-variant font-mono-sm text-center">
+            Monitoring Period
+          </h3>
+          <div className="flex items-center gap-3">
+            <div className="glass-card rounded-xl p-1 flex">
+              {availablePeriods.map((period) => (
+                <button
+                  key={period.value}
+                  onClick={() => setTimePeriod(period.value)}
+                  className={`
         px-4 py-2 rounded-lg cursor-pointer text-[12px] font-semibold transition-all
         ${
           timePeriod === period.value
@@ -646,10 +672,11 @@ export default function Index() {
             : "text-on-surface-variant hover:text-on-surface"
         }
       `}
-              >
-                {period.label}
-              </button>
-            ))}
+                >
+                  {period.label}
+                </button>
+              ))}
+            </div>
           </div>
           {/* <button className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl text-[13px] font-semibold hover:opacity-90 transition-opacity">
             <Icon name="Bolt" size={14} className="text-on-primary" />
@@ -665,7 +692,7 @@ export default function Index() {
           <CardHeader eyebrow="Readiness" title="Overall AI Score" />
           <Divider />
           <div className="flex flex-col items-center py-7 px-6 gap-6">
-            {loading ? (
+            {/* {loading ? (
               <div className="w-48 h-48 flex items-center justify-center">
                 <Icon
                   name="Spinner"
@@ -675,7 +702,8 @@ export default function Index() {
               </div>
             ) : (
               <ScoreRing score={aiScore} />
-            )}
+            )} */}
+            <ScoreRing score={aiScore} loading={loading} />
             <div className="grid grid-cols-2 w-full gap-px bg-outline-variant rounded-xl overflow-hidden">
               {[
                 {
@@ -839,6 +867,7 @@ export default function Index() {
           <Divider />
 
           {/* 3 tabs — matches doc 9 exactly */}
+
           <div className="flex gap-1 px-6 pt-3">
             {[
               { id: "missing", label: "Missing Intents", iconName: "EyeOff" },
@@ -874,7 +903,13 @@ export default function Index() {
                 />
               </div>
             ) : promptItems.length === 0 ? (
-              <div className="min-h-20" aria-hidden="true" />
+              <div className="flex items-center justify-center py-12 text-sm text-on-surface-variant">
+                {promptTab === "missing"
+                  ? "No Missing Prompts yet"
+                  : promptTab === "improve"
+                    ? "No Prompts needing improvement yet."
+                    : "No Winning Prompts yet."}
+              </div>
             ) : (
               promptItems.map((item) => (
                 <PromptRow key={item._id} item={item} />
@@ -919,7 +954,7 @@ export default function Index() {
                 {
                   iconName: "Inventory",
                   label: "Products",
-                  value: `${stats.totalProducts ?? 0} / ${plan?.limits?.maxProductsAnalyzed ?? "—"}`,
+                  value: `${stats.totalProducts ?? 0} / ${plan?.limits?.maxProductsAnalyzed ?? "Unlimited"}`,
                 },
                 {
                   iconName: "AutoFix",

@@ -956,9 +956,9 @@ export default function ProductSyncModal({ onClose, onSynced, syncSlots }) {
                 <input
                   type="checkbox"
                   checked={isSelected || product.isSynced}
-                  disabled={product.isSynced || isDisabled}
+                  // disabled={product.isSynced || isDisabled}
                   onChange={() => toggleSelect(product)}
-                  className="w-4 h-4 rounded accent-primary shrink-0"
+                  className="w-4 h-4 rounded accent-[#4e5b72] shrink-0"
                 />
 
                 {product.image ? (

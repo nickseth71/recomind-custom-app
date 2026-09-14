@@ -1,6 +1,7 @@
 // src/pages/simulate/ModeIntelligence.jsx
 import { useState } from "react";
 import { promptApi } from "../../lib/api";
+import { SearchCode } from "lucide-react";
 import { RunButton, ErrorBanner, ResultCard, inputCls } from "./SimulateShared";
 
 export default function ModeIntelligence() {
@@ -51,10 +52,16 @@ export default function ModeIntelligence() {
       </div>
 
       {/* ── Right: Result ── */}
-      <div className="space-y-4 pt-7.5">
+      <div className="space-y-4 pt-5.5">
         {!result && (
-          <div className="rounded-2xl border h-[120px] border-outline-variant bg-surface-bright p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
-            <span className="text-3xl">🔍</span>
+          <div className="rounded-2xl border h-[120px] border-outline-variant bg-surface-bright p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-1">
+            <span className="text-3xl">
+              <SearchCode
+                size={40}
+                strokeWidth={1.7}
+                className="text-primary"
+              />
+            </span>
             Intelligence report will appear here.
           </div>
         )}

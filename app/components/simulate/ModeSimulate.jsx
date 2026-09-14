@@ -1,5 +1,6 @@
 // src/pages/simulate/ModeSimulate.jsx
 import { useState } from "react";
+import { Waypoints } from "lucide-react";
 import { Link } from "react-router";
 import { promptApi } from "../../lib/api";
 import {
@@ -159,7 +160,9 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
              min-h-[120px] flex flex-col items-center justify-center
              text-center text-sm text-on-surface-variant gap-3 px-8"
           >
-            <span className="text-4xl">🎯</span>
+            <span className="text-4xl">
+              <Waypoints size={40} strokeWidth={1.7} className="text-primary" />
+            </span>
 
             <p className="font-semibold text-on-surface">No Simulation Yet</p>
 
