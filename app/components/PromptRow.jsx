@@ -51,7 +51,7 @@ export default function PromptRow({ item }) {
       className={`rounded-xl border bg-surface-container-low/50 transition-all ${expanded ? "border-outline" : "border-outline-variant"}`}
     >
       <button
-        onClick={() => setExpanded((v) => !v)}
+        // onClick={() => setExpanded((v) => !v)}
         className="w-full text-left px-4 py-3.5 flex items-start gap-3"
       >
         <div
@@ -87,11 +87,11 @@ export default function PromptRow({ item }) {
           >
             Detail
           </Link>
-          <ChevronRight
+          {/* <ChevronRight
             size={14}
             strokeWidth={2}
             className={`text-on-surface-variant transition-transform ${expanded ? "rotate-90" : ""}`}
-          />
+          /> */}
         </div>
       </button>
 

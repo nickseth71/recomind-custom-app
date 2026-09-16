@@ -614,9 +614,9 @@ export default function Index() {
     const planName = accountPlanName;
 
     return [
-      { value: "30d", label: "30D" },
-      { value: "3months", label: "3M" },
-      { value: "6months", label: "6M" },
+      { value: "30d", label: "30D", tooltip: "Last 30 days" },
+      { value: "3months", label: "3M", tooltip: "Last 3 months" },
+      { value: "6months", label: "6M", tooltip: "Last 6 months" },
     ];
   }, [accountPlanName]);
 
@@ -661,10 +661,10 @@ export default function Index() {
           <div className="flex items-center gap-3">
             <div className="glass-card rounded-xl p-1 flex">
               {availablePeriods.map((period) => (
-                <button
-                  key={period.value}
-                  onClick={() => setTimePeriod(period.value)}
-                  className={`
+                <div key={period.value} className="relative group">
+                  <button
+                    onClick={() => setTimePeriod(period.value)}
+                    className={`
         px-4 py-2 rounded-lg cursor-pointer text-[12px] font-semibold transition-all
         ${
           timePeriod === period.value
@@ -672,9 +672,27 @@ export default function Index() {
             : "text-on-surface-variant hover:text-on-surface"
         }
       `}
-                >
-                  {period.label}
-                </button>
+                  >
+                    {period.label}
+                  </button>
+
+                  {/* Tooltip */}
+                  <div
+                    className="
+        absolute left-1/2 -translate-x-1/2 bottom-full mt-2
+    z-[9999] whitespace-nowrap
+    rounded-md px-2 py-1
+    bg-black/80 text-white
+    text-[9px] font-medium
+    opacity-0 invisible
+    group-hover:opacity-100 group-hover:visible
+    transition-opacity duration-150
+    pointer-events-none
+      "
+                  >
+                    {period.tooltip}
+                  </div>
+                </div>
               ))}
             </div>
           </div>

@@ -21,7 +21,6 @@ export function useApi(fn, deps = []) {
 
     setLoading(true);
     setError(null);
-    setData(null);
     try {
       const res = await fn();
       if (requestId !== requestIdRef.current) return; // a newer call superseded this one — drop it

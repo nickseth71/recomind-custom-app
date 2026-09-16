@@ -540,7 +540,7 @@ function SmartPromptsPanel({ smartPrompts }) {
           return (
             <div
               key={i}
-              className={`rounded-xl border p-4 flex items-start gap-3 bg-surface-container-low ${isHV ? "border-[#00e29e]/35" : "border-outline-variant"}`}
+              className={`rounded-xl border p-4 flex items-start gap-3 bg-surface-container-lowest ${isHV ? "border-[#00e29e]/35" : "border-outline-variant"}`}
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
@@ -616,7 +616,7 @@ function FixesPanel({ fixes }) {
         return (
           <div
             key={i}
-            className={`rounded-xl border p-4 flex gap-4 bg-surface-container-low ${f.impact === "HIGH" ? "border-error/30" : "border-outline-variant"}`}
+            className={`rounded-xl border p-4 flex gap-4 bg-surface-container-lowest ${f.impact === "HIGH" ? "border-error/30" : "border-outline-variant"}`}
           >
             <div
               className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center font-mono-sm text-[12px] font-black border mt-0.5 ${ic.text} ${ic.bg} ${ic.border}`}
@@ -716,7 +716,7 @@ function FaqPanel({ analysis }) {
           {analysis.faq.map((f, i) => (
             <div
               key={i}
-              className="rounded-xl border border-outline-variant bg-surface-container-low p-4"
+              className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4"
             >
               <p className="text-[13px] font-bold text-on-surface mb-2">
                 {f.question}

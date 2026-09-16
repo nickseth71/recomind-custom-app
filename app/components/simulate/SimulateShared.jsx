@@ -57,10 +57,16 @@ export function ErrorBanner({ message }) {
   );
 }
 
-export function ResultCard({ label, children, labelColor = "text-on-surface-variant" }) {
+export function ResultCard({
+  label,
+  children,
+  labelColor = "text-on-surface-variant",
+}) {
   return (
-    <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-5 space-y-2">
-      <p className={`text-[10px] font-bold uppercase tracking-widest ${labelColor}`}>
+    <div className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 space-y-2">
+      <p
+        className={`text-[10px] font-bold uppercase tracking-widest ${labelColor}`}
+      >
         {label}
       </p>
       {children}
@@ -70,7 +76,9 @@ export function ResultCard({ label, children, labelColor = "text-on-surface-vari
 
 export function Eyebrow({ children, className = "" }) {
   return (
-    <p className={`text-[10px] font-bold uppercase tracking-widest text-on-surface-variant ${className}`}>
+    <p
+      className={`text-[10px] font-bold uppercase tracking-widest text-on-surface-variant ${className}`}
+    >
       {children}
     </p>
   );

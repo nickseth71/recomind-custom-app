@@ -65,7 +65,7 @@ export default function Simulate() {
 
   const history = historyRes?.data ?? [];
   const pagination = historyRes?.pagination;
-  if (loading) {
+  if (loading && !historyRes) {
     return (
       <div className="flex min-h-[70vh] q-center justify-center">
         <AiSpinner size={70} label="Loading simulator..." />
@@ -86,8 +86,6 @@ export default function Simulate() {
         title="AI Recommendation Simulator"
         subtitle="Test prompts against your catalog and discover intelligence-led recommendations."
       />
-
-      {/* Mode tabs */}
       {/* Mode tabs */}
       <div className="flex flex-wrap gap-2">
         {MODES.map(({ key, label, tooltip }) => (
@@ -106,22 +104,22 @@ export default function Simulate() {
 
             <div
               className="
-          pointer-events-none
-          absolute top-full left-1/2 -translate-x-1/2 mt-2
-          z-50
-          w-max max-w-[200px]
-          rounded-lg
-          bg-surface-container-high
-          border border-outline-variant
-          px-3 py-2
-          text-[11px] font-mono-sm
-          text-on-surface
-          text-center
-          shadow-lg
-          opacity-0 invisible
-          peer-hover:opacity-100 peer-hover:visible
-          transition-opacity
-        "
+    pointer-events-none
+    absolute top-full left-1/2 -translate-x-1/2 mt-2
+    z-50
+    w-max max-w-[200px]
+    rounded-lg
+    bg-gray-500
+    border border-surface-container-highest
+    px-3 py-2
+    text-[11px] font-medium
+    text-white
+    text-center
+    shadow-lg
+    opacity-0 invisible
+    peer-hover:opacity-100 peer-hover:visible
+    transition-opacity duration-150
+  "
             >
               {tooltip}
             </div>

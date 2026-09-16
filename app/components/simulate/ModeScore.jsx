@@ -96,7 +96,7 @@ export default function ModeScore({ token }) {
         {result && (
           <>
             {/* Score hero */}
-            <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-5">
+            <div className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-5">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">

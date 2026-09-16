@@ -69,7 +69,7 @@ export default function ModeIntelligence() {
         {result && (
           <>
             {/* Summary row */}
-            <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-5 space-y-3">
+            <div className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-5 space-y-3">
               <div className="flex flex-wrap gap-2">
                 {result.rankingCompetitiveness && (
                   <span

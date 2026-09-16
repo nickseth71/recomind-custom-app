@@ -1750,21 +1750,20 @@ function ActionButton({ product, onConfirmAnalyse }) {
 
         {/* Tooltip */}
         <div
-          className="pointer-events-none
-    absolute bottom-full left-1/2 -translate-x-1/2 mb-2
-    z-50
-    w-[160px]
-    rounded-md
-    bg-surface-container-high
-    border border-outline-variant
-    px-2.5 py-1.5
-    text-[10px] leading-4 font-mono-sm
-    text-on-surface
-    text-center
-    shadow-md
-    opacity-0 invisible
-    peer-hover:opacity-100 peer-hover:visible
-    transition-opacity"
+          className="  pointer-events-none
+  absolute left-1/2 -translate-x-1/2 bottom-full mb-2
+  z-[9999]
+  whitespace-nowrap
+  rounded-md
+  bg-black/80
+  text-white
+  px-2 py-1
+  text-[9px]
+  font-medium
+  opacity-0 invisible
+  group-hover:opacity-100
+  group-hover:visible
+  transition-opacity duration-150"
         >
           Check AI readiness and identify issues.
         </div>
@@ -1784,7 +1783,7 @@ function ConfirmAnalyseModal({ product, onClose, onConfirm }) {
   return (
     <Modal title="Analyse Product" onClose={onClose}>
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-200/45 backdrop-blur-md border border-white/60">
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-200/45 backdrop-blur-md border border-black/60">
           <ProductThumb images={product.images} />
           <div className="min-w-0">
             <p className="font-semibold text-on-surface text-[14px] truncate">
@@ -1802,7 +1801,7 @@ function ConfirmAnalyseModal({ product, onClose, onConfirm }) {
             )}
           </div>
         </div>
-        <div className="rounded-xl bg-slate-200/45 backdrop-blur-md border border-white/60 p-4 flex flex-col gap-3">
+        <div className="rounded-xl bg-slate-200/45 backdrop-blur-md border border-black/60 p-4 flex flex-col gap-3">
           <Eyebrow>What this analysis does</Eyebrow>
           {[
             {
@@ -3286,7 +3285,7 @@ export default function Products() {
       </Card>
 
       {/* Bottom panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
         <Card className="lg:col-span-2 p-6 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
             <BarChart2 size={120} strokeWidth={1} />

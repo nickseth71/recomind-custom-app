@@ -149,7 +149,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
 
       {/* ── Right: Result ── */}
       {/* <div className="space-y-4"> */}
-      <div className="flex flex-col pt-7">
+      <div className="flex flex-col gap-4 pt-7">
         {!result && (
           // <div className="rounded-2xl border border-outline-variant bg-surface-container-highest p-10 text-center text-sm text-on-surface-variant flex flex-col items-center gap-3">
           //   <span className="text-3xl">🎯</span>
@@ -192,13 +192,13 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
               </div>
             )}
             {/* Score + likelihood */}
-            <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-5">
+            <div className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-5">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1">
                     Recommendation Score
                   </p>
-                  <p className="text-4xl font-black text-on-surface leading-none">
+                  <p className="text-4xl font-black text-on-surface leading-none ">
                     {result.recommendationScore ?? "—"}
                     <span className="text-base font-semibold text-on-surface-variant ml-1">
                       /100
@@ -207,14 +207,14 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
                 </div>
                 <LikelihoodBadge value={result.likelihood} />
               </div>
-              {result._id && (
+              {/* {result._id && (
                 <Link
                   to={`/app/simulation/${result._id}`}
                   className="inline-block mt-3 text-[12px] font-bold text-primary hover:opacity-80 transition-opacity"
                 >
                   View full detail →
                 </Link>
-              )}
+              )} */}
             </div>
 
             {result.buyerIntent && (
