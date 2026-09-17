@@ -278,9 +278,20 @@ export default function Billing() {
 
   const [tokenAmount, setTokenAmount] = useState(1000);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [planLoading, setPlanLoading] = useState(null);
+  const [billingError, setBillingError] = useState(null);
 
   useEffect(() => {
     fetchBillingData();
+  }, []);
+
+  useEffect(() => {
+    function refreshAfterApproval() {
+      fetchBillingData();
+    }
+
+    window.addEventListener("focus", refreshAfterApproval);
+    return () => window.removeEventListener("focus", refreshAfterApproval);
   }, []);
 
   const fetchBillingData = async () => {
@@ -295,7 +306,7 @@ export default function Billing() {
       setPlans(plansRes.data.plans);
       setBilling(billingRes.data);
     } catch (err) {
-      console.error(err);
+      setBillingError(err.message || "Could not load billing information");
     } finally {
       setLoading(false);
     }
@@ -303,6 +314,7 @@ export default function Billing() {
 
   async function purchaseTokens() {
     setPurchaseLoading(true);
+    setBillingError(null);
 
     try {
       const result = await billingApi.purchaseTokens(tokenAmount);
@@ -314,10 +326,31 @@ export default function Billing() {
           "noopener,noreferrer",
         );
       }
+      await fetchBillingData();
     } catch (err) {
-      console.error(err);
+      setBillingError(err.message);
     } finally {
       setPurchaseLoading(false);
+    }
+  }
+
+  async function purchasePlan(planId) {
+    setPlanLoading(planId);
+    setBillingError(null);
+    try {
+      const result = await billingApi.purchasePlan(planId);
+      if (result.data?.confirmationUrl) {
+        window.open(
+          result.data.confirmationUrl,
+          "_blank",
+          "noopener,noreferrer",
+        );
+      }
+      await fetchBillingData();
+    } catch (err) {
+      setBillingError(err.message);
+    } finally {
+      setPlanLoading(null);
     }
   }
 
@@ -337,13 +370,64 @@ export default function Billing() {
       <p className="mt-2 text-on-surface-variant text-mono-sm">
         Manage your subscription, plan, and payment details
       </p>
+      {billingError && (
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-error/20 bg-error/5 px-4 py-3 text-sm text-error">
+          <span>{billingError}</span>
+          <button
+            type="button"
+            onClick={fetchBillingData}
+            className="shrink-0 font-semibold underline underline-offset-2"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      {billing?.plan?.isTrial && (
+        <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-on-surface">
+          Free trial ends{" "}
+          {new Date(billing.plan.trialEndsAt).toLocaleDateString()}. Approve the
+          Starter plan to continue automatically after the trial.
+        </div>
+      )}
+      {billing?.plan?.billingStatus &&
+        billing.plan.billingStatus !== "ACTIVE" &&
+        billing.plan.billingStatus !== "trialing" && (
+          <div className="mt-3 rounded-xl border border-tertiary-fixed-dim/30 bg-tertiary-fixed-dim/10 px-4 py-3 text-sm text-on-surface">
+            Shopify subscription approval is pending. Complete approval in the
+            Shopify tab, then return here to refresh your billing status.
+          </div>
+        )}
+      {billing?.billingConfirmationUrl && (
+        <button
+          type="button"
+          onClick={() =>
+            window.open(
+              billing.billingConfirmationUrl,
+              "_blank",
+              "noopener,noreferrer",
+            )
+          }
+          className="mt-3 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary"
+        >
+          Approve Shopify billing
+        </button>
+      )}
+      {billing?.tokenQuota && (
+        <p className="mt-3 text-sm text-on-surface-variant">
+          Token balance: {billing.tokenQuota.remaining?.toLocaleString() ?? 0}{" "}
+          remaining
+        </p>
+      )}
 
       {/* Plans */}
       <div className="mt-5 rounded-xl border glass-card p-5">
-        <h2 className="text-on-surface text-headline-md">Buy monthly tokens</h2>
+        <h2 className="text-on-surface text-headline-md">
+          Buy one-time tokens
+        </h2>
 
         <p className="mt-2 text-on-surface-variant text-mono-sm">
-          Purchased tokens expire at the next monthly renewal.
+          Purchased tokens are added once after Shopify payment approval and do
+          not renew.
         </p>
 
         {/* Modular Token Slider */}
@@ -396,6 +480,7 @@ export default function Billing() {
         <div className="grid grid-cols-3 gap-6">
           {plans.map((plan) => {
             const isCurrentPlan = billing?.plan?.name === plan.id;
+            const isPendingPlan = billing?.plan?.pendingPlan === plan.id;
 
             return (
               <div
@@ -407,14 +492,14 @@ export default function Billing() {
                 }`}
               >
                 {/* Current badge */}
-                {isCurrentPlan && (
+                {isCurrentPlan && !isPendingPlan && (
                   <span className="absolute right-8 top-8 rounded-full bg-primary px-2 py-1 text-white">
                     Current
                   </span>
                 )}
 
                 {/* Plan name */}
-                <h3 className="text-on-surface text-headline-md text-on-surface-variant">
+                <h3 className="text-headline-md text-on-surface-variant">
                   {plan.label}
                 </h3>
 
@@ -457,13 +542,32 @@ export default function Billing() {
                 {/* Plan button */}
                 <button
                   type="button"
+                  onClick={() =>
+                    !isCurrentPlan &&
+                    plan.priceMonthly != null &&
+                    purchasePlan(plan.id)
+                  }
+                  disabled={
+                    isCurrentPlan ||
+                    isPendingPlan ||
+                    plan.priceMonthly == null ||
+                    planLoading === plan.id
+                  }
                   className={`mt-5 w-full rounded-xl py-4 cursor-pointer text-xl font-semibold ${
                     isCurrentPlan
                       ? "bg-[#111844] text-white"
                       : "border border-[#3A4AA0] text-on-surface-variant hover:-translate-y-1 hover:bg-[#111844] hover:text-white"
                   }`}
                 >
-                  {isCurrentPlan ? "Current Plan" : `Switch to ${plan.label}`}
+                  {isPendingPlan
+                    ? "Approval pending"
+                    : isCurrentPlan
+                      ? "Current Plan"
+                      : plan.priceMonthly == null
+                        ? "Contact us"
+                        : planLoading === plan.id
+                          ? "Opening Shopify billing..."
+                          : `Switch to ${plan.label}`}
                 </button>
               </div>
             );

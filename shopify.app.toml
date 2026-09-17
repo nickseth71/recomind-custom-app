@@ -37,6 +37,10 @@ uri = "https://staging-recomind-api.onrender.com/api/webhooks/markets-update"
 topics = ["app_subscriptions/update"]
 uri = "https://staging-recomind-api.onrender.com/api/webhooks/app-subscriptions-update"
 
+[[webhooks.subscriptions]]
+topics = ["app_purchases_one_time/update"]
+uri = "https://staging-recomind-api.onrender.com/api/webhooks/app-purchases-one-time-update"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "write_products,write_themes,read_reports,read_orders,read_markets"

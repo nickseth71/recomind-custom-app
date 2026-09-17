@@ -42,6 +42,11 @@ export const productApi = {
   },
   get: (id) => request(`/products/${id}`),
   getCompetitors: (id) => request(`/products/${id}/competitors`),
+  runCompetitors: (id, urls) =>
+    request(`/products/${id}/competitors`, {
+      method: "POST",
+      body: JSON.stringify({ urls }),
+    }),
   analyse: (id) => request(`/products/${id}/analyse`, { method: "POST" }),
   analyseBulk: () => request("/products/analyse-bulk", { method: "POST" }),
   getAnalyses: (id) => request(`/products/${id}/analysis`),
@@ -167,6 +172,11 @@ export const billingApi = {
     request("/stores/billing/tokens", {
       method: "POST",
       body: JSON.stringify({ amount }),
+    }),
+  purchasePlan: (plan) =>
+    request("/stores/billing/plan", {
+      method: "POST",
+      body: JSON.stringify({ plan }),
     }),
 };
 

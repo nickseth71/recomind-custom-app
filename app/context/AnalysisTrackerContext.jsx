@@ -51,6 +51,16 @@ export function AnalysisTrackerProvider({ children }) {
     return () => clearTimeout(t);
   }, [toast]);
 
+  useEffect(() => {
+    function handleNotification(event) {
+      const { message, type = "success" } = event.detail || {};
+      if (message) showToast(message, type);
+    }
+    window.addEventListener("recomind:notification", handleNotification);
+    return () =>
+      window.removeEventListener("recomind:notification", handleNotification);
+  }, []);
+
   const updateState = useCallback((updater) => {
     setState((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;

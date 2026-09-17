@@ -65,16 +65,16 @@ const Impact = () => {
     <div>
       <div className="flex flex-col gap-1">
         <h1 className="font-headline-lg text-on-surface text-headline-lg">
-          Your AI Optimization Impact
+          Your AI Discovery Impact
         </h1>
         <p className="text-secondary-fixed-dim mt-1 text-body-md">
           See how fixing buyer intent gaps is improving your store performance
           {payload?.dataSource ? ` (data from ${payload.dataSource})` : ""}
         </p>
 
-        {!payload?.hasOptimizations && (
+        {!payload?.hasPublishedFiles && (
           <p className="mt-3 rounded-lg glass-card px-4 py-2 text-sm text-amber-800">
-            Optimize at least one product to unlock before/after comparison.
+            Publish your AI discovery files to unlock a before/after comparison.
             Current metrics show your latest Shopify store performance.
           </p>
         )}
@@ -110,8 +110,8 @@ const Impact = () => {
             How your performance changed
           </h3>
           <p className="text-on-surface text-xs">
-            {payload?.hasOptimizations
-              ? "Performance improved after optimization"
+            {payload?.hasPublishedFiles
+              ? "Performance after publishing AI discovery files"
               : "Current store performance"}
           </p>
         </div>
@@ -119,7 +119,7 @@ const Impact = () => {
         <div className="grid grid-cols-2">
           <div className="p-3 border-r border-outline">
             <h3 className="text-on-surface font-headline-md font-semibold mb-2">
-              BEFORE OPTIMIZATION
+              BEFORE PUBLICATION
             </h3>
             <div className="space-y-3">
               {beforeData.map((item, index) => (
@@ -137,7 +137,7 @@ const Impact = () => {
 
           <div className="p-3">
             <h3 className="text-on-surface font-headline-md font-semibold mb-2">
-              AFTER OPTIMIZATION
+              AFTER PUBLICATION
             </h3>
             <div className="space-y-3">
               {afterData.map((item, index) => (
@@ -196,8 +196,8 @@ const Impact = () => {
 
         {opportunities.length === 0 ? (
           <div className="px-6 py-8 text-on-surface-variant text-sm">
-            No impact opportunities yet. Optimize products and match buyer
-            intents to see gains here.
+            No impact opportunities yet. Publish analysed products and match
+            buyer intents to see gains here.
           </div>
         ) : (
           opportunities.map((item, index) => (
@@ -260,7 +260,7 @@ const Impact = () => {
         <div className="px-6 py-5">
           <h2 className="text-on-surface text-headline-md">Product Impact</h2>
           <p className="mt-1 text-on-surface-variant text-mono-sm">
-            Before and after metrics per product (from Shopify)
+            Before and after metrics per analysed product (from Shopify)
           </p>
         </div>
         <div className="grid grid-cols-5 bg-white px-4 py-2 text-on-surface font-semibold text-mono-sm uppercase">
@@ -273,8 +273,9 @@ const Impact = () => {
 
         {productImpactData.length === 0 ? (
           <div className="px-6 py-8 text-on-surface-variant text-sm">
-            No optimized products yet. Apply fixes to products to track
-            before/after revenue and intent wins.
+            No analysed products published yet. Publish AI discovery files to
+            track before/after revenue and intent wins.
+            
           </div>
         ) : (
           productImpactData.map((item) => (
@@ -326,7 +327,7 @@ const Impact = () => {
               <div>
                 <Link
                   to={`/app/products/${item.productId}`}
-                  className="flex items-center gap-2 rounded-xl text-mono-sm bg-gradient-to-r bg-[#111844] px-3 py-1 font-medium text-white transition hover:opacity-90 w-fit"
+                  className="flex items-center gap-2 rounded-xl text-mono-sm bg-linear-to-r bg-[#111844] px-3 py-1 font-medium text-white transition hover:opacity-90 w-fit"
                 >
                   <Zap size={16} /> View
                 </Link>

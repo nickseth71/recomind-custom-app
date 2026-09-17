@@ -10,20 +10,14 @@ function CellValue({ value, isYou, isScoreRow, isReviewRow }) {
 
   // Tick / cross
   if (v === "✓" || v === "true" || v.toLowerCase() === "yes") {
-    return (
-      <span
-        className={`text-lg font-bold ${isYou ? "text-[#00e29e]" : "text-[#00e29e]"}`}
-      >
-        ✓
-      </span>
-    );
+    return <span className="text-lg font-bold text-green-win-light">✓</span>;
   }
   if (v === "✗" || v === "false" || v.toLowerCase() === "no") {
     return <span className="text-lg font-bold text-error">✗</span>;
   }
   if (v.toLowerCase() === "partial") {
     return (
-      <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full bg-[#e9ba00]/15 text-[#7b5800] border border-[#e9ba00]/30">
+      <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary border border-tertiary-fixed-dim/30">
         Partial
       </span>
     );
@@ -113,6 +107,7 @@ const Competitors = () => {
     data: benchmarkResponse,
     loading: benchmarkLoading,
     error: benchmarkError,
+    refetch: refetchBenchmark,
   } = useApi(
     token && selectedProductId
       ? () => productApi.getCompetitors(selectedProductId)
@@ -137,6 +132,10 @@ const Competitors = () => {
   const headerCols = columns.slice(1); // ["You", "Tiffany...", "Cartier...", ...]
   const competitorUrls = benchmark?.competitorUrls ?? [];
   const [isOpen, setIsOpen] = useState(false);
+  const [manualUrls, setManualUrls] = useState("");
+  const [manualLoading, setManualLoading] = useState(false);
+  const [manualError, setManualError] = useState(null);
+  const [manualMessage, setManualMessage] = useState(null);
 
   const dropdownRef = useRef(null);
 
@@ -151,6 +150,30 @@ const Competitors = () => {
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  async function runManualAnalysis() {
+    const urls = manualUrls
+      .split(/[\n,]+/)
+      .map((url) => url.trim())
+      .filter(Boolean);
+    if (!selectedProductId || !urls.length) {
+      setManualError("Add at least one competitor URL first.");
+      return;
+    }
+    setManualLoading(true);
+    setManualError(null);
+    setManualMessage(null);
+    try {
+      await productApi.runCompetitors(selectedProductId, urls);
+      setManualMessage("Competitor analysis completed.");
+      refetchBenchmark();
+      window.dispatchEvent(new Event("recomind:competitor-updated"));
+    } catch (error) {
+      setManualError(error.message);
+    } finally {
+      setManualLoading(false);
+    }
+  }
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -210,7 +233,7 @@ const Competitors = () => {
               </option>
             ))}
           </select> */}
-          <div className="relative w-[450px]" ref={dropdownRef}>
+          <div className="relative w-112.5" ref={dropdownRef}>
             {/* Button */}
 
             {/* <button
@@ -441,6 +464,38 @@ const Competitors = () => {
       </div>
 
       {/* Error states */}
+      {enabled && selectedProductId && (
+        <div className="rounded-xl border border-outline-variant bg-surface-container-low p-5">
+          <p className="font-semibold text-on-surface">Manual competitors</p>
+          <p className="mt-1 text-sm text-on-surface-variant">
+            Add one competitor product or brand URL per line, then run the
+            benchmark for this product.
+          </p>
+          <textarea
+            value={manualUrls}
+            onChange={(event) => setManualUrls(event.target.value)}
+            placeholder="https://competitor.example/products/item"
+            className="mt-3 min-h-24 w-full rounded-xl border border-outline-variant bg-white p-3 text-sm text-on-surface outline-none focus:border-primary"
+          />
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={runManualAnalysis}
+              disabled={manualLoading}
+              className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary disabled:opacity-50"
+            >
+              {manualLoading ? "Analysing..." : "Run competitor analysis"}
+            </button>
+            {manualMessage && (
+              <span className="text-sm text-green-win">{manualMessage}</span>
+            )}
+            {manualError && (
+              <span className="text-sm text-error">{manualError}</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {productsError && (
         <div
           className="rounded-xl px-4 py-3 text-sm font-semibold"

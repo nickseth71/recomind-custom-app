@@ -55,8 +55,26 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
       const res = await promptApi.simulateCsv(await file.text(), productId);
       setResult(res.data ?? res);
       refetchHistory();
+      window.dispatchEvent(
+        new CustomEvent("recomind:notification", {
+          detail: {
+            message: `CSV simulation complete: ${
+              res.data?.simulatedPromptNumbers?.length ?? 0
+            } prompts simulated`,
+            type: "success",
+          },
+        }),
+      );
     } catch (e) {
       setError(e.message);
+      window.dispatchEvent(
+        new CustomEvent("recomind:notification", {
+          detail: {
+            message: `CSV simulation failed: ${e.message}`,
+            type: "error",
+          },
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -74,7 +92,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder='e.g. "best protein powder for beginners under $60"'
-          className={`${inputCls} min-h-[120px] resize-none bg-white`}
+          className={`${inputCls} min-h-30 resize-none bg-white`}
           // className={`${inputCls} min-h-[120px] resize-none bg-surface-container-low`}
         />
 
@@ -157,7 +175,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
           // </div>
           <div
             className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-10
-             min-h-[120px] flex flex-col items-center justify-center
+             min-h-30 flex flex-col items-center justify-center
              text-center text-sm text-on-surface-variant gap-3 px-8"
           >
             <span className="text-4xl">
@@ -166,7 +184,7 @@ export default function ModeSimulate({ token, history, refetchHistory }) {
 
             <p className="font-semibold text-on-surface">No Simulation Yet</p>
 
-            <p className="max-w-[260px]">
+            <p className="max-w-65">
               Results will appear here once the simulation runs.
             </p>
           </div>
