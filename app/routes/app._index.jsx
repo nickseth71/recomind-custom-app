@@ -311,11 +311,36 @@ function CardHeader({ eyebrow, title, right, className = "" }) {
 }
 
 /* ─── ScoreRing ──────────────────────────────────────────────────── */
-function ScoreRing({ score, size = 192, stroke = 10, loading = false }) {
+
+function ScoreRing({
+  score,
+  size = 192,
+  stroke = 10,
+  loading = false,
+  animationKey,
+}) {
   const r = (size - stroke * 2) / 2;
   const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
   const cx = size / 2;
+
+  const [animatedScore, setAnimatedScore] = useState(0);
+
+  useEffect(() => {
+    if (loading) {
+      // API is being hit → immediately reset ring
+      setAnimatedScore(0);
+    } else {
+      // API finished → animate to new score
+      const timer = setTimeout(() => {
+        setAnimatedScore(score ?? 0);
+      }, 50);
+
+      return () => clearTimeout(timer);
+    }
+  }, [loading, animationKey]);
+
+  const offset = c - (animatedScore / 100) * c;
+
   return (
     <div className="relative inline-flex items-center justify-center">
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
@@ -328,6 +353,7 @@ function ScoreRing({ score, size = 192, stroke = 10, loading = false }) {
           stroke="currentColor"
           strokeWidth={stroke}
         />
+
         <circle
           cx={cx}
           cy={cx}
@@ -338,20 +364,18 @@ function ScoreRing({ score, size = 192, stroke = 10, loading = false }) {
           strokeDasharray={c}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          // style={{
-          //   transition: "stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)",
-          // }}
-          className={loading ? "animate-pulse" : ""}
           style={{
             transition: "stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)",
             opacity: loading ? 0.55 : 1,
           }}
         />
       </svg>
+
       <div className="absolute flex flex-col items-center select-none">
         <span className="font-display-lg text-[52px] font-bold leading-none text-on-surface">
           {score}
         </span>
+
         <span className="font-mono-sm text-mono-sm text-on-surface-variant uppercase tracking-widest mt-1">
           Score
         </span>
@@ -399,7 +423,86 @@ function TokenRing({ pct }) {
 /* ─── EngineRow ──────────────────────────────────────────────────── */
 const RANK_LABELS = ["#1", "#2", "#3", "#4", "SGE"];
 
-function EngineRow({ engine, value, loading, rank }) {
+// function EngineRow({ engine, value, loading, rank }) {
+//   return (
+//     <div>
+//       <div className="flex items-center justify-between mb-2">
+//         <div className="flex items-center gap-2.5">
+//           <span
+//             className="font-mono-sm text-[9px] font-bold w-5 text-center shrink-0"
+//             style={{ color: engine.hex }}
+//           >
+//             {RANK_LABELS[rank]}
+//           </span>
+//           <div
+//             className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${engine.bgClass} ${engine.borderClass}`}
+//           >
+//             <Icon
+//               name={engine.iconName}
+//               size={14}
+//               className={engine.colorClass}
+//             />
+//           </div>
+//           <div className="flex items-baseline gap-1.5">
+//             <span className="text-[13px] font-semibold text-on-surface">
+//               {engine.label}
+//             </span>
+//             <span className="font-mono-sm text-mono-sm text-on-surface-variant">
+//               {engine.sub}
+//             </span>
+//           </div>
+//         </div>
+//         {/* <span
+//           className={`font-mono-sm text-mono-sm font-semibold ${engine.colorClass}`}
+//         >
+//           {loading ? "—" : `${value}%`}
+//         </span> */}
+//         <span
+//           className={`font-mono-sm text-mono-sm font-semibold ${engine.colorClass}`}
+//         >
+//           {value}%
+//         </span>
+//       </div>
+//       {/* <div className="h-[3px] w-full bg-surface-container-highest rounded-full overflow-hidden">
+//         <div
+//           className="h-full rounded-full transition-all duration-1000"
+//           style={{
+//             width: loading ? "0%" : `${value}%`,
+//             background: engine.hex,
+//           }}
+//         />
+//       </div> */}
+//       <div className="h-[3px] w-full bg-surface-container-highest rounded-full overflow-hidden">
+//         <div
+//           className={`h-full rounded-full transition-all duration-1000 ${
+//             loading ? "animate-pulse opacity-60" : ""
+//           }`}
+//           style={{
+//             width: `${value}%`,
+//             background: engine.hex,
+//           }}
+//         />
+//       </div>
+//     </div>
+//   );
+// }
+function EngineRow({ engine, value, loading, rank, animationKey }) {
+  const [animatedValue, setAnimatedValue] = useState(0);
+
+  useEffect(() => {
+    // Reset to 0 whenever API response / period changes
+    setAnimatedValue(0);
+
+    // Start animation on next frame
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setAnimatedValue(value ?? 0);
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [animationKey, value]);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -410,6 +513,7 @@ function EngineRow({ engine, value, loading, rank }) {
           >
             {RANK_LABELS[rank]}
           </span>
+
           <div
             className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${engine.bgClass} ${engine.borderClass}`}
           >
@@ -419,43 +523,32 @@ function EngineRow({ engine, value, loading, rank }) {
               className={engine.colorClass}
             />
           </div>
+
           <div className="flex items-baseline gap-1.5">
             <span className="text-[13px] font-semibold text-on-surface">
               {engine.label}
             </span>
+
             <span className="font-mono-sm text-mono-sm text-on-surface-variant">
               {engine.sub}
             </span>
           </div>
         </div>
-        {/* <span
-          className={`font-mono-sm text-mono-sm font-semibold ${engine.colorClass}`}
-        >
-          {loading ? "—" : `${value}%`}
-        </span> */}
+
         <span
           className={`font-mono-sm text-mono-sm font-semibold ${engine.colorClass}`}
         >
-          {value}%
+          {loading ? "—" : `${value}%`}
         </span>
       </div>
-      {/* <div className="h-[3px] w-full bg-surface-container-highest rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-1000"
-          style={{
-            width: loading ? "0%" : `${value}%`,
-            background: engine.hex,
-          }}
-        />
-      </div> */}
+
       <div className="h-[3px] w-full bg-surface-container-highest rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all duration-1000 ${
-            loading ? "animate-pulse opacity-60" : ""
-          }`}
+          className="h-full rounded-full"
           style={{
-            width: `${value}%`,
+            width: loading ? "0%" : `${animatedValue}%`,
             background: engine.hex,
+            transition: "width 1.2s cubic-bezier(.4,0,.2,1)",
           }}
         />
       </div>
@@ -523,6 +616,7 @@ export default function Index() {
   const [timePeriod, setTimePeriod] = useState("30d");
   const [promptTab, setPromptTab] = useState("missing");
   const { token } = useAuth();
+  const [animationKey, setAnimationKey] = useState(0);
 
   // Store/plan NAME only, decoupled from the period toggle — this is what
   // fixes the tab flash: previously availablePeriods derived from the
@@ -620,13 +714,13 @@ export default function Index() {
     ];
   }, [accountPlanName]);
 
-  // if (loading) {
-  //   return (
-  //     <div className="glass-surface flex min-h-full items-center justify-center rounded-xl p-4">
-  //       {/* <Loader2 size={24} className="animate-spin text-primary" /> */}
-  //     </div>
-  //   );
-  // }
+  if (loading && dashboardResponse == null) {
+    return (
+      <div className="glass-surface flex min-h-full items-center justify-center rounded-xl p-4">
+        <Loader2 size={24} className="animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!loading && !error && Number(aiScore) === 0) {
     return <SetupDashboard />;
@@ -721,7 +815,11 @@ export default function Index() {
             ) : (
               <ScoreRing score={aiScore} />
             )} */}
-            <ScoreRing score={aiScore} loading={loading} />
+            <ScoreRing
+              score={aiScore}
+              loading={loading}
+              animationKey={animationKey}
+            />
             <div className="grid grid-cols-2 w-full gap-px bg-outline-variant rounded-xl overflow-hidden">
               {[
                 {

@@ -113,7 +113,7 @@ export default function SetupDashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="glass-surface min-h-full text-[#111d34]">
+    <div className=" min-h-full text-[#111d34]">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-[21px] font-semibold leading-tight">
