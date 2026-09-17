@@ -32,6 +32,8 @@ async function request(path, options = {}) {
 
 export const storeApi = {
   getMe: () => request("/stores/me"),
+  getVisibilityScore: (period = "30d") =>
+    request(`/stores/visibility-score?period=${encodeURIComponent(period)}`),
 };
 
 export const productApi = {
@@ -48,6 +50,7 @@ export const productApi = {
       body: JSON.stringify({ urls }),
     }),
   analyse: (id) => request(`/products/${id}/analyse`, { method: "POST" }),
+  optimise: (id) => request(`/products/${id}/optimise`, { method: "POST" }),
   analyseBulk: () => request("/products/analyse-bulk", { method: "POST" }),
   getAnalyses: (id) => request(`/products/${id}/analysis`),
   rollback: (id, analysisId) =>

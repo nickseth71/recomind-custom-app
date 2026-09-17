@@ -162,6 +162,12 @@ export default function AiIndex() {
   }
 
   const files = data?.files || {};
+  const hasUnpublishedChanges =
+    Boolean(files.agents) &&
+    Boolean(files.generatedAt) &&
+    (!files.publishedAt ||
+      new Date(files.generatedAt).getTime() >
+        new Date(files.publishedAt).getTime());
 
   return (
     <div className="space-y-5">
@@ -212,10 +218,14 @@ export default function AiIndex() {
       <div className="flex gap-3">
         <button
           onClick={publish}
-          disabled={busy || !files.agents}
+          disabled={busy || !hasUnpublishedChanges}
           className="rounded-xl bg-primary px-4 py-3 text-on-primary font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {busy ? "Publishing..." : "Publish to Shopify"}
+          {busy
+            ? "Publishing..."
+            : hasUnpublishedChanges
+              ? "Publish to Shopify"
+              : "No new changes"}
         </button>
       </div>
 

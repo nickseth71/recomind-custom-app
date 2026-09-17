@@ -1052,10 +1052,14 @@ export default function Index() {
           <Card>
             <CardHeader
               eyebrow="Subscription"
-              title={plan?.config?.label ?? plan?.name ?? "Starter"}
+              title={
+                plan?.isTrial
+                  ? "Trial"
+                  : (plan?.config?.label ?? plan?.name ?? "No plan")
+              }
               right={
                 <span className="px-2 py-0.5 rounded-full font-mono-sm text-[10px] font-bold bg-green-win/10 text-green-win border border-green-win/20">
-                  Active
+                  {plan?.isTrial ? "Trial" : "Active"}
                 </span>
               }
             />
@@ -1070,7 +1074,7 @@ export default function Index() {
                 {
                   iconName: "Inventory",
                   label: "Products",
-                  value: `${stats.totalProducts ?? 0} / ${plan?.limits?.maxProductsAnalyzed ?? "Unlimited"}`,
+                  value: `${plan?.limits?.analyzedProducts ?? 0} / ${plan?.limits?.maxProductsAnalyzed ?? "Unlimited"}`,
                 },
                 {
                   iconName: "AutoFix",

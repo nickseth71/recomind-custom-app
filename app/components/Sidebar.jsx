@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../context/Authcontext";
+import { useApi } from "../hooks/useApi";
+import { storeApi } from "../lib/api";
 
 export const loader = async () => null;
 
@@ -30,6 +32,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const [storePlan, setStorePlan] = useState("Starter");
   const [storedShop, setStoredShop] = useState(null);
 
+  const { data: meResponse } = useApi(
+    existingToken ? () => storeApi.getMe() : null,
+    [existingToken],
+  );
+  const { data: visibilityResponse } = useApi(
+    existingToken ? () => storeApi.getVisibilityScore("30d") : null,
+    [existingToken],
+  );
+  const storeData = meResponse?.data ?? {};
+  const visibility = visibilityResponse?.data ?? {};
+  const visibilityScore = visibility.score ?? 0;
+  const visibilityChange = visibility.change;
+  const isTrial = storeData.isTrial ?? visibility.isTrial;
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -43,9 +59,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       decodedToken = null;
     }
 
-    setStorePlan(decodedToken?.storePlan || "Starter");
+    setStorePlan(
+      isTrial
+        ? "Trial"
+        : storeData.plan || decodedToken?.storePlan || "Starter",
+    );
     setStoredShop(normalizeShopName(shop));
-  }, []);
+  }, [existingToken, shop, isTrial, storeData.plan]);
 
   // changed isOpen to sideBar openand setIsOpen to setSidebarOpen for sidebar changes
   // const Sidebar = () => {
@@ -254,7 +274,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           </span>
           {sidebarOpen && <span className="ml-3">Settings</span>}
         </Link> */}
-        {/* {sidebarOpen && (
+        {sidebarOpen && (
           <div className=" rounded-2xl border border-outline-variant bg-surface-container p-1">
             <div className="flex items-center ">
               <div className="relative h-12 w-12 rounded-full flex items-center justify-center">
@@ -272,15 +292,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     cy="24"
                     r="18"
                     fill="none"
-                    stroke="#6366F1"
+                    stroke="#9E3A56"
                     strokeWidth="4"
                     strokeDasharray="113"
-                    strokeDashoffset="32"
+                    strokeDashoffset={113 - (113 * visibilityScore) / 100}
                     strokeLinecap="round"
                   />
                 </svg>
 
-                <span className="text-sm font-bold text-on-surface">72</span>
+                <span className="text-sm font-bold text-on-surface">
+                  {visibility.score ?? "—"}
+                </span>
               </div>
 
               <div>
@@ -288,17 +310,24 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   AI Visibility Score
                 </p>
 
-                <p className="text-green-500 text-xs font-semibold">
-                  ↑ 12 pts vs last scan
+                <p
+                  className={`text-xs font-semibold ${visibilityChange == null || visibilityChange >= 0 ? "text-green-500" : "text-error"}`}
+                >
+                  {visibilityChange == null
+                    ? `${visibility.period || "30d"} scan`
+                    : `${visibilityChange >= 0 ? "↑" : "↓"} ${Math.abs(visibilityChange)} pts vs previous scan`}
                 </p>
 
-                <button className="text-xs text-on-surface-variant hover:underline">
+                <Link
+                  to="/app/impact"
+                  className="text-xs text-on-surface-variant hover:underline"
+                >
                   View full report
-                </button>
+                </Link>
               </div>
             </div>
           </div>
-        )} */}
+        )}
 
         {/* store name */}
         {storedShop ? (

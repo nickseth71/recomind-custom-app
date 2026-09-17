@@ -2148,7 +2148,8 @@ function OptimiseModal({ product, onClose, onDone }) {
             currentDescription || "No product description available yet.",
           nextDescription:
             stripHtml(analysis?.optimizedDescription || "") ||
-            "A richer, AI-optimized description will be written.",
+            currentDescription ||
+            "No product description available yet.",
           keywords: [
             ...(analysis?.bestFor || []),
             ...(analysis?.intentKeywords || []),
@@ -2194,6 +2195,11 @@ function OptimiseModal({ product, onClose, onDone }) {
       setPhase("error");
     }
   }
+  const hasNewChanges =
+    Boolean(preview) &&
+    (preview.nextTitle.trim() !== preview.currentTitle.trim() ||
+      preview.nextDescription.trim() !== preview.currentDescription.trim());
+
   return (
     <Modal title="Apply to Shopify" onClose={onClose}>
       {phase === "confirm" && (
@@ -2319,7 +2325,15 @@ function OptimiseModal({ product, onClose, onDone }) {
           <div className="flex gap-3">
             <button
               onClick={apply}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity"
+              disabled={
+                previewLoading || !hasNewChanges || phase === "applying"
+              }
+              title={
+                !hasNewChanges
+                  ? "There are no new AI changes to publish"
+                  : "Apply changes to Shopify"
+              }
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-[13px] hover:opacity-90 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
             >
               <WandSparkles size={15} strokeWidth={1.8} />
               Apply to Shopify
