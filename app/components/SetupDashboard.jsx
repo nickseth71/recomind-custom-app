@@ -117,7 +117,7 @@ export default function SetupDashboard() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-[21px] font-semibold leading-tight">
-            <Hand size={21} className="text-[#db9a16]" /> Welcome to RecoMind
+            {/* <Hand size={21} className="text-[#db9a16]" /> */} Welcome to RecoMind 
           </h1>
           <p className="mt-1 text-[14px] text-[#63738b]">
             You're set up. Here's how to get your first insights in under 5

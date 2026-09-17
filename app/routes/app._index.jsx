@@ -1078,8 +1078,8 @@ export default function Index() {
                 },
                 {
                   iconName: "AutoFix",
-                  label: "Optimised",
-                  value: stats.optimisedProducts ?? 0,
+                  label: "Analyzed",
+                  value: plan?.limits?.analyzedProducts ?? 0,
                 },
                 {
                   iconName: "Radar",
